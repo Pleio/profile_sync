@@ -3,7 +3,6 @@
 $title = elgg_echo("profile_sync:admin:datasources:add");
 
 $entity = $vars["entity"];
-$title = "";
 if (elgg_instanceof($entity, "object", "profile_sync_datasource")) {
 	$title = $entity->title;
 }

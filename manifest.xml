@@ -3,16 +3,22 @@
 	<name>Profile Sync</name>
 	<author>ColdTrick IT Solutions</author>
 	<version>0.1</version>
+	<id>profile_sync</id>
 	<description>Sync Elgg user profile data from an external data source</description>
 	<website>http://www.coldtrick.com/</website>
 	<repository>https://github.com/ColdTrick/profile_sync</repository>
 	<bugtracker>https://github.com/ColdTrick/profile_sync/issues</bugtracker>
-	<copyright>(C) ColdTrick IT Solutions 2011 - 2014</copyright>
+	<copyright>(C) ColdTrick IT Solutions 2014</copyright>
 	<license>GNU General Public License version 2</license>
 	
 	<requires>
 		<type>elgg_release</type>
 		<version>1.9</version>
+	</requires>
+	
+	<requires>
+		<type>php_extension</type>
+		<name>mysqli</name>
 	</requires>
 	
 	<category>ColdTrick</category>

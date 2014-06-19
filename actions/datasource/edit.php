@@ -20,8 +20,8 @@ if (!elgg_instanceof($entity, "object", "profile_sync_datasource")) {
 	
 	$entity = new ElggObject();
 	$entity->subtype = "profile_sync_datasource";
-	$entity->owner_guid = $site->guid;
-	$entity->container_guid = $site->guid;
+	$entity->owner_guid = $site->getGUID();
+	$entity->container_guid = $site->getGUID();
 	$entity->access_id = ACCESS_PUBLIC;
 	
 	$entity->save();

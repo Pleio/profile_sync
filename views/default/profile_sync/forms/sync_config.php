@@ -1,14 +1,20 @@
 <?php
 
-$sync_config = false;
-
-$datasource_guid = (int) get_input("datasource_guid");
-$datasource = get_entity($datasource_guid);
-if (!elgg_instanceof($datasource, "object", "profile_sync_datasource")) {
-	return;
+$sync_config_guid = (int) get_input("guid");
+$sync_config = get_entity($sync_config_guid);
+if (empty($sync_config) || !elgg_instanceof($sync_config, "object", "profile_sync_config")) {
+	$sync_config = false;
+	$datasource_guid = (int) get_input("datasource_guid");
+	$title = elgg_echo("profile_sync:admin:sync_configs:add");
+} else {
+	$datasource_guid = (int) $sync_config->datasource_guid;
+	$title = $sync_config->title;
 }
 
-$title = elgg_echo("profile_sync:admin:sync_configs:add");
+$datasource = get_entity($datasource_guid);
+if (empty($datasource) || !elgg_instanceof($datasource, "object", "profile_sync_datasource")) {
+	return;
+}
 
 // add form
 $body_vars = array(

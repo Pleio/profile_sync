@@ -4,6 +4,8 @@ return array(
 
 	'profile_sync' => "Profile Sync",
 	'admin:configure_utilities:profile_sync' => "Profile Sync",
+	'item:object:profile_sync_datasource' => "Profile Sync Datasource",
+	'item:object:profile_sync_config' => "Profile Sync Configuration",
 
 	'profile_sync:admin:datasources' => "Datasources",
 	'profile_sync:admin:datasources:add' => "Add a datasource",
@@ -23,8 +25,17 @@ return array(
 	'profile_sync:admin:sync_configs:edit:select_datasource_column' => "Select a datasource column",
 	'profile_sync:admin:sync_configs:edit:select_profile_column' => "Select a target profile field",
 	'profile_sync:admin:sync_configs:edit:fields' => "Field configuration",
-	'profile_sync:admin:sync_configs:edit:match' => "Unique matching fields",
-	'' => "",
-	'' => "",
-	'' => "",
+	'profile_sync:admin:sync_configs:edit:unique_id' => "Unique matching fields",
+	'profile_sync:admin:sync_configs:edit:schedule' => "Schedule",
+	
+	// actions
+	'profile_sync:action:error:title' => "Please provide a title",
+	
+	'profile_sync:action:datasource:edit:error:params' => "No parameters supplied, please check the form",
+	'profile_sync:action:datasource:edit:error:entity' => "No datasource could be found/created, please try again",
+	
+	'profile_sync:action:sync_config:edit:error:guid' => "Invalid GUID provided, please try again",
+	'profile_sync:action:sync_config:edit:error:unique_id' => "Please provide a set of unique IDs",
+	'profile_sync:action:sync_config:edit:error:fields' => "No fields are configured for synchronization",
+	'profile_sync:action:sync_config:edit:error:entity' => "The provided GUID is not a synchronization configuration",
 );

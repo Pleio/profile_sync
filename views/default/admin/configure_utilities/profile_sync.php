@@ -2,6 +2,7 @@
 
 elgg_load_js("lightbox");
 elgg_load_css("lightbox");
+elgg_load_css("elgg.icons");
 
 $datasource_title = elgg_view("output/url", array(
 	"class" => "elgg-button elgg-button-action elgg-lightbox float-alt profile-sync-admin-title-button",

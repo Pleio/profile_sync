@@ -1,9 +1,11 @@
 <?php
 
-$title = elgg_echo("profile_sync:admin:datasources:add");
+$title_text = elgg_echo("profile_sync:admin:datasources:add");
+$title = "";
 
 $entity = $vars["entity"];
 if (elgg_instanceof($entity, "object", "profile_sync_datasource")) {
+	$title_text = $entity->title;
 	$title = $entity->title;
 }
 
@@ -22,4 +24,4 @@ if ($entity) {
 
 $body = elgg_view("input/form", array("action" => "action/profile_sync/datasource/edit", "body" => $form_body, "class" => "phs"));
 
-echo elgg_view_module("inline", $title, $body);
+echo elgg_view_module("inline", $title_text, $body);

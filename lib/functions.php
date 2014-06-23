@@ -56,12 +56,13 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 	
 	$create_user = (bool) $sync_config->create_user;
 	$notify_user = (bool) $sync_config->notify_user;
+	$create_user_name = false;
+	$create_user_email = false;
+	$create_user_username = false;
+	
 	if ($create_user) {
 		fwrite($fh, "User creation is allowed" . PHP_EOL);
 		
-		$create_user_name = false;
-		$create_user_email = false;
-		$create_user_username = false;
 		foreach ($sync_match as $datasource_col => $datasource_config) {
 			switch ($datasource_config["profile_field"]) {
 				case "name":
@@ -177,11 +178,11 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 					if ($notify_user) {
 						$subject = elgg_echo("useradd:subject");
 						$body = elgg_echo("useradd:body", array(
-							$name,
+							$user->name,
 							$site->name,
 							$site->url,
-							$username,
-							$password,
+							$user->username,
+							$pwd,
 						));
 						
 						notify_user($user->getGUID(), $site->getGUID(), $subject, $body);

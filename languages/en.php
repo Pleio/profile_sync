@@ -7,6 +7,8 @@ return array(
 	'item:object:profile_sync_datasource' => "Profile Sync Datasource",
 	'item:object:profile_sync_config' => "Profile Sync Configuration",
 
+	'profile_sync:sync_config:run' => "Run now",
+	
 	'profile_sync:admin:datasources' => "Datasources",
 	'profile_sync:admin:datasources:add' => "Add a datasource",
 	'profile_sync:admin:sync_configs' => "Sync configurations",
@@ -27,6 +29,9 @@ return array(
 	'profile_sync:admin:sync_configs:edit:fields' => "Field configuration",
 	'profile_sync:admin:sync_configs:edit:unique_id' => "Unique matching fields",
 	'profile_sync:admin:sync_configs:edit:schedule' => "Schedule",
+	'profile_sync:admin:sync_configs:edit:create_user' => "Create missing users",
+	'profile_sync:admin:sync_configs:edit:create_user:description' => "When a user could not be found, create it. This requires a field for Displayname, username and e-mail.",
+	'profile_sync:admin:sync_configs:edit:notify_user' => "Notify the newly created user with their username/password",
 	
 	// actions
 	'profile_sync:action:error:title' => "Please provide a title",
@@ -38,4 +43,6 @@ return array(
 	'profile_sync:action:sync_config:edit:error:unique_id' => "Please provide a set of unique IDs",
 	'profile_sync:action:sync_config:edit:error:fields' => "No fields are configured for synchronization",
 	'profile_sync:action:sync_config:edit:error:entity' => "The provided GUID is not a synchronization configuration",
+	
+	'profile_sync:action:sync_config:run' => "Synchronisation run",
 );

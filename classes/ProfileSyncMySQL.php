@@ -14,10 +14,22 @@ class ProfileSyncMySQL {
 	protected $result_row_count = 0;
 	protected $result_row = 0;
 	
+	/**
+	 * Create a Datasource connection to a MySQL DB
+	 *
+	 * @param ElggObject $datasource the datasource configuration
+	 *
+	 * @return void
+	 */
 	public function __construct(ElggObject $datasource) {
 		$this->datasource = $datasource;
 	}
 
+	/**
+	 * Connect to the MySQL DB
+	 *
+	 * @return bool
+	 */
 	protected function connect() {
 		
 		if ($this->mysqli) {
@@ -39,6 +51,11 @@ class ProfileSyncMySQL {
 		return true;
 	}
 	
+	/**
+	 * Get the available columns in the database
+	 *
+	 * @return bool|array:
+	 */
 	public function getColumns() {
 		
 		if (!$this->connect()) {
@@ -60,6 +77,11 @@ class ProfileSyncMySQL {
 		return array_keys($tmp->fetch_assoc());
 	}
 	
+	/**
+	 * Get a row from the database
+	 *
+	 * @return bool|array
+	 */
 	public function fetchRow() {
 		
 		if (!$this->connect()) {

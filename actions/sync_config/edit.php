@@ -16,6 +16,8 @@ $profile_cols = get_input("profile_cols");
 $access = get_input("access");
 
 $schedule = get_input("schedule");
+$create_user = (int) get_input("create_user");
+$notify_user = (int) get_input("notify_user");
 
 if (empty($guid) && empty($datasource_guid)) {
 	register_error(elgg_echo("profile_sync:action:sync_config:edit:error:guid"));
@@ -63,10 +65,8 @@ if (empty($guid)) {
 	$entity = new ElggObject();
 	$entity->subtype = "profile_sync_config";
 	$entity->owner_guid = $site->getGUID();
-	$entity->container_guid = $site->getGUID();
+	$entity->container_guid = $datasource_guid;
 	$entity->access_id = ACCESS_PUBLIC;
-	
-	$entity->datasource_guid = $datasource_guid;
 	
 	if (!$entity->save()) {
 		register_error(elgg_echo("save:fail"));
@@ -87,6 +87,8 @@ $entity->profile_id = $profile_id;
 
 $entity->sync_match = json_encode($sync_match);
 $entity->schedule = $schedule;
+$entity->create_user = $create_user;
+$entity->notify_user = $notify_user;
 
 $entity->save();
 

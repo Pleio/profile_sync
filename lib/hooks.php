@@ -74,6 +74,15 @@ function profile_sync_entity_register_menu($hook, $type, $return, $params) {
 				"href" => false,
 				"priority" => 10,
 			));
+			
+			$return[] = ElggMenuItem::factory(array(
+				"name" => "run",
+				"text" => elgg_echo("profile_sync:sync_config:run"),
+				"href" => "action/profile_sync/sync_config/run?guid=" . $entity->getGUID(),
+				"priority" => 50,
+				"is_action" => true
+			));
+			
 		}
 	}
 	

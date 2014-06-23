@@ -24,7 +24,7 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 	$log_file->write("start processing: " . date(elgg_echo("friendlytime:date_format")) . PHP_EOL);
 	$fh = $log_file->open("append");
 	
-	$datasource = get_entity($sync_config->datasource_guid);
+	$datasource = $sync_config->getContainerEntity();
 	if (empty($datasource) || !elgg_instanceof($datasource, "object", "profile_sync_datasource")) {
 		return;
 	}
@@ -54,6 +54,34 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 			break;
 	}
 	
+	$create_user = (bool) $sync_config->create_user;
+	$notify_user = (bool) $sync_config->notify_user;
+	if ($create_user) {
+		fwrite($fh, "User creation is allowed" . PHP_EOL);
+		
+		$create_user_name = false;
+		$create_user_email = false;
+		$create_user_username = false;
+		foreach ($sync_match as $datasource_col => $datasource_config) {
+			switch ($datasource_config["profile_field"]) {
+				case "name":
+					$create_user_name = $datasource_col;
+					break;
+				case "email":
+					$create_user_email = $datasource_col;
+					break;
+				case "username":
+					$create_user_username = $datasource_col;
+					break;
+			}
+		}
+		
+		if (empty($create_user_name) || empty($create_user_username) || empty($create_user_email)) {
+			fwrite($fh, "Missing information to create users" . PHP_EOL);
+			$create_user = false;
+		}
+	}
+	
 	// start the sync process
 	set_time_limit(0);
 	_elgg_services()->db->disableQueryCache();
@@ -61,6 +89,7 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 	$dbprefix = elgg_get_config("dbprefix");
 	$default_access = get_default_access();
 	$ia = elgg_set_ignore_access(true);
+	$site = elgg_get_site_entity();
 	
 	$counters = array(
 		"source rows" => 0,
@@ -69,6 +98,7 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 		"duplicate name" => 0,
 		"duplicate profile field" => 0,
 		"user not found" => 0,
+		"user created" => 0,
 		"empty attributes" => 0,
 		"invalid profile field" => 0,
 		"invalid source field" => 0,
@@ -131,6 +161,38 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 				break;
 		}
 		
+		// check if we need to create a user
+		if (empty($user) && $create_user) {
+			
+			$pwd = generate_random_cleartext_password();
+			
+			try {
+				$user_guid = register_user($source_row[$create_user_username], $pwd, $source_row[$create_user_name], $source_row[$create_user_email]);
+				if (!empty($user_guid)) {
+					$counters["user created"]++;
+					fwrite($fh, "Created user: " . $source_row[$create_user_name] . PHP_EOL);
+					
+					$user = get_user($user_guid);
+					
+					if ($notify_user) {
+						$subject = elgg_echo("useradd:subject");
+						$body = elgg_echo("useradd:body", array(
+							$name,
+							$site->name,
+							$site->url,
+							$username,
+							$password,
+						));
+						
+						notify_user($user->getGUID(), $site->getGUID(), $subject, $body);
+					}
+				}
+			} catch (RegistrationException $r) {
+				fwrite($fh, "Failure creating user: " . $source_row[$create_user_name] . " - " . $r->getMessage() . PHP_EOL);
+			}
+		}
+		
+		// did we get a user
 		if (empty($user)) {
 			$counters["user not found"]++;
 			fwrite($fh, "user not found: " . $datasource_id . " => " . $source_row[$datasource_id] . PHP_EOL);
@@ -202,6 +264,8 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 	foreach ($counters as $name => $count) {
 		fwrite($fh, $name . ": " . $count . PHP_EOL);
 	}
+	
+	$sync_config->lastrun = time();
 	
 	// re-enable db caching
 	_elgg_services()->db->enableQueryCache();

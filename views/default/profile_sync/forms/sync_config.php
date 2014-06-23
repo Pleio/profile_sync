@@ -7,7 +7,7 @@ if (empty($sync_config) || !elgg_instanceof($sync_config, "object", "profile_syn
 	$datasource_guid = (int) get_input("datasource_guid");
 	$title = elgg_echo("profile_sync:admin:sync_configs:add");
 } else {
-	$datasource_guid = (int) $sync_config->datasource_guid;
+	$datasource_guid = (int) $sync_config->getContainerGUID();
 	$title = $sync_config->title;
 }
 

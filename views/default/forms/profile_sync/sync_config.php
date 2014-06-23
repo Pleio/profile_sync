@@ -7,11 +7,15 @@ $title = "";
 $schedule = "";
 $datasource_id = "";
 $profile_id = "";
+$create_user = false;
+$notify_user = false;
 if (!empty($sync_config)) {
 	$title = $sync_config->title;
 	$schedule = $sync_config->schedule;
 	$datasource_id = $sync_config->datasource_id;
 	$profile_id = $sync_config->profile_id;
+	$create_user = (bool) $sync_config->create_user;
+	$notify_user = (bool) $sync_config->notify_user;
 }
 
 // get field config
@@ -121,6 +125,22 @@ $body .= "</div>";
 $body .= "<div class='mbs'>";
 $body .= "<label>" . elgg_echo("profile_sync:admin:sync_configs:edit:schedule") . "</label>";
 $body .= elgg_view("input/select", array("name" => "schedule", "value" => $schedule, "options_values" => $schedule_options, "class" => "mls"));
+$body .= "</div>";
+
+$body .= "<div class='mbs'>";
+$body .= elgg_view("input/checkbox", array(
+	"name" => "create_user",
+	"value" => 1,
+	"label" => elgg_echo("profile_sync:admin:sync_configs:edit:create_user"),
+	"checked" => $create_user
+));
+$body .= "<div class='elgg-subtext'>" . elgg_echo("profile_sync:admin:sync_configs:edit:create_user:description") . "</div>";
+$body .= elgg_view("input/checkbox", array(
+	"name" => "notify_user",
+	"value" => 1,
+	"label" => elgg_echo("profile_sync:admin:sync_configs:edit:notify_user"),
+	"checked" => $notify_user
+));
 $body .= "</div>";
 
 $body .= "<div class='elgg-foot'>";

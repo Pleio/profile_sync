@@ -36,5 +36,6 @@ function profile_sync_init() {
 	elgg_register_action("profile_sync/datasource/delete", elgg_get_root_path() . "/actions/entities/delete.php", "admin");
 	elgg_register_action("profile_sync/sync_config", dirname(__FILE__) . "/actions/sync_config/edit.php", "admin");
 	elgg_register_action("profile_sync/sync_config/delete", elgg_get_root_path() . "/actions/entities/delete.php", "admin");
+	elgg_register_action("profile_sync/sync_config/run", dirname(__FILE__) . "/actions/sync_config/run.php", "admin");
 	
 }

@@ -29,6 +29,7 @@ $schedule_options = array(
 	"weekly" => elgg_echo("interval:weekly"),
 	"monthly" => elgg_echo("interval:monthly"),
 	"yearly" => elgg_echo("interval:yearly"),
+	"manual" => elgg_echo("profile_sync:sync_configs:schedule:manual")
 );
 
 // show which datasource

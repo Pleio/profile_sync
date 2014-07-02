@@ -8,6 +8,7 @@ return array(
 	'item:object:profile_sync_config' => "Profile Sync Configuration",
 
 	'profile_sync:sync_config:run' => "Run now",
+	'profile_sync:sync_configs:schedule:manual' => "Manual",
 	
 	'profile_sync:admin:datasources' => "Datasources",
 	'profile_sync:admin:datasources:add' => "Add a datasource",

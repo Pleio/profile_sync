@@ -68,9 +68,13 @@ function profile_sync_entity_register_menu($hook, $type, $return, $params) {
 				}
 			}
 			
+			$schedule_text = elgg_echo("interval:" . $entity->schedule);
+			if ($entity->schedule == "manual") {
+				$schedule_text = elgg_echo("profile_sync:sync_configs:schedule:manual");
+			}
 			$return[] = ElggMenuItem::factory(array(
 				"name" => "sync_config_interval",
-				"text" => elgg_echo("interval:" . $entity->schedule),
+				"text" => $schedule_text,
 				"href" => false,
 				"priority" => 10,
 			));

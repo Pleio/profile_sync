@@ -46,6 +46,9 @@ class ProfileSyncMySQL {
 			return false;
 		}
 		
+		// @todo make the charset into a setting of the datasource
+		$mysqli->set_charset("utf8");
+		
 		$this->mysqli = $mysqli;
 		
 		return true;

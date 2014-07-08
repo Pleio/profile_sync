@@ -34,6 +34,10 @@ return array(
 	'profile_sync:admin:sync_configs:edit:create_user:description' => "When a user could not be found, create it. This requires a field for Displayname, username and e-mail.",
 	'profile_sync:admin:sync_configs:edit:notify_user' => "Notify the newly created user with their username/password",
 	
+	'profile_sync:sync_config:logs' => "List logs",
+	'profile_sync:sync_logs:title' => "Sync logs: %s",
+	'profile_sync:view_log:title' => "Log file for %s from %s",
+	
 	// actions
 	'profile_sync:action:error:title' => "Please provide a title",
 	

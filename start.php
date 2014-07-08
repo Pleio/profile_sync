@@ -24,6 +24,8 @@ function profile_sync_init() {
 	// register ajax views
 	elgg_register_ajax_view("profile_sync/forms/datasource");
 	elgg_register_ajax_view("profile_sync/forms/sync_config");
+	elgg_register_ajax_view("profile_sync/sync_logs");
+	elgg_register_ajax_view("profile_sync/view_log");
 	
 	elgg_register_admin_menu_item("configure", "profile_sync", "configure_utilities");
 	

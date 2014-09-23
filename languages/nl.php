@@ -1,10 +1,13 @@
 <?php
 /**
  * This file was created by Translation Editor v2.0
- * On 2014-09-23 15:48
+ * On 2014-09-23 16:05
  */
 
 return array (
+  'profile_sync:sync_config:sync_status:create' => 'Sync data en gebruikers aanmaken',
+  'profile_sync:sync_config:sync_status:ban' => 'Gebruikers blokkeren',
+  'profile_sync:sync_config:sync_status:default' => 'Sync data',
   'profile_sync:admin:datasources:edit:mysql:dbquery:description' => 'Je kunt gebruik maken van %s als placeholder om te gebruiken als het tijdstip (als unix timestamp) van de laatste keer dat een sync configuratie gebruik heeft gemaakt van deze datasource. Hiermee kun je het aantal resultaten limiteren.',
   'profile_sync:admin:sync_configs:edit:ban_user' => 'Blokkeer de gevonden gebruikers',
   'profile_sync:admin:sync_configs:edit:ban_user:description' => 'Als er een gebruiker wordt gevonden blokkeer hem/haar op het systeem. Dit zorgt er tevens voor dat er geen profiel data wordt gesynchroniseerd voor de gevonden gebruikers.',

@@ -41,6 +41,10 @@ return array(
 	'profile_sync:sync_logs:title' => "Sync logs: %s",
 	'profile_sync:view_log:title' => "Log file for %s from %s",
 	
+	'profile_sync:sync_config:sync_status:create' => "Sync data and create users",
+	'profile_sync:sync_config:sync_status:ban' => "Ban users",
+	'profile_sync:sync_config:sync_status:default' => "Sync data",
+	
 	// actions
 	'profile_sync:action:error:title' => "Please provide a title",
 	

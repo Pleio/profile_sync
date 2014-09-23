@@ -1,10 +1,14 @@
 <?php
 /**
  * This file was created by Translation Editor v2.0
- * On 2014-07-17 09:54
+ * On 2014-09-23 15:48
  */
 
-$language = array (
+return array (
+  'profile_sync:admin:datasources:edit:mysql:dbquery:description' => 'Je kunt gebruik maken van %s als placeholder om te gebruiken als het tijdstip (als unix timestamp) van de laatste keer dat een sync configuratie gebruik heeft gemaakt van deze datasource. Hiermee kun je het aantal resultaten limiteren.',
+  'profile_sync:admin:sync_configs:edit:ban_user' => 'Blokkeer de gevonden gebruikers',
+  'profile_sync:admin:sync_configs:edit:ban_user:description' => 'Als er een gebruiker wordt gevonden blokkeer hem/haar op het systeem. Dit zorgt er tevens voor dat er geen profiel data wordt gesynchroniseerd voor de gevonden gebruikers.',
+  'profile_sync:action:sync_config:edit:error:create_ban' => 'Je kunt niet tegelijk gebruikers aanmaken en blokkeren',
   'profile_sync' => 'Profile Sync',
   'admin:configure_utilities:profile_sync' => 'Profile Sync',
   'item:object:profile_sync_datasource' => 'Profile Sync databron',
@@ -44,4 +48,3 @@ $language = array (
   'profile_sync:action:sync_config:edit:error:entity' => 'De opgegeven GUID is geen synchronisatie configuratie',
   'profile_sync:action:sync_config:run' => 'Synchronisatie run',
 );
-add_translation("nl", $language);

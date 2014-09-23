@@ -8,6 +8,7 @@ $schedule = "";
 $datasource_id = "";
 $profile_id = "";
 $create_user = false;
+$ban_user = false;
 $notify_user = false;
 if (!empty($sync_config)) {
 	$title = $sync_config->title;
@@ -15,6 +16,7 @@ if (!empty($sync_config)) {
 	$datasource_id = $sync_config->datasource_id;
 	$profile_id = $sync_config->profile_id;
 	$create_user = (bool) $sync_config->create_user;
+	$ban_user = (bool) $sync_config->ban_user;
 	$notify_user = (bool) $sync_config->notify_user;
 }
 
@@ -81,6 +83,11 @@ $body .= elgg_view("input/select", array("name" => "profile_id", "options_values
 $body .= "</div>";
 
 // fields to sync
+$field_class = "profile-sync-edit-sync-fields";
+if ($ban_user) {
+	$field_class .= " hidden";
+}
+$body .= "<div class='" . $field_class . "'>";
 $body .= "<label>" . elgg_echo("profile_sync:admin:sync_configs:edit:fields") . "</label>";
 
 if (!empty($sync_config)) {
@@ -119,7 +126,13 @@ $body .= elgg_view("input/access", array("name" => "access[]"));
 $body .= "</div>";
 
 $body .= "<div>";
-$body .= elgg_view("output/url", array("text" => elgg_echo("add"), "href" => "#", "onclick" => "elgg.profile_sync.add_field_config(); return false;", "class" => "float-alt"));
+$body .= elgg_view("output/url", array(
+	"id" => "profile-sync-edit-sync-add-field",
+	"text" => elgg_echo("add"),
+	"href" => "#",
+	"class" => "float-alt"
+));
+$body .= "</div>";
 $body .= "</div>";
 
 // schedule
@@ -128,8 +141,10 @@ $body .= "<label>" . elgg_echo("profile_sync:admin:sync_configs:edit:schedule") 
 $body .= elgg_view("input/select", array("name" => "schedule", "value" => $schedule, "options_values" => $schedule_options, "class" => "mls"));
 $body .= "</div>";
 
+// speciaf actions
 $body .= "<div class='mbs'>";
 $body .= elgg_view("input/checkbox", array(
+	"id" => "profile-sync-edit-sync-create-user",
 	"name" => "create_user",
 	"value" => 1,
 	"label" => elgg_echo("profile_sync:admin:sync_configs:edit:create_user"),
@@ -140,24 +155,24 @@ $body .= elgg_view("input/checkbox", array(
 	"name" => "notify_user",
 	"value" => 1,
 	"label" => elgg_echo("profile_sync:admin:sync_configs:edit:notify_user"),
-	"checked" => $notify_user
+	"checked" => $notify_user,
+	"class" => "mlm"
 ));
 $body .= "</div>";
+
+$body .= "<div class='mbs'>";
+$body .= elgg_view("input/checkbox", array(
+	"id" => "profile-sync-edit-sync-ban-user",
+	"name" => "ban_user",
+	"value" => 1,
+	"label" => elgg_echo("profile_sync:admin:sync_configs:edit:ban_user"),
+	"checked" => $ban_user
+));
+$body .= "<div class='elgg-subtext'>" . elgg_echo("profile_sync:admin:sync_configs:edit:ban_user:description") . "</div>";
+
 
 $body .= "<div class='elgg-foot'>";
 $body .= elgg_view("input/submit", array("value" => elgg_echo("save")));
 $body .= "</div>";
 
 echo $body;
-?>
-<script type="text/javascript">
-	elgg.provide("elgg.profile_sync");
-
-	elgg.profile_sync.add_field_config = function() {
-		var $clone = $("#profile-sync-field-config-template").clone();
-		$clone.removeAttr("id").removeClass("hidden");
-		$clone.insertBefore("#profile-sync-field-config-template");
-
-		$.colorbox.resize();
-	}
-</script>

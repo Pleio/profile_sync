@@ -34,6 +34,8 @@ return array(
 	'profile_sync:admin:sync_configs:edit:create_user' => "Create missing users",
 	'profile_sync:admin:sync_configs:edit:create_user:description' => "When a user could not be found, create it. This requires a field for Displayname, username and e-mail.",
 	'profile_sync:admin:sync_configs:edit:notify_user' => "Notify the newly created user with their username/password",
+	'profile_sync:admin:sync_configs:edit:ban_user' => "Ban matching users",
+	'profile_sync:admin:sync_configs:edit:ban_user:description' => "When a matching user is found ban him/her from the system. This will not sync profile data for the matching user.",
 	
 	'profile_sync:sync_config:logs' => "List logs",
 	'profile_sync:sync_logs:title' => "Sync logs: %s",
@@ -49,6 +51,7 @@ return array(
 	'profile_sync:action:sync_config:edit:error:unique_id' => "Please provide a set of unique IDs",
 	'profile_sync:action:sync_config:edit:error:fields' => "No fields are configured for synchronization",
 	'profile_sync:action:sync_config:edit:error:entity' => "The provided GUID is not a synchronization configuration",
+	'profile_sync:action:sync_config:edit:error:create_ban' => "You can't create and ban users at the same time",
 	
 	'profile_sync:action:sync_config:run' => "Synchronisation run",
 );

@@ -8,6 +8,7 @@
 class ProfileSyncMySQL {
 	
 	protected $datasource;
+	protected $lastrun;
 	protected $mysqli;
 	
 	protected $result;
@@ -18,11 +19,13 @@ class ProfileSyncMySQL {
 	 * Create a Datasource connection to a MySQL DB
 	 *
 	 * @param ElggObject $datasource the datasource configuration
+	 * @param int        $lastrun    the timestamp of the sync config last run
 	 *
 	 * @return void
 	 */
-	public function __construct(ElggObject $datasource) {
+	public function __construct(ElggObject $datasource, $lastrun = 0) {
 		$this->datasource = $datasource;
+		$this->lastrun = (int) $lastrun;
 	}
 
 	/**
@@ -55,6 +58,33 @@ class ProfileSyncMySQL {
 	}
 	
 	/**
+	 * Get the database query
+	 *
+	 * This helper function will fill in placeholders with actual values
+	 *
+	 * @return bool|string
+	 */
+	protected function getDbQuery() {
+		$datasource = $this->datasource;
+		if (empty($datasource)) {
+			return false;
+		}
+		
+		$dbquery = $datasource->dbquery;
+		if (empty($dbquery)) {
+			return false;
+		}
+		
+		// make sure we have the actual text, not the encoded version
+		$dbquery = html_entity_decode($dbquery);
+		
+		// replace placeholders with actual values
+		$dbquery = str_ireplace("[[lastrun]]", $this->lastrun, $dbquery);
+		
+		return $dbquery;
+	}
+	
+	/**
 	 * Get the available columns in the database
 	 *
 	 * @return bool|array:
@@ -65,13 +95,22 @@ class ProfileSyncMySQL {
 			return false;
 		}
 		
-		$datasource = $this->datasource;
-		if (!$datasource->dbquery) {
+		// fake last run to get more results for the columns
+		$lastrun = $this->lastrun;
+		$this->lastrun = 0;
+		
+		$dbquery = $this->getDbQuery();
+		if (empty($dbquery)) {
+			// restore actual lastrun
+			$this->lastrun = $lastrun;
 			return false;
 		}
 		
+		// restore actual lastrun
+		$this->lastrun = $lastrun;
+		
 		$mysqli = $this->mysqli;
-		$tmp = $mysqli->query($datasource->dbquery);
+		$tmp = $mysqli->query($dbquery);
 		
 		if (!$tmp->num_rows) {
 			return false;
@@ -94,13 +133,13 @@ class ProfileSyncMySQL {
 		if (!isset($this->result)) {
 			$this->result = false;
 			
-			$datasource = $this->datasource;
-			if (!$datasource->dbquery) {
+			$dbquery = $this->getDbQuery();
+			if (empty($dbquery)) {
 				return false;
 			}
 			
 			$mysqli = $this->mysqli;
-			$tmp = $mysqli->query($datasource->dbquery);
+			$tmp = $mysqli->query($dbquery);
 			
 			if (!$tmp->num_rows) {
 				return false;

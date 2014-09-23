@@ -1,6 +1,10 @@
-Version Information
-===================
+Version History
+===============
 
 x.x:
+
+- added: support for lastrun timestamp in datasource query
+
+0.1 (2014-07-17):
 
 - first release

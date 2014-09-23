@@ -32,6 +32,7 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 	$sync_match = json_decode($sync_config->sync_match, true);
 	$datasource_id = $sync_config->datasource_id;
 	$profile_id = $sync_config->profile_id;
+	$lastrun = (int) $sync_config->lastrun;
 	
 	$profile_fields = elgg_get_config("profile_fields");
 	
@@ -46,7 +47,7 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 	
 	switch ($datasource->datasource_type) {
 		case "mysql":
-			$sync_source = new ProfileSyncMySQL($datasource);
+			$sync_source = new ProfileSyncMySQL($datasource, $lastrun);
 			break;
 		default:
 			fwrite($fh, "invalid datasource type" . PHP_EOL);

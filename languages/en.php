@@ -22,6 +22,7 @@ return array(
 	'profile_sync:admin:datasources:edit:mysql:dbusername' => "Database username",
 	'profile_sync:admin:datasources:edit:mysql:dbpassword' => "Database password",
 	'profile_sync:admin:datasources:edit:mysql:dbquery' => "Database query",
+	'profile_sync:admin:datasources:edit:mysql:dbquery:description' => "You can use %s as a placeholder for the last time (as a unix timestamp) the sync config used this datasource. This way you can limit the number of results returned.",
 	
 	'profile_sync:admin:sync_configs:edit:no_columns' => "No columns found in the datasource.",
 	'profile_sync:admin:sync_configs:edit:datasource' => "Using datasource",

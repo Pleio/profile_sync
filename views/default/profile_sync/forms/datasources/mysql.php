@@ -75,4 +75,5 @@ echo elgg_view("input/plaintext", array(
 	"name" => "params[dbquery]",
 	"value" => $dbquery
 ));
+echo "<div class='elgg-subtext'>" . elgg_echo("profile_sync:admin:datasources:edit:mysql:dbquery:description", array("[[lastrun]]")) . "</div>";
 echo "</div>";

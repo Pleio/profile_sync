@@ -38,10 +38,12 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 	
 	if (empty($sync_match) || empty($datasource_id) || empty($profile_id)) {
 		fwrite($fh, "Configuration error" . PHP_EOL);
+		fclose($fh);
 		return;
 	}
 	if (!in_array($profile_id, array("name", "username", "email")) && !array_key_exists($profile_id, $profile_fields)) {
 		fwrite($fh, "Invalid profile identifier" . PHP_EOL);
+		fclose($fh);
 		return;
 	}
 	
@@ -51,8 +53,15 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 			break;
 		default:
 			fwrite($fh, "Invalid datasource type" . PHP_EOL);
+			fclose($fh);
 			return;
 			break;
+	}
+	
+	if (!$sync_source->connect()) {
+		fwrite($fh, "Unable to connect to the datasource" . PHP_EOL);
+		fclose($fh);
+		return;
 	}
 	
 	$create_user = (bool) $sync_config->create_user;

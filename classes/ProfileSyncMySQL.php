@@ -33,7 +33,7 @@ class ProfileSyncMySQL {
 	 *
 	 * @return bool
 	 */
-	protected function connect() {
+	public function connect() {
 		
 		if ($this->mysqli) {
 			return true;

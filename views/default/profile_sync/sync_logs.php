@@ -31,6 +31,8 @@ if (empty($files)) {
 	return;
 }
 
+krsort($files);
+
 $content = "<table class='elgg-table-alt'>";
 $content .= "<tr>";
 $content .= "<th>" . elgg_echo("admin:cron:date") . "</th>";

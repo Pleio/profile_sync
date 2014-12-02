@@ -1,10 +1,17 @@
 <?php
 /**
  * This file was created by Translation Editor v2.0
- * On 2014-09-23 16:05
+ * On 2014-12-02 10:26
  */
 
 return array (
+  'profile_sync:settings:memory_limit' => 'Stel de PHP geheugen limiet in voor sync opdrachten',
+  'profile_sync:settings:memory_limit:description' => 'Verhoog de limiet als je sync opdrachten mislukken en je in de errorlog Out of Memory foutmeldingen ziet.',
+  'profile_sync:settings:memory_limit:64' => '64M',
+  'profile_sync:settings:memory_limit:128' => '128M',
+  'profile_sync:settings:memory_limit:256' => '256M',
+  'profile_sync:settings:memory_limit:512' => '512M',
+  'profile_sync:settings:memory_limit:unlimited' => 'Ongelimiteerd',
   'profile_sync:sync_config:sync_status:create' => 'Sync data en gebruikers aanmaken',
   'profile_sync:sync_config:sync_status:ban' => 'Gebruikers blokkeren',
   'profile_sync:sync_config:sync_status:default' => 'Sync data',

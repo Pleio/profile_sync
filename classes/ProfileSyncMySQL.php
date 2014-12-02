@@ -166,4 +166,24 @@ class ProfileSyncMySQL {
 		
 		return false;
 	}
+	
+	/**
+	 * Invalidate all cached data, run this after the sync is done
+	 *
+	 * @return void
+	 */
+	public function cleanup() {
+		
+		if ($this->result) {
+			$this->result->free();
+			
+			unset($this->result);
+		}
+		
+		if ($this->mysqli) {
+			$this->mysqli->close();
+			
+			unset($this->mysqli);
+		}
+	}
 }

@@ -304,6 +304,8 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 	
 	$sync_config->lastrun = time();
 	
+	// cleanup datasource cache
+	$sync_source->cleanup();
 	// re-enable db caching
 	_elgg_services()->db->enableQueryCache();
 	// restore access

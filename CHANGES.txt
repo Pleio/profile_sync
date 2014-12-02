@@ -5,6 +5,7 @@ x.x:
 
 - added: support for lastrun timestamp in datasource query
 - added: option to ban users during sync (this will not sync profile data)
+- added: plugin setting to increase PHP memory limit
 
 0.1 (2014-07-17):
 

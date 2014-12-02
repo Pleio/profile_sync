@@ -7,6 +7,14 @@ return array(
 	'item:object:profile_sync_datasource' => "Profile Sync Datasource",
 	'item:object:profile_sync_config' => "Profile Sync Configuration",
 
+	'profile_sync:settings:memory_limit' => "Set PHP memory limit for sync jobs",
+	'profile_sync:settings:memory_limit:description' => "Increase the limit if your sync jobs fail and you find Out of Memory error in the errorlog.",
+	'profile_sync:settings:memory_limit:64' => "64M",
+	'profile_sync:settings:memory_limit:128' => "128M",
+	'profile_sync:settings:memory_limit:256' => "256M",
+	'profile_sync:settings:memory_limit:512' => "512M",
+	'profile_sync:settings:memory_limit:unlimited' => "Unlimited",
+	
 	'profile_sync:sync_config:run' => "Run now",
 	'profile_sync:sync_configs:schedule:manual' => "Manual",
 	

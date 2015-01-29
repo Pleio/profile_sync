@@ -6,6 +6,8 @@ return array(
 	'admin:configure_utilities:profile_sync' => "Profile Sync",
 	'item:object:profile_sync_datasource' => "Profile Sync Datasource",
 	'item:object:profile_sync_config' => "Profile Sync Configuration",
+	
+	'profile_sync:csv:column' => "Column %d: %s",
 
 	'profile_sync:settings:memory_limit' => "Set PHP memory limit for sync jobs",
 	'profile_sync:settings:memory_limit:description' => "Increase the limit if your sync jobs fail and you find Out of Memory error in the errorlog.",
@@ -23,6 +25,11 @@ return array(
 	'profile_sync:admin:sync_configs' => "Sync configurations",
 	'profile_sync:admin:sync_configs:add' => "Add a sync configuration",
 
+	'profile_sync:admin:datasources:type' => "Type",
+	'profile_sync:admin:datasources:type:choose' => "Pick a datasource type",
+	'profile_sync:admin:datasources:type:mysql' => "MySQL",
+	'profile_sync:admin:datasources:type:csv' => "CSV",
+	
 	'profile_sync:admin:datasources:edit:mysql:dbhost' => "Database host",
 	'profile_sync:admin:datasources:edit:mysql:dbport' => "Database port",
 	'profile_sync:admin:datasources:edit:mysql:dbport:default' => "Default: 3306",
@@ -32,6 +39,12 @@ return array(
 	'profile_sync:admin:datasources:edit:mysql:dbquery' => "Database query",
 	'profile_sync:admin:datasources:edit:mysql:dbquery:description' => "You can use %s as a placeholder for the last time (as a unix timestamp) the sync config used this datasource. This way you can limit the number of results returned.",
 	
+	'profile_sync:admin:datasources:edit:csv:location' => "CSV location",
+	'profile_sync:admin:datasources:edit:csv:delimiter' => "Field delimiter",
+	'profile_sync:admin:datasources:edit:csv:enclosure' => "Text enclosure",
+	'profile_sync:admin:datasources:edit:csv:first_row' => "First row contains headers",
+	
+	'profile_sync:admin:sync_configs:edit:no_datasource' => "No datasource could be created.",
 	'profile_sync:admin:sync_configs:edit:no_columns' => "No columns found in the datasource.",
 	'profile_sync:admin:sync_configs:edit:datasource' => "Using datasource",
 	'profile_sync:admin:sync_configs:edit:select_datasource_column' => "Select a datasource column",
@@ -58,6 +71,7 @@ return array(
 	
 	'profile_sync:action:datasource:edit:error:params' => "No parameters supplied, please check the form",
 	'profile_sync:action:datasource:edit:error:entity' => "No datasource could be found/created, please try again",
+	'profile_sync:action:datasource:edit:error:type' => "Please select a datasource type",
 	
 	'profile_sync:action:sync_config:edit:error:guid' => "Invalid GUID provided, please try again",
 	'profile_sync:action:sync_config:edit:error:unique_id' => "Please provide a set of unique IDs",

@@ -17,7 +17,7 @@ elgg.profile_sync.admin.check_create_user = function(event) {
 		alert(elgg.echo("profile_sync:action:sync_config:edit:error:create_ban"));
 		$(this).removeAttr("checked");
 	}
-}
+};
 
 /**
  * Validate if there is no conflict with the create user checkbox
@@ -42,7 +42,7 @@ elgg.profile_sync.admin.check_ban_user = function(event) {
 	}
 	
 	$.colorbox.resize();
-}
+};
 
 /**
  * Add a new profile field to the sync list
@@ -57,7 +57,29 @@ elgg.profile_sync.admin.add_field_config = function() {
 	$.colorbox.resize();
 
 	return false
-}
+};
+
+elgg.profile_sync.admin.datasource_type = function() {
+	var $form = $(this).parents("form");
+
+	$form.find(".profile-sync-datasource-type").hide();
+	var type = $(this).val();
+	if (type !== "") {
+		$form.find(".profile-sync-datasource-type-" + type).show();
+	}
+
+	elgg.profile_sync.admin.datasource_form();
+
+	$.colorbox.resize();
+};
+
+elgg.profile_sync.admin.datasource_form = function() {
+
+	var $inputs = $(".elgg-form-profile-sync-datasource-edit .profile-sync-datasource-type").find("input,select,textarea");
+	
+	$inputs.not(":visible").attr("disabled", "disabled");
+	$inputs.filter(":visible").removeAttr("disabled");
+};
 
 /**
  * Register callbacks when the document is done
@@ -68,7 +90,9 @@ elgg.profile_sync.admin.init = function() {
 
 	$(document).on("change", "#profile-sync-edit-sync-create-user", elgg.profile_sync.admin.check_create_user);
 	$(document).on("change", "#profile-sync-edit-sync-ban-user", elgg.profile_sync.admin.check_ban_user);
+	$(document).on("change", "#profile-sync-edit-datasource-type", elgg.profile_sync.admin.datasource_type);
 	$(document).on("click", "#profile-sync-edit-sync-add-field", elgg.profile_sync.admin.add_field_config);
+	$(document).on("submit", ".elgg-form-profile-sync-datasource-edit", elgg.profile_sync.admin.datasource_form);
 };
 
 

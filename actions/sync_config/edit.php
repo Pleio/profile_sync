@@ -30,7 +30,7 @@ if (empty($title)) {
 	forward(REFERER);
 }
 
-if (empty($datasource_id) || empty($profile_id)) {
+if (($datasource_id === "") || empty($profile_id)) {
 	register_error(elgg_echo("profile_sync:action:sync_config:edit:error:unique_id"));
 	forward(REFERER);
 }

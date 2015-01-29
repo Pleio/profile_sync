@@ -36,11 +36,12 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 	
 	$profile_fields = elgg_get_config("profile_fields");
 	
-	if (empty($sync_match) || empty($datasource_id) || empty($profile_id)) {
+	if (empty($sync_match) || ($datasource_id === "") || empty($profile_id)) {
 		fwrite($fh, "Configuration error" . PHP_EOL);
 		fclose($fh);
 		return;
 	}
+	
 	if (!in_array($profile_id, array("name", "username", "email")) && !array_key_exists($profile_id, $profile_fields)) {
 		fwrite($fh, "Invalid profile identifier" . PHP_EOL);
 		fclose($fh);
@@ -50,6 +51,9 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 	switch ($datasource->datasource_type) {
 		case "mysql":
 			$sync_source = new ProfileSyncMySQL($datasource, $lastrun);
+			break;
+		case "csv":
+			$sync_source = new ProfileSyncCSV($datasource, $lastrun);
 			break;
 		default:
 			fwrite($fh, "Invalid datasource type" . PHP_EOL);

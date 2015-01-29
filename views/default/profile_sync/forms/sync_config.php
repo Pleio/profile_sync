@@ -22,6 +22,6 @@ $body_vars = array(
 	"datasource" => $datasource,
 );
 
-$body .= elgg_view_form("profile_sync/sync_config", array(), $body_vars);
+$body = elgg_view_form("profile_sync/sync_config", array(), $body_vars);
 
 echo elgg_view_module("inline", $title, $body, array("class" => "mvn"));

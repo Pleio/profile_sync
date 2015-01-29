@@ -7,20 +7,21 @@ $dbusername = "";
 $dbpassword = "";
 $dbquery = "";
 
-$entity = elgg_extract("entity", $vars);;
-if ($entity) {
+$class = "hidden";
+
+$entity = elgg_extract("entity", $vars);
+if ($entity && ($entity->datasource_type === "mysql")) {
 	$dbhost = $entity->dbhost;
 	$dbport = $entity->dbport;
 	$dbname = $entity->dbname;
 	$dbusername = $entity->dbusername;
 	$dbpassword = $entity->dbpassword;
 	$dbquery = $entity->dbquery;
+	
+	$class = "";
 }
 
-echo elgg_view("input/hidden", array(
-	"name" => "params[datasource_type]",
-	"value" => "mysql",
-));
+echo "<div class='profile-sync-datasource-type profile-sync-datasource-type-mysql $class'>";
 
 echo "<div>";
 echo "<label>" . elgg_echo("profile_sync:admin:datasources:edit:mysql:dbhost") . "</label>";
@@ -76,4 +77,6 @@ echo elgg_view("input/plaintext", array(
 	"value" => $dbquery
 ));
 echo "<div class='elgg-subtext'>" . elgg_echo("profile_sync:admin:datasources:edit:mysql:dbquery:description", array("[[lastrun]]")) . "</div>";
+echo "</div>";
+
 echo "</div>";

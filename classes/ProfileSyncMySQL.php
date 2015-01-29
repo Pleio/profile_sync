@@ -1,33 +1,18 @@
 <?php
 /**
- * ProfileSyncMySQL
+ * ProfileSyncMySQL connect to a mysql datasource
  *
  * @package ProfileSync
  *
  */
-class ProfileSyncMySQL {
+class ProfileSyncMySQL extends ProfileSync {
 	
-	protected $datasource;
-	protected $lastrun;
 	protected $mysqli;
 	
 	protected $result;
 	protected $result_row_count = 0;
 	protected $result_row = 0;
 	
-	/**
-	 * Create a Datasource connection to a MySQL DB
-	 *
-	 * @param ElggObject $datasource the datasource configuration
-	 * @param int        $lastrun    the timestamp of the sync config last run
-	 *
-	 * @return void
-	 */
-	public function __construct(ElggObject $datasource, $lastrun = 0) {
-		$this->datasource = $datasource;
-		$this->lastrun = (int) $lastrun;
-	}
-
 	/**
 	 * Connect to the MySQL DB
 	 *
@@ -39,8 +24,12 @@ class ProfileSyncMySQL {
 			return true;
 		}
 		
-		$datasource = $this->datasource;
-		if ($datasource->datasource_type != "mysql") {
+		$datasource = $this->getDatasource();
+		if (empty($datasource)) {
+			return false;
+		}
+		
+		if ($datasource->datasource_type !== "mysql") {
 			return false;
 		}
 		
@@ -62,10 +51,10 @@ class ProfileSyncMySQL {
 	 *
 	 * This helper function will fill in placeholders with actual values
 	 *
-	 * @return bool|string
+	 * @return false|string
 	 */
 	protected function getDbQuery() {
-		$datasource = $this->datasource;
+		$datasource = $this->getDatasource();
 		if (empty($datasource)) {
 			return false;
 		}
@@ -87,7 +76,7 @@ class ProfileSyncMySQL {
 	/**
 	 * Get the available columns in the database
 	 *
-	 * @return bool|array:
+	 * @return false|array
 	 */
 	public function getColumns() {
 		
@@ -116,13 +105,15 @@ class ProfileSyncMySQL {
 			return false;
 		}
 		
-		return array_keys($tmp->fetch_assoc());
+		$columns = array_keys($tmp->fetch_assoc());
+		
+		return array_combine($columns, $columns);
 	}
 	
 	/**
 	 * Get a row from the database
 	 *
-	 * @return bool|array
+	 * @return false|array
 	 */
 	public function fetchRow() {
 		

@@ -9,3 +9,7 @@ a.profile-sync-admin-title-button {
 .elgg-form-profile-sync-sync-config select {
 	max-width: 175px;
 }
+
+.profile-sync-datasource-type > div {
+	margin: 10px 0;
+}

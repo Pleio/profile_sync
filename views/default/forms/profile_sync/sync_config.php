@@ -10,6 +10,9 @@ $profile_id = "";
 $create_user = false;
 $ban_user = false;
 $notify_user = false;
+
+$ps = false;
+
 if (!empty($sync_config)) {
 	$title = $sync_config->title;
 	$schedule = $sync_config->schedule;
@@ -21,7 +24,19 @@ if (!empty($sync_config)) {
 }
 
 // get field config
-$ps = new ProfileSyncMySQL($datasource);
+switch ($datasource->datasource_type) {
+	case "mysql":
+		$ps = new ProfileSyncMySQL($datasource);
+		break;
+	case "csv":
+		$ps = new ProfileSyncCSV($datasource);
+		break;
+}
+
+if (empty($ps)) {
+	echo elgg_view("output/longtext", array("value" => elgg_echo("profile_sync:admin:sync_configs:edit:no_datasource")));
+	return;
+}
 
 $datasource_cols = $ps->getColumns();
 $profile_fields = elgg_get_config("profile_fields");
@@ -49,7 +64,7 @@ if (empty($datasource_cols) || empty($profile_fields)) {
 $datasource_columns = array(
 	"" => elgg_echo("profile_sync:admin:sync_configs:edit:select_datasource_column")
 );
-$datasource_columns = array_merge($datasource_columns, array_combine($datasource_cols, $datasource_cols));
+$datasource_columns = array_merge($datasource_columns, $datasource_cols);
 
 $profile_columns = array(
 	"" => elgg_echo("profile_sync:admin:sync_configs:edit:select_profile_column"),

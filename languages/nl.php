@@ -1,10 +1,21 @@
 <?php
 /**
  * This file was created by Translation Editor v2.0
- * On 2014-12-02 10:26
+ * On 2015-01-29 14:46
  */
 
 return array (
+  'profile_sync:csv:column' => 'Kolom %d: %s',
+  'profile_sync:admin:datasources:type' => 'Type',
+  'profile_sync:admin:datasources:type:choose' => 'Kies een databron type',
+  'profile_sync:admin:datasources:type:mysql' => 'MySQL',
+  'profile_sync:admin:datasources:type:csv' => 'CSV-bestand',
+  'profile_sync:admin:datasources:edit:csv:location' => 'CSV locatie',
+  'profile_sync:admin:datasources:edit:csv:delimiter' => 'Veld scheidingsteken',
+  'profile_sync:admin:datasources:edit:csv:enclosure' => 'Tekst scheidingsteken',
+  'profile_sync:admin:datasources:edit:csv:first_row' => 'Eerste regel bevat koptekst',
+  'profile_sync:admin:sync_configs:edit:no_datasource' => 'De databron kon niet worden aangemaakt',
+  'profile_sync:action:datasource:edit:error:type' => 'Selecteer een databron type',
   'profile_sync:settings:memory_limit' => 'Stel de PHP geheugen limiet in voor sync opdrachten',
   'profile_sync:settings:memory_limit:description' => 'Verhoog de limiet als je sync opdrachten mislukken en je in de errorlog Out of Memory foutmeldingen ziet.',
   'profile_sync:settings:memory_limit:64' => '64M',

@@ -35,7 +35,7 @@ if (empty($datasource_id) || empty($profile_id)) {
 	forward(REFERER);
 }
 
-if (empty($datasource_cols) || empty($profile_cols)) {
+if (!$ban_user && (empty($datasource_cols) || empty($profile_cols))) {
 	register_error(elgg_echo("profile_sync:action:sync_config:edit:error:fields"));
 	forward(REFERER);
 }
@@ -59,7 +59,7 @@ foreach ($datasource_cols as $index => $datasource_col_name) {
 	);
 }
 
-if (empty($sync_match)) {
+if (!$ban_user && empty($sync_match)) {
 	register_error(elgg_echo("profile_sync:action:sync_config:edit:error:fields"));
 	forward(REFERER);
 }

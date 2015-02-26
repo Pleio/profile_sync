@@ -11,6 +11,7 @@ $create_user = false;
 $ban_user = false;
 $unban_user = false;
 $notify_user = false;
+$log_cleanup_count = "";
 
 $ps = false;
 
@@ -23,6 +24,10 @@ if (!empty($sync_config)) {
 	$ban_user = (bool) $sync_config->ban_user;
 	$unban_user = (bool) $sync_config->unban_user;
 	$notify_user = (bool) $sync_config->notify_user;
+	$log_cleanup_count = sanitise_int($sync_config->log_cleanup_count, false);
+	if (empty($log_cleanup_count)) {
+		$log_cleanup_count = "";
+	}
 }
 
 // get field config
@@ -197,6 +202,16 @@ $body .= elgg_view("input/checkbox", array(
 	"checked" => $ban_user
 ));
 $body .= "<div class='elgg-subtext'>" . elgg_echo("profile_sync:admin:sync_configs:edit:unban_user:description") . "</div>";
+
+// log cleanup
+$body .= "<div class='mbs'>";
+$body .= "<label>" . elgg_echo("profile_sync:admin:sync_configs:edit:log_cleanup_count") . "</label>";
+$body .= elgg_view("input/text", array(
+	"name" => "log_cleanup_count",
+	"value" => $log_cleanup_count,
+));
+$body .= "<div class='elgg-subtext'>" . elgg_echo("profile_sync:admin:sync_configs:edit:log_cleanup_count:description") . "</div>";
+
 
 $body .= "<div class='elgg-foot'>";
 $body .= elgg_view("input/submit", array("value" => elgg_echo("save")));

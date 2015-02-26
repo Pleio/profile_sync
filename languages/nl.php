@@ -1,10 +1,12 @@
 <?php
 /**
  * This file was created by Translation Editor v2.0.1
- * On 2015-02-26 11:48
+ * On 2015-02-26 14:36
  */
 
 return array (
+  'profile_sync:admin:sync_configs:edit:log_cleanup_count' => 'Aantal logbestanden om te behouden',
+  'profile_sync:admin:sync_configs:edit:log_cleanup_count:description' => 'Als je oudere logbestanden wilt opruimen kun je hier aangeven hoeveel logbestanden je wilt behouden. Laat dit veld leeg om alle logbestanden te behouden.',
   'profile_sync:admin:sync_configs:edit:unban_user' => 'Deblokkeer de gevonden gebruikers',
   'profile_sync:admin:sync_configs:edit:unban_user:description' => 'Als er een gebruiker wordt gevonden deblokkeer hem/haar op het systeem. Dit zorgt er tevens voor dat er geen profiel data wordt gesynchroniseerd voor de gevonden gebruikers.',
   'profile_sync:action:sync_config:edit:error:create_unban' => 'Je kunt niet tegelijk gebruikers aanmaken en deblokkeren',

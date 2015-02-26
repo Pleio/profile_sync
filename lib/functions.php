@@ -15,15 +15,6 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 		return;
 	}
 	
-	// create log file handler
-	$log_file = new ElggFile();
-	$log_file->owner_guid = $sync_config->getGUID();
-	$log_file->setFilename(time() . ".log");
-	
-	$log_file->open("write");
-	$log_file->write("Start processing: " . date(elgg_echo("friendlytime:date_format")) . PHP_EOL);
-	$fh = $log_file->open("append");
-	
 	$datasource = $sync_config->getContainerEntity();
 	if (empty($datasource) || !elgg_instanceof($datasource, "object", "profile_sync_datasource")) {
 		return;
@@ -37,14 +28,12 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 	$profile_fields = elgg_get_config("profile_fields");
 	
 	if (empty($sync_match) || ($datasource_id === "") || empty($profile_id)) {
-		fwrite($fh, "Configuration error" . PHP_EOL);
-		fclose($fh);
+		profile_sync_log($sync_config->getGUID(), "Configuration error", true);
 		return;
 	}
 	
 	if (!in_array($profile_id, array("name", "username", "email")) && !array_key_exists($profile_id, $profile_fields)) {
-		fwrite($fh, "Invalid profile identifier" . PHP_EOL);
-		fclose($fh);
+		profile_sync_log($sync_config->getGUID(), "Invalid profile identifier", true);
 		return;
 	}
 	
@@ -56,15 +45,13 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 			$sync_source = new ProfileSyncCSV($datasource, $lastrun);
 			break;
 		default:
-			fwrite($fh, "Invalid datasource type" . PHP_EOL);
-			fclose($fh);
+			profile_sync_log($sync_config->getGUID(), "Invalid datasource type", true);
 			return;
 			break;
 	}
 	
 	if (!$sync_source->connect()) {
-		fwrite($fh, "Unable to connect to the datasource" . PHP_EOL);
-		fclose($fh);
+		profile_sync_log($sync_config->getGUID(), "Unable to connect to the datasource", true);
 		return;
 	}
 	
@@ -77,7 +64,7 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 	$create_user_username = false;
 	
 	if ($create_user) {
-		fwrite($fh, "User creation is allowed" . PHP_EOL);
+		profile_sync_log($sync_config->getGUID(), "User creation is allowed");
 		
 		foreach ($sync_match as $datasource_col => $datasource_config) {
 			switch ($datasource_config["profile_field"]) {
@@ -94,34 +81,31 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 		}
 		
 		if (empty($create_user_name) || empty($create_user_username) || empty($create_user_email)) {
-			fwrite($fh, "Missing information to create users" . PHP_EOL);
+			profile_sync_log($sync_config->getGUID(), "Missing information to create users");
 			$create_user = false;
 		}
 	}
 	
 	if ($ban_user) {
-		fwrite($fh, "Matching users will be banned" . PHP_EOL);
+		profile_sync_log($sync_config->getGUID(), "Matching users will be banned");
 	}
 	
 	if ($unban_user) {
-		fwrite($fh, "Matching users will be unbanned" . PHP_EOL);
+		profile_sync_log($sync_config->getGUID(), "Matching users will be unbanned");
 	}
 	
 	if ($ban_user && $create_user) {
-		fwrite($fh, "Both create and ban users is allowed, don't know what to do" . PHP_EOL);
-		fclose($fh);
+		profile_sync_log($sync_config->getGUID(), "Both create and ban users is allowed, don't know what to do", true);
 		return;
 	}
 	
 	if ($unban_user && $create_user) {
-		fwrite($fh, "Both create and unban users is allowed, don't know what to do" . PHP_EOL);
-		fclose($fh);
+		profile_sync_log($sync_config->getGUID(), "Both create and unban users is allowed, don't know what to do", true);
 		return;
 	}
 	
 	if ($ban_user && $unban_user) {
-		fwrite($fh, "Both ban and unban users is allowed, don't know what to do" . PHP_EOL);
-		fclose($fh);
+		profile_sync_log($sync_config->getGUID(), "Both ban and unban users is allowed, don't know what to do", true);
 		return;
 	}
 	
@@ -169,7 +153,7 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 					$user = $users[0];
 				} else {
 					$counters["duplicate email"]++;
-					fwrite($fh, "Duplicate email address: " . $source_row[$datasource_id] . PHP_EOL);
+					profile_sync_log($sync_config->getGUID(), "Duplicate email address: " . $source_row[$datasource_id]);
 				}
 				break;
 			case "name":
@@ -184,7 +168,7 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 					$user = $users[0];
 				} else {
 					$counters["duplicate name"]++;
-					fwrite($fh, "Duplicate name: " . $source_row[$datasource_id] . PHP_EOL);
+					profile_sync_log($sync_config->getGUID(), "Duplicate name: " . $source_row[$datasource_id]);
 				}
 				break;
 			default:
@@ -201,7 +185,7 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 					$user = $users[0];
 				} else {
 					$counters["duplicate profile field"]++;
-					fwrite($fh, "Duplicate profile field: " . $source_row[$datasource_id] . PHP_EOL);
+					profile_sync_log($sync_config->getGUID(), "Duplicate profile field: " . $source_row[$datasource_id]);
 				}
 				break;
 		}
@@ -215,7 +199,7 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 				$user_guid = register_user($source_row[$create_user_username], $pwd, $source_row[$create_user_name], $source_row[$create_user_email]);
 				if (!empty($user_guid)) {
 					$counters["user created"]++;
-					fwrite($fh, "Created user: " . $source_row[$create_user_name] . PHP_EOL);
+					profile_sync_log($sync_config->getGUID(), "Created user: " . $source_row[$create_user_name]);
 					
 					$user = get_user($user_guid);
 					
@@ -233,14 +217,14 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 					}
 				}
 			} catch (RegistrationException $r) {
-				fwrite($fh, "Failure creating user: " . $source_row[$create_user_name] . " - " . $r->getMessage() . PHP_EOL);
+				profile_sync_log($sync_config->getGUID(), "Failure creating user: " . $source_row[$create_user_name] . " - " . $r->getMessage());
 			}
 		}
 		
 		// did we get a user
 		if (empty($user)) {
 			$counters["user not found"]++;
-			fwrite($fh, "User not found: " . $datasource_id . " => " . $source_row[$datasource_id] . PHP_EOL);
+			profile_sync_log($sync_config->getGUID(), "User not found: " . $datasource_id . " => " . $source_row[$datasource_id]);
 			continue;
 		} else {
 			$counters["processed users"]++;
@@ -252,7 +236,7 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 			if (!$user->isBanned()) {
 				$counters["user banned"]++;
 				$user->ban("Profile Sync: " . $sync_config->title);
-				fwrite($fh, "User banned: " . $user->name . " ( " . $user->username . ")" . PHP_EOL);
+				profile_sync_log($sync_config->getGUID(), "User banned: " . $user->name . " ( " . $user->username . ")");
 			}
 			
 			continue;
@@ -264,7 +248,7 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 			if ($user->isBanned()) {
 				$counters["user unbanned"]++;
 				$user->unban();
-				fwrite($fh, "User unbanned: " . $user->name . " ( " . $user->username . ")" . PHP_EOL);
+				profile_sync_log($sync_config->getGUID(), "User unbanned: " . $user->name . " ( " . $user->username . ")");
 			}
 			
 			continue;
@@ -292,7 +276,7 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 				case "username":
 					if (empty($source_row[$datasource_col])) {
 						$counters["empty attributes"]++;
-						fwrite($fh, "Empty user attribute: " . $datasource_id . " for user " . $user->name . PHP_EOL);
+						profile_sync_log($sync_config->getGUID(), "Empty user attribute: " . $datasource_id . " for user " . $user->name);
 						continue(2);
 					}
 					
@@ -328,13 +312,12 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 		}
 	}
 	
-	fwrite($fh, "End processing: " . date(elgg_echo("friendlytime:date_format")) . PHP_EOL);
-	fwrite($fh, PHP_EOL);
+	profile_sync_log($sync_config->getGUID(), PHP_EOL . "End processing: " . date(elgg_echo("friendlytime:date_format")) . PHP_EOL);
 	foreach ($counters as $name => $count) {
-		fwrite($fh, $name . ": " . $count . PHP_EOL);
+		profile_sync_log($sync_config->getGUID(), $name . ": " . $count);
 	}
 	
-	fclose($fh);
+	profile_sync_log($sync_config->getGUID(), null, true);
 	
 	$sync_config->lastrun = time();
 	
@@ -344,4 +327,144 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 	_elgg_services()->db->enableQueryCache();
 	// restore access
 	elgg_set_ignore_access($ia);
+}
+
+/**
+ * Write information to a log file
+ *
+ * @param int    $sync_config_guid the guid of a sync config where to write the log file
+ * @param string $text             the text to log
+ * @param bool   $close            close the log file (default: false)
+ *
+ * @return void
+ */
+function profile_sync_log($sync_config_guid, $text, $close = false) {
+	static $file_handlers;
+	
+	if (!isset($file_handlers)) {
+		$file_handlers = array();
+	}
+	
+	$sync_config_guid = sanitise_int($sync_config_guid, false);
+	if (empty($sync_config_guid)) {
+		return;
+	}
+	
+	if (empty($text) && empty($close)) {
+		return;
+	}
+	
+	if (!isset($file_handlers[$sync_config_guid])) {
+		$log_file = new ElggFile();
+		$log_file->owner_guid = $sync_config_guid;
+		$log_file->setFilename(time() . ".log");
+		
+		$log_file->open("write");
+		$log_file->write("Start processing: " . date(elgg_echo("friendlytime:date_format")) . PHP_EOL);
+		$file_handlers[$sync_config_guid] = $log_file->open("append");
+	}
+	
+	if (!empty($text)) {
+		fwrite($file_handlers[$sync_config_guid], $text . PHP_EOL);
+		elgg_log("Profile sync log({$sync_config_guid}): " . $text, "NOTICE");
+	}
+	
+	if (!empty($close)) {
+		fclose($file_handlers[$sync_config_guid]);
+		unset($file_handlers[$sync_config_guid]);
+	}
+}
+
+/**
+ * Get the sync logs, newest log first
+ *
+ * @param ElggObject $sync_config the sync config to get the logs for
+ * @param bool       $with_label  add readable labels to the output (default: true)
+ *
+ * @return false|array
+ */
+function profile_sync_get_ordered_log_files(ElggObject $sync_config, $with_label = true) {
+	
+	if (empty($sync_config) || !elgg_instanceof($sync_config, "object", "profile_sync_config")) {
+		return false;
+	}
+	
+	$with_label = (bool) $with_label;
+	
+	$fh = new ElggFile();
+	$fh->owner_guid = $sync_config->getGUID();
+	$fh->setFilename("temp");
+	
+	$dir = $fh->getFilenameOnFilestore();
+	$dir = substr($dir, 0, strlen($dir) - 4);
+	
+	$dh = opendir($dir);
+	$files = array();
+	while (($file = readdir($dh)) !== false) {
+		if (is_dir($dir . $file)) {
+			continue;
+		}
+		
+		if ($with_label) {
+			list($time) = explode(".", $file);
+			$files[$file] = date(elgg_echo("friendlytime:date_format"), $time);
+		} else {
+			$files[] = $file;
+		}
+	}
+	
+	closedir($dh);
+	
+	if ($with_label) {
+		krsort($files);
+	} else {
+		natcasesort($files);
+		$files = array_reverse($files);
+	}
+	
+	return $files;
+}
+
+/**
+ * Cleanup the oldes logfiles of a sync config, based of the settings of the sync config
+ *
+ * @param ElggObject $sync_config the sync config to cleanup the logs for
+ *
+ * @return bool
+ */
+function profile_sync_cleanup_logs(ElggObject $sync_config) {
+	
+	if (empty($sync_config) || !elgg_instanceof($sync_config, "object", "profile_sync_config")) {
+		return false;
+	}
+	
+	$log_cleanup_count = sanitise_int($sync_config->log_cleanup_count, false);
+	if (empty($log_cleanup_count)) {
+		return true;
+	}
+	
+	$log_files = profile_sync_get_ordered_log_files($sync_config, false);
+	if (empty($log_files) || (count($log_files) < $log_cleanup_count)) {
+		return true;
+	}
+	
+	$to_be_removed = array_slice($log_files, $log_cleanup_count);
+	if (empty($to_be_removed)) {
+		return true;
+	}
+	
+	$fh = new ElggFile();
+	$fh->owner_guid = $sync_config->getGUID();
+	
+	$result = true;
+	foreach ($to_be_removed as $filename) {
+		$fh->setFilename($filename);
+		if (!$fh->exists()) {
+			continue;
+		}
+		
+		$result = $result & $fh->delete();
+	}
+	
+	return $result;
 }

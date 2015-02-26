@@ -20,6 +20,7 @@ $create_user = (int) get_input("create_user");
 $ban_user = (int) get_input("ban_user");
 $unban_user = (int) get_input("unban_user");
 $notify_user = (int) get_input("notify_user");
+$log_cleanup_count = sanitise_int(get_input("log_cleanup_count"), false);
 
 if (empty($guid) && empty($datasource_guid)) {
 	register_error(elgg_echo("profile_sync:action:sync_config:edit:error:guid"));
@@ -106,6 +107,8 @@ $entity->create_user = $create_user;
 $entity->ban_user = $ban_user;
 $entity->unban_user = $unban_user;
 $entity->notify_user = $notify_user;
+
+$entity->log_cleanup_count = $log_cleanup_count;
 
 $entity->save();
 

@@ -158,6 +158,9 @@ function profile_sync_cron_handler($hook, $type, $return, $params) {
 	$batch = new ElggBatch("elgg_get_entities_from_metadata", $options);
 	foreach ($batch as $sync_config) {
 		profile_sync_proccess_configuration($sync_config);
+		
+		// log cleanup
+		profile_sync_cleanup_logs($entity);
 	}
 	
 	// reset memory limit

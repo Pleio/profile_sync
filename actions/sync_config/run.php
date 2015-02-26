@@ -25,6 +25,9 @@ if (!empty($setting)) {
 
 profile_sync_proccess_configuration($entity);
 
+// log cleanup
+profile_sync_cleanup_logs($entity);
+
 // reset memory limit
 ini_set("memory_limit", $old_memory_limit);
 

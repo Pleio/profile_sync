@@ -59,6 +59,8 @@ return array(
 	'profile_sync:admin:sync_configs:edit:ban_user:description' => "When a matching user is found ban him/her from the system. This will not sync profile data for the matching user.",
 	'profile_sync:admin:sync_configs:edit:unban_user' => "Unban matching users",
 	'profile_sync:admin:sync_configs:edit:unban_user:description' => "When a matching user is found unban him/her from the system. This will not sync profile data for the matching user.",
+	'profile_sync:admin:sync_configs:edit:log_cleanup_count' => "Number of logfiles to keep",
+	'profile_sync:admin:sync_configs:edit:log_cleanup_count:description' => "If you wish to remove older log files enter the amount of logfiles you wish to keep. Leave empty to keep them all.",
 	
 	'profile_sync:sync_config:logs' => "List logs",
 	'profile_sync:sync_logs:title' => "Sync logs: %s",

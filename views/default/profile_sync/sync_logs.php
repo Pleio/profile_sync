@@ -8,30 +8,12 @@ if (empty($entity) || !elgg_instanceof($entity, "object", "profile_sync_config")
 	return;
 }
 
-$fh = new ElggFile();
-$fh->owner_guid = $entity->getGUID();
-$fh->setFilename("temp");
-
-$dir = $fh->getFilenameOnFilestore();
-$dir = substr($dir, 0, strlen($dir) - 4);
-
-$dh = opendir($dir);
-$files = array();
-while (($file = readdir()) !== false) {
-	if (is_dir($dir . $file)) {
-		continue;
-	}
-	
-	list($time) = explode(".", $file);
-	$files[$file] = date(elgg_echo("friendlytime:date_format"), $time);
-}
+$files = profile_sync_get_ordered_log_files($entity);
 
 if (empty($files)) {
 	echo elgg_echo("notfound");
 	return;
 }
-
-krsort($files);
 
 $content = "<table class='elgg-table-alt'>";
 $content .= "<tr>";

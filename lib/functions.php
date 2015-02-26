@@ -25,6 +25,8 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 	$profile_id = $sync_config->profile_id;
 	$lastrun = (int) $sync_config->lastrun;
 	
+	profile_sync_log($sync_config->getGUID(), "Last run timestamp: " . $lastrun . " (" . date(elgg_echo("friendlytime:date_format"), $lastrun) . ")" . PHP_EOL);
+	
 	$profile_fields = elgg_get_config("profile_fields");
 	
 	if (empty($sync_match) || ($datasource_id === "") || empty($profile_id)) {

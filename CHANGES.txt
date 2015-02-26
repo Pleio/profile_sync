@@ -12,6 +12,7 @@ x.x:
 - added: option to unban users during sync (this will not sync profile data)
 - added: log cleanup settings per sync config
 - fixed: ban sync no longer requires sync fields #2
+- fixed: improved visibility when manualy running a sync config
 
 0.1 (2014-07-17):
 

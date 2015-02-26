@@ -88,9 +88,10 @@ function profile_sync_entity_register_menu($hook, $type, $return, $params) {
 			$return[] = ElggMenuItem::factory(array(
 				"name" => "run",
 				"text" => elgg_echo("profile_sync:sync_config:run"),
-				"href" => "action/profile_sync/sync_config/run?guid=" . $entity->getGUID(),
+				"href" => "ajax/view/profile_sync/sync_config/run?guid=" . $entity->getGUID(),
 				"priority" => 50,
-				"is_action" => true
+				"is_action" => true,
+				"link_class" => "elgg-lightbox"
 			));
 			
 			if ($entity->lastrun) {

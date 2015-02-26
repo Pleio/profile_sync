@@ -137,6 +137,8 @@ elgg.profile_sync.admin.init = function() {
 	$(document).on("click", "#profile-sync-edit-sync-add-field", elgg.profile_sync.admin.add_field_config);
 	$(document).on("submit", ".elgg-form-profile-sync-datasource-edit", elgg.profile_sync.admin.datasource_form);
 	$(document).bind("cbox_complete", elgg.profile_sync.admin.datasource_form);
+
+	//elgg.ui.registerTogglableMenuItems("run", "processing");
 };
 
 

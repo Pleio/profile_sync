@@ -117,38 +117,41 @@ function profile_sync_entity_register_menu($hook, $type, $return, $params) {
 function profile_sync_cron_handler($hook, $type, $return, $params) {
 	
 	$allowed_intervals = array(
+		"hourly",
 		"daily",
 		"weekly",
 		"monthly",
 		"yearly"
 	);
 	
-	if (!empty($type) && in_array($type, $allowed_intervals)) {
-		// get current memory limit
-		$old_memory_limit = ini_get("memory_limit");
-		
-		// set new memory limit
-		$setting = elgg_get_plugin_setting("memory_limit", "profile_sync");
-		if (!empty($setting)) {
-			ini_set("memory_limit", $setting);
-		}
-		
-		// get sync configs
-		$options = array(
-			"type" => "object",
-			"subtype" => "profile_sync_config",
-			"limit" => false,
-			"metadata_name_value_pairs" => array(
-				"name" => "schedule",
-				"value" => $type
-			)
-		);
-		$batch = new ElggBatch("elgg_get_entities_from_metadata", $options);
-		foreach ($batch as $sync_config) {
-			profile_sync_proccess_configuration($sync_config);
-		}
-		
-		// reset memory limit
-		ini_set("memory_limit", $old_memory_limit);
+	if (empty($type) || !in_array($type, $allowed_intervals)) {
+		return $return;
 	}
+	
+	// get current memory limit
+	$old_memory_limit = ini_get("memory_limit");
+	
+	// set new memory limit
+	$setting = elgg_get_plugin_setting("memory_limit", "profile_sync");
+	if (!empty($setting)) {
+		ini_set("memory_limit", $setting);
+	}
+	
+	// get sync configs
+	$options = array(
+		"type" => "object",
+		"subtype" => "profile_sync_config",
+		"limit" => false,
+		"metadata_name_value_pairs" => array(
+			"name" => "schedule",
+			"value" => $type
+		)
+	);
+	$batch = new ElggBatch("elgg_get_entities_from_metadata", $options);
+	foreach ($batch as $sync_config) {
+		profile_sync_proccess_configuration($sync_config);
+	}
+	
+	// reset memory limit
+	ini_set("memory_limit", $old_memory_limit);
 }

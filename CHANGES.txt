@@ -8,6 +8,7 @@ x.x:
 - added: plugin setting to increase PHP memory limit
 - added: datasource cache cleaup to help with OOM issues
 - added: support for CSV file sync
+- added: hourly schedule options to sync configs
 - fixed: ban sync no longer requires sync fields #2
 
 0.1 (2014-07-17):

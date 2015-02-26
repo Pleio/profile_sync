@@ -4,7 +4,7 @@ $datasource = elgg_extract("datasource", $vars);
 $sync_config = elgg_extract("sync_config", $vars);
 
 $title = "";
-$schedule = "";
+$schedule = "daily";
 $datasource_id = "";
 $profile_id = "";
 $create_user = false;
@@ -42,6 +42,7 @@ $datasource_cols = $ps->getColumns();
 $profile_fields = elgg_get_config("profile_fields");
 
 $schedule_options = array(
+	"hourly" => elgg_echo("interval:hourly"),
 	"daily" => elgg_echo("interval:daily"),
 	"weekly" => elgg_echo("interval:weekly"),
 	"monthly" => elgg_echo("interval:monthly"),

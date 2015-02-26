@@ -233,7 +233,7 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 			// already banned?
 			if (!$user->isBanned()) {
 				$counters["user banned"]++;
-				$user->ban("Profile Sync");
+				$user->ban("Profile Sync: " . $sync_config->title);
 				fwrite($fh, "User banned: " . $user->name . " ( " . $user->username . ")" . PHP_EOL);
 			}
 			

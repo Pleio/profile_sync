@@ -1,10 +1,14 @@
 <?php
 /**
- * This file was created by Translation Editor v2.0
- * On 2015-01-29 14:46
+ * This file was created by Translation Editor v2.0.1
+ * On 2015-02-26 11:48
  */
 
 return array (
+  'profile_sync:admin:sync_configs:edit:unban_user' => 'Deblokkeer de gevonden gebruikers',
+  'profile_sync:admin:sync_configs:edit:unban_user:description' => 'Als er een gebruiker wordt gevonden deblokkeer hem/haar op het systeem. Dit zorgt er tevens voor dat er geen profiel data wordt gesynchroniseerd voor de gevonden gebruikers.',
+  'profile_sync:action:sync_config:edit:error:create_unban' => 'Je kunt niet tegelijk gebruikers aanmaken en deblokkeren',
+  'profile_sync:action:sync_config:edit:error:ban_unban' => 'Je kunt niet tegelijk gebruikers blokkeren en deblokkeren',
   'profile_sync:csv:column' => 'Kolom %d: %s',
   'profile_sync:admin:datasources:type' => 'Type',
   'profile_sync:admin:datasources:type:choose' => 'Kies een databron type',

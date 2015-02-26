@@ -5,27 +5,34 @@
 elgg.provide("elgg.profile_sync.admin");
 
 /**
- * Validate if there is no conflict with the ban user checkbox
+ * Validate if there is no conflict with the ban/unban user checkbox
  *
  * @return void
  */
 elgg.profile_sync.admin.check_create_user = function(event) {
 	var ban_checked = $("#profile-sync-edit-sync-ban-user").is(":checked");
+	var unban_checked = $("#profile-sync-edit-sync-unban-user").is(":checked");
 	var create_checked = $(this).is(":checked");
 
 	if (ban_checked && create_checked) {
 		alert(elgg.echo("profile_sync:action:sync_config:edit:error:create_ban"));
 		$(this).removeAttr("checked");
 	}
+	
+	if (unban_checked && create_checked) {
+		alert(elgg.echo("profile_sync:action:sync_config:edit:error:create_unban"));
+		$(this).removeAttr("checked");
+	}
 };
 
 /**
- * Validate if there is no conflict with the create user checkbox
+ * Validate if there is no conflict with the create/unban user checkbox
  *
  * @return void
  */
 elgg.profile_sync.admin.check_ban_user = function(event) {
 	var ban_checked = $(this).is(":checked");
+	var unban_checked = $("#profile-sync-edit-sync-unban-user").is(":checked");
 	var create_checked = $("#profile-sync-edit-sync-create-user").is(":checked");
 	
 	if (create_checked && ban_checked) {
@@ -35,7 +42,43 @@ elgg.profile_sync.admin.check_ban_user = function(event) {
 		ban_checked = false;
 	}
 	
+	if (unban_checked && ban_checked) {
+		alert(elgg.echo("profile_sync:action:sync_config:edit:error:ban_unban"));
+		$(this).removeAttr("checked");
+	}
+	
 	if (ban_checked) {
+		$(".profile-sync-edit-sync-fields").hide();
+	} else {
+		$(".profile-sync-edit-sync-fields").show();
+	}
+	
+	$.colorbox.resize();
+};
+
+/**
+ * Validate if there is no conflict with the create/ban user checkbox
+ *
+ * @return void
+ */
+elgg.profile_sync.admin.check_unban_user = function(event) {
+	var unban_checked = $(this).is(":checked");
+	var ban_checked = $("#profile-sync-edit-sync-ban-user").is(":checked");
+	var create_checked = $("#profile-sync-edit-sync-create-user").is(":checked");
+	
+	if (create_checked && unban_checked) {
+		alert(elgg.echo("profile_sync:action:sync_config:edit:error:create_unban"));
+		$(this).removeAttr("checked");
+
+		unban_checked = false;
+	}
+	
+	if (ban_checked && unban_checked) {
+		alert(elgg.echo("profile_sync:action:sync_config:edit:error:ban_unban"));
+		$(this).removeAttr("checked");
+	}
+	
+	if (unban_checked) {
 		$(".profile-sync-edit-sync-fields").hide();
 	} else {
 		$(".profile-sync-edit-sync-fields").show();
@@ -74,7 +117,6 @@ elgg.profile_sync.admin.datasource_type = function() {
 };
 
 elgg.profile_sync.admin.datasource_form = function() {
-
 	var $inputs = $(".elgg-form-profile-sync-datasource-edit .profile-sync-datasource-type").find("input,select,textarea");
 	
 	$inputs.not(":visible").attr("disabled", "disabled");
@@ -90,9 +132,11 @@ elgg.profile_sync.admin.init = function() {
 
 	$(document).on("change", "#profile-sync-edit-sync-create-user", elgg.profile_sync.admin.check_create_user);
 	$(document).on("change", "#profile-sync-edit-sync-ban-user", elgg.profile_sync.admin.check_ban_user);
+	$(document).on("change", "#profile-sync-edit-sync-unban-user", elgg.profile_sync.admin.check_unban_user);
 	$(document).on("change", "#profile-sync-edit-datasource-type", elgg.profile_sync.admin.datasource_type);
 	$(document).on("click", "#profile-sync-edit-sync-add-field", elgg.profile_sync.admin.add_field_config);
 	$(document).on("submit", ".elgg-form-profile-sync-datasource-edit", elgg.profile_sync.admin.datasource_form);
+	$(document).bind("cbox_complete", elgg.profile_sync.admin.datasource_form);
 };
 
 

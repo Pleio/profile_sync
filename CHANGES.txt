@@ -9,6 +9,7 @@ x.x:
 - added: datasource cache cleaup to help with OOM issues
 - added: support for CSV file sync
 - added: hourly schedule options to sync configs
+- added: option to unban users during sync (this will not sync profile data)
 - fixed: ban sync no longer requires sync fields #2
 
 0.1 (2014-07-17):

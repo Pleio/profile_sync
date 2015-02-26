@@ -29,7 +29,9 @@ function profile_sync_entity_register_menu($hook, $type, $return, $params) {
 						
 						$menu_item->setHref("ajax/view/profile_sync/forms/datasource?guid=" . $entity->getGUID());
 						$menu_item->setLinkClass("elgg-lightbox");
-						$menu_item->{"data-colorbox-opts"} = '{"width": 700}';
+						$menu_item->{"data-colorbox-opts"} = json_encode(array(
+							"width" => 700
+						));
 						break;
 					case "delete":
 						break;
@@ -45,7 +47,9 @@ function profile_sync_entity_register_menu($hook, $type, $return, $params) {
 				"href" => "ajax/view/profile_sync/forms/sync_config?datasource_guid=" . $entity->getGUID(),
 				"priority" => 10,
 				"link_class" => "elgg-lightbox",
-				"data-colorbox-opts" => '{"width": 700}',
+				"data-colorbox-opts" => json_encode(array(
+					"width" => 700
+				)),
 			));
 		} elseif (elgg_instanceof($entity, "object", "profile_sync_config")) {
 			elgg_load_js("lightbox");
@@ -58,7 +62,9 @@ function profile_sync_entity_register_menu($hook, $type, $return, $params) {
 			
 						$menu_item->setHref("ajax/view/profile_sync/forms/sync_config?guid=" . $entity->getGUID());
 						$menu_item->setLinkClass("elgg-lightbox");
-						$menu_item->{"data-colorbox-opts"} = '{"width": 700}';
+						$menu_item->{"data-colorbox-opts"} = json_encode(array(
+							"width" => 700
+						));
 						break;
 					case "delete":
 						break;
@@ -94,7 +100,9 @@ function profile_sync_entity_register_menu($hook, $type, $return, $params) {
 					"href" => "ajax/view/profile_sync/sync_logs/?guid=" . $entity->getGUID(),
 					"priority" => 100,
 					"link_class" => "elgg-lightbox",
-					"data-colorbox-opts" => '{"width": 500}'
+					"data-colorbox-opts" => json_encode(array(
+						"width" => 500
+					)),
 				));
 			}
 			

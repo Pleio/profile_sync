@@ -9,6 +9,7 @@ $datasource_id = "";
 $profile_id = "";
 $create_user = false;
 $ban_user = false;
+$unban_user = false;
 $notify_user = false;
 
 $ps = false;
@@ -20,6 +21,7 @@ if (!empty($sync_config)) {
 	$profile_id = $sync_config->profile_id;
 	$create_user = (bool) $sync_config->create_user;
 	$ban_user = (bool) $sync_config->ban_user;
+	$unban_user = (bool) $sync_config->unban_user;
 	$notify_user = (bool) $sync_config->notify_user;
 }
 
@@ -157,7 +159,7 @@ $body .= "<label>" . elgg_echo("profile_sync:admin:sync_configs:edit:schedule") 
 $body .= elgg_view("input/select", array("name" => "schedule", "value" => $schedule, "options_values" => $schedule_options, "class" => "mls"));
 $body .= "</div>";
 
-// speciaf actions
+// special actions
 $body .= "<div class='mbs'>";
 $body .= elgg_view("input/checkbox", array(
 	"id" => "profile-sync-edit-sync-create-user",
@@ -186,6 +188,15 @@ $body .= elgg_view("input/checkbox", array(
 ));
 $body .= "<div class='elgg-subtext'>" . elgg_echo("profile_sync:admin:sync_configs:edit:ban_user:description") . "</div>";
 
+$body .= "<div class='mbs'>";
+$body .= elgg_view("input/checkbox", array(
+	"id" => "profile-sync-edit-sync-unban-user",
+	"name" => "unban_user",
+	"value" => 1,
+	"label" => elgg_echo("profile_sync:admin:sync_configs:edit:unban_user"),
+	"checked" => $ban_user
+));
+$body .= "<div class='elgg-subtext'>" . elgg_echo("profile_sync:admin:sync_configs:edit:unban_user:description") . "</div>";
 
 $body .= "<div class='elgg-foot'>";
 $body .= elgg_view("input/submit", array("value" => elgg_echo("save")));

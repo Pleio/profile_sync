@@ -70,6 +70,7 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 	
 	$create_user = (bool) $sync_config->create_user;
 	$ban_user = (bool) $sync_config->ban_user;
+	$unban_user = (bool) $sync_config->unban_user;
 	$notify_user = (bool) $sync_config->notify_user;
 	$create_user_name = false;
 	$create_user_email = false;
@@ -102,8 +103,24 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 		fwrite($fh, "Matching users will be banned" . PHP_EOL);
 	}
 	
+	if ($unban_user) {
+		fwrite($fh, "Matching users will be unbanned" . PHP_EOL);
+	}
+	
 	if ($ban_user && $create_user) {
 		fwrite($fh, "Both create and ban users is allowed, don't know what to do" . PHP_EOL);
+		fclose($fh);
+		return;
+	}
+	
+	if ($unban_user && $create_user) {
+		fwrite($fh, "Both create and unban users is allowed, don't know what to do" . PHP_EOL);
+		fclose($fh);
+		return;
+	}
+	
+	if ($ban_user && $unban_user) {
+		fwrite($fh, "Both ban and unban users is allowed, don't know what to do" . PHP_EOL);
 		fclose($fh);
 		return;
 	}
@@ -126,6 +143,7 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 		"user not found" => 0,
 		"user created" => 0,
 		"user banned" => 0,
+		"user unbanned" => 0,
 		"empty attributes" => 0,
 		"invalid profile field" => 0,
 		"invalid source field" => 0,
@@ -235,6 +253,18 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 				$counters["user banned"]++;
 				$user->ban("Profile Sync: " . $sync_config->title);
 				fwrite($fh, "User banned: " . $user->name . " ( " . $user->username . ")" . PHP_EOL);
+			}
+			
+			continue;
+		}
+		
+		// unban the user
+		if ($unban_user) {
+			// already banned?
+			if ($user->isBanned()) {
+				$counters["user unbanned"]++;
+				$user->unban();
+				fwrite($fh, "User unbanned: " . $user->name . " ( " . $user->username . ")" . PHP_EOL);
 			}
 			
 			continue;

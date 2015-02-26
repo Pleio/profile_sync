@@ -18,6 +18,7 @@ $access = get_input("access");
 $schedule = get_input("schedule");
 $create_user = (int) get_input("create_user");
 $ban_user = (int) get_input("ban_user");
+$unban_user = (int) get_input("unban_user");
 $notify_user = (int) get_input("notify_user");
 
 if (empty($guid) && empty($datasource_guid)) {
@@ -35,13 +36,21 @@ if (($datasource_id === "") || empty($profile_id)) {
 	forward(REFERER);
 }
 
-if (!$ban_user && (empty($datasource_cols) || empty($profile_cols))) {
+if ((!$ban_user && !$unban_user) && (empty($datasource_cols) || empty($profile_cols))) {
 	register_error(elgg_echo("profile_sync:action:sync_config:edit:error:fields"));
 	forward(REFERER);
 }
 
 if ($create_user && $ban_user) {
 	register_error(elgg_echo("profile_sync:action:sync_config:edit:error:create_ban"));
+	forward(REFERER);
+}
+if ($create_user && $unban_user) {
+	register_error(elgg_echo("profile_sync:action:sync_config:edit:error:create_unban"));
+	forward(REFERER);
+}
+if ($ban_user && $unban_user) {
+	register_error(elgg_echo("profile_sync:action:sync_config:edit:error:ban_unban"));
 	forward(REFERER);
 }
 
@@ -59,7 +68,7 @@ foreach ($datasource_cols as $index => $datasource_col_name) {
 	);
 }
 
-if (!$ban_user && empty($sync_match)) {
+if ((!$ban_user && !$unban_user) && empty($sync_match)) {
 	register_error(elgg_echo("profile_sync:action:sync_config:edit:error:fields"));
 	forward(REFERER);
 }
@@ -95,6 +104,7 @@ $entity->sync_match = json_encode($sync_match);
 $entity->schedule = $schedule;
 $entity->create_user = $create_user;
 $entity->ban_user = $ban_user;
+$entity->unban_user = $unban_user;
 $entity->notify_user = $notify_user;
 
 $entity->save();

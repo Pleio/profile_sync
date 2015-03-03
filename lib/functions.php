@@ -293,12 +293,14 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 						$value = $source_row[$datasource_col];
 					}
 					
-					// set metadata field
+					// remove existing value
 					if (empty($value)) {
 						unset($user->$profile_field);
-					} elseif (!isset($user->$profile_field)) {
-						create_metadata($user->getGUID(), $profile_field, $value, '', $user->getGUID(), $access);
-					} else {
+						continue(2);
+					}
+					
+					// get the access of existing profile data
+					if (isset($user->$profile_field)) {
 						$metadata_options = array(
 							"guid" => $user->getGUID(),
 							"metadata_name" => $profile_field,
@@ -306,9 +308,11 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 						);
 						$metadata = elgg_get_metadata($metadata_options);
 						$access = (int) $metadata[0]->access_id;
-						
-						create_metadata($user->getGUID(), $profile_field, $value, '', $user->getGUID(), $access);
 					}
+					
+					// save new value
+					$user->setMetadata($profile_field, $value, '', false, $user->getGUID(), $access);
+					
 					break;
 			}
 		}

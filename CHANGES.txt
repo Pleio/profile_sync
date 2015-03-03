@@ -13,6 +13,7 @@ x.x:
 - added: log cleanup settings per sync config
 - fixed: ban sync no longer requires sync fields #2
 - fixed: improved visibility when manualy running a sync config
+- changed: simplified profile data update
 
 0.1 (2014-07-17):
 

@@ -161,7 +161,7 @@ function profile_sync_cron_handler($hook, $type, $return, $params) {
 		profile_sync_proccess_configuration($sync_config);
 		
 		// log cleanup
-		profile_sync_cleanup_logs($entity);
+		profile_sync_cleanup_logs($sync_config);
 	}
 	
 	// reset memory limit

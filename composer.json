@@ -1,0 +1,18 @@
+{
+	"name": "coldtrick/profile_sync",
+	"description": "Sync Elgg user profile data from an external datasource",
+	"type": "elgg-plugin",
+	"keywords": ["elgg", "plugin", "sync"],
+	"license": "GPL-2.0",
+	"support": {
+		"source": "https://github.com/ColdTrick/profile_sync",
+		"issues": "https://github.com/ColdTrick/profile_sync/issues"
+	},
+	"require": {
+		"composer/installers": "^1.0.8",
+		"ext-mysqli": "*"
+	},
+	"require-dev": {
+		"coldtrick/sniffs": "dev-master"
+	}
+}

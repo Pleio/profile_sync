@@ -7,8 +7,7 @@ elgg_load_css("elgg.icons");
 $datasource_title = elgg_view("output/url", array(
 	"class" => "elgg-button elgg-button-action elgg-lightbox float-alt profile-sync-admin-title-button",
 	"href" => "ajax/view/profile_sync/forms/datasource",
-	"text" => elgg_echo("add"),
-	"data-colorbox-opts" => '{"width": 700}'
+	"text" => elgg_echo("add")
 ));
 $datasource_title .= elgg_echo("profile_sync:admin:datasources");
 

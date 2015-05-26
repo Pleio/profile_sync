@@ -11,6 +11,8 @@
  * @return void
  */
 function profile_sync_proccess_configuration(ElggObject $sync_config) {
+	global $DB_QUERY_CACHE;
+	
 	if (empty($sync_config) || !elgg_instanceof($sync_config, "object", "profile_sync_config")) {
 		return;
 	}
@@ -113,7 +115,8 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 	
 	// start the sync process
 	set_time_limit(0);
-	_elgg_services()->db->disableQueryCache();
+	$query_backup = $DB_QUERY_CACHE;
+	$DB_QUERY_CACHE = false;
 	
 	$dbprefix = elgg_get_config("dbprefix");
 	$default_access = get_default_access();
@@ -330,7 +333,7 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 	// cleanup datasource cache
 	$sync_source->cleanup();
 	// re-enable db caching
-	_elgg_services()->db->enableQueryCache();
+	$DB_QUERY_CACHE = $query_backup;
 	// restore access
 	elgg_set_ignore_access($ia);
 }

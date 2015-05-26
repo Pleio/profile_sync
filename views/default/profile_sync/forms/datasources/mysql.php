@@ -27,8 +27,7 @@ echo "<div>";
 echo "<label>" . elgg_echo("profile_sync:admin:datasources:edit:mysql:dbhost") . "</label>";
 echo elgg_view("input/text", array(
 	"name" => "params[dbhost]",
-	"value" => $dbhost,
-	"required" => true
+	"value" => $dbhost
 ));
 echo "</div>";
 
@@ -37,8 +36,7 @@ echo "<label>" . elgg_echo("profile_sync:admin:datasources:edit:mysql:dbport") .
 echo elgg_view("input/text", array(
 	"name" => "params[dbport]",
 	"value" => $dbport,
-	"placeholder" => elgg_echo("profile_sync:admin:datasources:edit:mysql:dbport:default"),
-	"required" => true
+	"placeholder" => elgg_echo("profile_sync:admin:datasources:edit:mysql:dbport:default")
 ));
 echo "</div>";
 
@@ -46,8 +44,7 @@ echo "<div>";
 echo "<label>" . elgg_echo("profile_sync:admin:datasources:edit:mysql:dbname") . "</label>";
 echo elgg_view("input/text", array(
 	"name" => "params[dbname]",
-	"value" => $dbname,
-	"required" => true
+	"value" => $dbname
 ));
 echo "</div>";
 
@@ -55,8 +52,7 @@ echo "<div>";
 echo "<label>" . elgg_echo("profile_sync:admin:datasources:edit:mysql:dbusername") . "</label>";
 echo elgg_view("input/text", array(
 	"name" => "params[dbusername]",
-	"value" => $dbusername,
-	"required" => true
+	"value" => $dbusername
 ));
 echo "</div>";
 
@@ -65,7 +61,6 @@ echo "<label>" . elgg_echo("profile_sync:admin:datasources:edit:mysql:dbpassword
 echo elgg_view("input/password", array(
 	"name" => "params[dbpassword]",
 	"value" => $dbpassword,
-	"required" => true,
 	"class" => "elgg-input-text"
 ));
 echo "</div>";

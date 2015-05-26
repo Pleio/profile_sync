@@ -1,11 +1,19 @@
 <?php
 
-return array(
+$english = array(
 
 	'profile_sync' => "Profile Sync",
-	'admin:configure_utilities:profile_sync' => "Profile Sync",
+	'admin:administer_utilities:profile_sync' => "Profile Sync",
 	'item:object:profile_sync_datasource' => "Profile Sync Datasource",
 	'item:object:profile_sync_config' => "Profile Sync Configuration",
+	
+	'profile_sync:interval:friendly' => "Last run",
+	'profile_sync:interval:date' => "Date",
+	'profile_sync:interval:hourly' => "Hourly",
+	'profile_sync:interval:daily' => "Daily",
+	'profile_sync:interval:weekly' => "Weekly",
+	'profile_sync:interval:monthly' => "Monthly",
+	'profile_sync:interval:yearly' => "Yearly",
 	
 	'profile_sync:csv:column' => "Column %d: %s",
 
@@ -88,3 +96,5 @@ return array(
 	
 	'profile_sync:action:sync_config:run' => "Synchronisation run",
 );
+
+add_translation("en", $english);

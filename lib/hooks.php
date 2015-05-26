@@ -29,9 +29,7 @@ function profile_sync_entity_register_menu($hook, $type, $return, $params) {
 						
 						$menu_item->setHref("ajax/view/profile_sync/forms/datasource?guid=" . $entity->getGUID());
 						$menu_item->setLinkClass("elgg-lightbox");
-						$menu_item->{"data-colorbox-opts"} = json_encode(array(
-							"width" => 700
-						));
+						$menu_item->setTooltip("");
 						break;
 					case "delete":
 						break;
@@ -46,10 +44,7 @@ function profile_sync_entity_register_menu($hook, $type, $return, $params) {
 				"text" => elgg_echo("profile_sync:admin:sync_configs:add"),
 				"href" => "ajax/view/profile_sync/forms/sync_config?datasource_guid=" . $entity->getGUID(),
 				"priority" => 10,
-				"link_class" => "elgg-lightbox",
-				"data-colorbox-opts" => json_encode(array(
-					"width" => 700
-				)),
+				"link_class" => "elgg-lightbox"
 			));
 		} elseif (elgg_instanceof($entity, "object", "profile_sync_config")) {
 			elgg_load_js("lightbox");
@@ -62,9 +57,7 @@ function profile_sync_entity_register_menu($hook, $type, $return, $params) {
 			
 						$menu_item->setHref("ajax/view/profile_sync/forms/sync_config?guid=" . $entity->getGUID());
 						$menu_item->setLinkClass("elgg-lightbox");
-						$menu_item->{"data-colorbox-opts"} = json_encode(array(
-							"width" => 700
-						));
+						$menu_item->setTooltip("");
 						break;
 					case "delete":
 						break;
@@ -74,7 +67,7 @@ function profile_sync_entity_register_menu($hook, $type, $return, $params) {
 				}
 			}
 			
-			$schedule_text = elgg_echo("interval:" . $entity->schedule);
+			$schedule_text = elgg_echo("profile_sync:interval:" . $entity->schedule);
 			if ($entity->schedule == "manual") {
 				$schedule_text = elgg_echo("profile_sync:sync_configs:schedule:manual");
 			}
@@ -100,10 +93,7 @@ function profile_sync_entity_register_menu($hook, $type, $return, $params) {
 					"text" => elgg_echo("profile_sync:sync_config:logs"),
 					"href" => "ajax/view/profile_sync/sync_logs/?guid=" . $entity->getGUID(),
 					"priority" => 100,
-					"link_class" => "elgg-lightbox",
-					"data-colorbox-opts" => json_encode(array(
-						"width" => 500
-					)),
+					"link_class" => "elgg-lightbox"
 				));
 			}
 			

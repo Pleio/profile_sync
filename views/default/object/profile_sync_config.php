@@ -23,7 +23,7 @@ if ($entity->create_user) {
 
 $subtitle = "";
 if ($entity->lastrun) {
-	$subtitle .= elgg_echo("admin:cron:friendly") . ": " . elgg_view_friendly_time($entity->lastrun);
+	$subtitle .= elgg_echo("profile_sync:interval:friendly") . ": " . elgg_view_friendly_time($entity->lastrun);
 }
 
 $params = array(

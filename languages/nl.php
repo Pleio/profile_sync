@@ -4,7 +4,7 @@
  * On 2015-02-26 15:52
  */
 
-return array (
+$dutch = array (
   'profile_sync:sync_config:processing' => 'Bezig met verwerken.....',
   'profile_sync:admin:sync_configs:edit:log_cleanup_count' => 'Aantal logbestanden om te behouden',
   'profile_sync:admin:sync_configs:edit:log_cleanup_count:description' => 'Als je oudere logbestanden wilt opruimen kun je hier aangeven hoeveel logbestanden je wilt behouden. Laat dit veld leeg om alle logbestanden te behouden.',
@@ -76,3 +76,5 @@ return array (
   'profile_sync:action:sync_config:edit:error:entity' => 'De opgegeven GUID is geen synchronisatie configuratie',
   'profile_sync:action:sync_config:run' => 'Synchronisatie run',
 );
+
+add_translation("nl", $dutch);

@@ -29,7 +29,7 @@ function profile_sync_init() {
 	elgg_register_ajax_view("profile_sync/view_log");
 	elgg_register_ajax_view("profile_sync/sync_config/run");
 	
-	elgg_register_admin_menu_item("configure", "profile_sync", "configure_utilities");
+	elgg_register_admin_menu_item("administer", "profile_sync", "administer_utilities");
 	
 	// register hooks
 	elgg_register_plugin_hook_handler("register", "menu:entity", "profile_sync_entity_register_menu");

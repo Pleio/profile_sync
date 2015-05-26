@@ -49,11 +49,11 @@ $datasource_cols = $ps->getColumns();
 $profile_fields = elgg_get_config("profile_fields");
 
 $schedule_options = array(
-	"hourly" => elgg_echo("interval:hourly"),
-	"daily" => elgg_echo("interval:daily"),
-	"weekly" => elgg_echo("interval:weekly"),
-	"monthly" => elgg_echo("interval:monthly"),
-	"yearly" => elgg_echo("interval:yearly"),
+	"hourly" => elgg_echo("profile_sync:interval:hourly"),
+	"daily" => elgg_echo("profile_sync:interval:daily"),
+	"weekly" => elgg_echo("profile_sync:interval:weekly"),
+	"monthly" => elgg_echo("profile_sync:interval:monthly"),
+	"yearly" => elgg_echo("profile_sync:interval:yearly"),
 	"manual" => elgg_echo("profile_sync:sync_configs:schedule:manual")
 );
 
@@ -100,9 +100,9 @@ $body .= "</div>";
 // unique fields to match
 $body .= "<div class='mbs'>";
 $body .= "<label>" . elgg_echo("profile_sync:admin:sync_configs:edit:unique_id") . "</label><br />";
-$body .= elgg_view("input/select", array("name" => "datasource_id", "options_values" => $datasource_columns, "value" => $datasource_id, "required" => true));
+$body .= elgg_view("input/dropdown", array("name" => "datasource_id", "options_values" => $datasource_columns, "value" => $datasource_id, "required" => true));
 $body .= elgg_view_icon("arrow-right");
-$body .= elgg_view("input/select", array("name" => "profile_id", "options_values" => $profile_columns, "value" => $profile_id, "required" => true));
+$body .= elgg_view("input/dropdown", array("name" => "profile_id", "options_values" => $profile_columns, "value" => $profile_id, "required" => true));
 $body .= "</div>";
 
 // fields to sync
@@ -123,27 +123,27 @@ if (!empty($sync_config)) {
 		$access = (int) elgg_extract("access", $profile_config);
 		
 		$body .= "<div class='mbs'>";
-		$body .= elgg_view("input/select", array("name" => "datasource_cols[]", "options_values" => $datasource_columns, "value" => $datasource_name));
+		$body .= elgg_view("input/dropdown", array("name" => "datasource_cols[]", "options_values" => $datasource_columns, "value" => $datasource_name));
 		$body .= elgg_view_icon("arrow-right");
-		$body .= elgg_view("input/select", array("name" => "profile_cols[]", "options_values" => $profile_columns, "value" => $profile_name));
+		$body .= elgg_view("input/dropdown", array("name" => "profile_cols[]", "options_values" => $profile_columns, "value" => $profile_name));
 		$body .= elgg_view_icon("lock-closed");
 		$body .= elgg_view("input/access", array("name" => "access[]", "value" => $access));
 		$body .= "</div>";
 	}
 } else {
 	$body .= "<div class='mbs'>";
-	$body .= elgg_view("input/select", array("name" => "datasource_cols[]", "options_values" => $datasource_columns));
+	$body .= elgg_view("input/dropdown", array("name" => "datasource_cols[]", "options_values" => $datasource_columns));
 	$body .= elgg_view_icon("arrow-right");
-	$body .= elgg_view("input/select", array("name" => "profile_cols[]", "options_values" => $profile_columns));
+	$body .= elgg_view("input/dropdown", array("name" => "profile_cols[]", "options_values" => $profile_columns));
 	$body .= elgg_view_icon("lock-closed");
 	$body .= elgg_view("input/access", array("name" => "access[]"));
 	$body .= "</div>";
 }
 
 $body .= "<div id='profile-sync-field-config-template' class='hidden mbs'>";
-$body .= elgg_view("input/select", array("name" => "datasource_cols[]", "options_values" => $datasource_columns));
+$body .= elgg_view("input/dropdown", array("name" => "datasource_cols[]", "options_values" => $datasource_columns));
 $body .= elgg_view_icon("arrow-right");
-$body .= elgg_view("input/select", array("name" => "profile_cols[]", "options_values" => $profile_columns));
+$body .= elgg_view("input/dropdown", array("name" => "profile_cols[]", "options_values" => $profile_columns));
 $body .= elgg_view_icon("lock-closed");
 $body .= elgg_view("input/access", array("name" => "access[]"));
 $body .= "</div>";
@@ -161,46 +161,46 @@ $body .= "</div>";
 // schedule
 $body .= "<div class='mbs'>";
 $body .= "<label>" . elgg_echo("profile_sync:admin:sync_configs:edit:schedule") . "</label>";
-$body .= elgg_view("input/select", array("name" => "schedule", "value" => $schedule, "options_values" => $schedule_options, "class" => "mls"));
+$body .= elgg_view("input/dropdown", array("name" => "schedule", "value" => $schedule, "options_values" => $schedule_options, "class" => "mls"));
 $body .= "</div>";
 
 // special actions
 $body .= "<div class='mbs'>";
-$body .= elgg_view("input/checkbox", array(
+$body .= "<label>" . elgg_view("input/checkbox", array(
 	"id" => "profile-sync-edit-sync-create-user",
 	"name" => "create_user",
 	"value" => 1,
-	"label" => elgg_echo("profile_sync:admin:sync_configs:edit:create_user"),
 	"checked" => $create_user
 ));
+$body .= elgg_echo("profile_sync:admin:sync_configs:edit:create_user") . "</label>";
 $body .= "<div class='elgg-subtext'>" . elgg_echo("profile_sync:admin:sync_configs:edit:create_user:description") . "</div>";
-$body .= elgg_view("input/checkbox", array(
+$body .= "<label>" . elgg_view("input/checkbox", array(
 	"name" => "notify_user",
 	"value" => 1,
-	"label" => elgg_echo("profile_sync:admin:sync_configs:edit:notify_user"),
 	"checked" => $notify_user,
 	"class" => "mlm"
 ));
+$body .= elgg_echo("profile_sync:admin:sync_configs:edit:notify_user") . "</label>";
 $body .= "</div>";
 
 $body .= "<div class='mbs'>";
-$body .= elgg_view("input/checkbox", array(
+$body .= "<label>" . elgg_view("input/checkbox", array(
 	"id" => "profile-sync-edit-sync-ban-user",
 	"name" => "ban_user",
 	"value" => 1,
-	"label" => elgg_echo("profile_sync:admin:sync_configs:edit:ban_user"),
 	"checked" => $ban_user
 ));
+$body .= elgg_echo("profile_sync:admin:sync_configs:edit:ban_user") . "</label>";
 $body .= "<div class='elgg-subtext'>" . elgg_echo("profile_sync:admin:sync_configs:edit:ban_user:description") . "</div>";
 
 $body .= "<div class='mbs'>";
-$body .= elgg_view("input/checkbox", array(
+$body .= "<label>" . elgg_view("input/checkbox", array(
 	"id" => "profile-sync-edit-sync-unban-user",
 	"name" => "unban_user",
 	"value" => 1,
-	"label" => elgg_echo("profile_sync:admin:sync_configs:edit:unban_user"),
 	"checked" => $ban_user
 ));
+$body .= elgg_echo("profile_sync:admin:sync_configs:edit:unban_user") . "</label>";
 $body .= "<div class='elgg-subtext'>" . elgg_echo("profile_sync:admin:sync_configs:edit:unban_user:description") . "</div>";
 
 // log cleanup

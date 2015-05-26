@@ -112,5 +112,5 @@ $entity->log_cleanup_count = $log_cleanup_count;
 
 $entity->save();
 
-system_message(elgg_echo("save:success"));
+system_message(elgg_echo("admin:configuration:success"));
 forward(REFERER);

@@ -53,7 +53,7 @@ elgg.profile_sync.admin.check_ban_user = function(event) {
 		$(".profile-sync-edit-sync-fields").show();
 	}
 	
-	$.colorbox.resize();
+	$.fancybox.resize();
 };
 
 /**
@@ -84,7 +84,7 @@ elgg.profile_sync.admin.check_unban_user = function(event) {
 		$(".profile-sync-edit-sync-fields").show();
 	}
 	
-	$.colorbox.resize();
+	$.fancybox.resize();
 };
 
 /**
@@ -97,30 +97,21 @@ elgg.profile_sync.admin.add_field_config = function() {
 	$clone.removeAttr("id").removeClass("hidden");
 	$clone.insertBefore("#profile-sync-field-config-template");
 
-	$.colorbox.resize();
+	$.fancybox.resize();
 
 	return false
 };
 
 elgg.profile_sync.admin.datasource_type = function() {
 	var $form = $(this).parents("form");
-
+	
 	$form.find(".profile-sync-datasource-type").hide();
 	var type = $(this).val();
 	if (type !== "") {
 		$form.find(".profile-sync-datasource-type-" + type).show();
 	}
 
-	elgg.profile_sync.admin.datasource_form();
-
-	$.colorbox.resize();
-};
-
-elgg.profile_sync.admin.datasource_form = function() {
-	var $inputs = $(".elgg-form-profile-sync-datasource-edit .profile-sync-datasource-type").find("input,select,textarea");
-	
-	$inputs.not(":visible").attr("disabled", "disabled");
-	$inputs.filter(":visible").removeAttr("disabled");
+	$.fancybox.resize();
 };
 
 /**
@@ -130,15 +121,11 @@ elgg.profile_sync.admin.datasource_form = function() {
  */
 elgg.profile_sync.admin.init = function() {
 
-	$(document).on("change", "#profile-sync-edit-sync-create-user", elgg.profile_sync.admin.check_create_user);
-	$(document).on("change", "#profile-sync-edit-sync-ban-user", elgg.profile_sync.admin.check_ban_user);
-	$(document).on("change", "#profile-sync-edit-sync-unban-user", elgg.profile_sync.admin.check_unban_user);
-	$(document).on("change", "#profile-sync-edit-datasource-type", elgg.profile_sync.admin.datasource_type);
-	$(document).on("click", "#profile-sync-edit-sync-add-field", elgg.profile_sync.admin.add_field_config);
-	$(document).on("submit", ".elgg-form-profile-sync-datasource-edit", elgg.profile_sync.admin.datasource_form);
-	$(document).bind("cbox_complete", elgg.profile_sync.admin.datasource_form);
-
-	//elgg.ui.registerTogglableMenuItems("run", "processing");
+	$("#profile-sync-edit-sync-create-user").live("change", elgg.profile_sync.admin.check_create_user);
+	$("#profile-sync-edit-sync-ban-user").live("change", elgg.profile_sync.admin.check_ban_user);
+	$("#profile-sync-edit-sync-unban-user").live("change", elgg.profile_sync.admin.check_unban_user);
+	$("#profile-sync-edit-datasource-type").live("change", elgg.profile_sync.admin.datasource_type);
+	$("#profile-sync-edit-sync-add-field").live("click", elgg.profile_sync.admin.add_field_config);
 };
 
 

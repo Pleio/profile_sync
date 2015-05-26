@@ -13,3 +13,10 @@ a.profile-sync-admin-title-button {
 .profile-sync-datasource-type > div {
 	margin: 10px 0;
 }
+
+.profile-sync-datasource-wrapper,
+.profile-sync-logs-wrapper,
+.profile-sync-log-wrapper,
+.profile-sync-config-wrapper {
+	width: 700px;
+}

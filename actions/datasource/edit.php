@@ -48,7 +48,7 @@ if ($entity) {
 	}
 	
 	$entity->save();
-	system_message(elgg_echo("save:success"));
+	system_message(elgg_echo("admin:configuration:success"));
 } else {
 	register_error(elgg_echo("profile_sync:action:datasource:edit:error:entity"));
 }

@@ -24,4 +24,4 @@ $body_vars = array(
 
 $body = elgg_view_form("profile_sync/sync_config", array(), $body_vars);
 
-echo elgg_view_module("inline", $title, $body, array("class" => "mvn"));
+echo elgg_view_module("inline", $title, $body, array("class" => "mvn profile-sync-config-wrapper"));

@@ -78,7 +78,9 @@ $profile_columns = array(
 	"" => elgg_echo("profile_sync:admin:sync_configs:edit:select_profile_column"),
 	"name" => elgg_echo("name"),
 	"username" => elgg_echo("username"),
-	"email" => elgg_echo("email")
+	"email" => elgg_echo("email"),
+	"user_icon_full_path" => elgg_echo("profile_sync:admin:sync_configs:edit:profile_column:icon_full"),
+	"user_icon_relative_path" => elgg_echo("profile_sync:admin:sync_configs:edit:profile_column:icon_relative"),
 );
 foreach ($profile_fields as $metadata_name => $type) {
 	$lan_key = "profile:" . $metadata_name;
@@ -88,6 +90,10 @@ foreach ($profile_fields as $metadata_name => $type) {
 	}
 	$profile_columns[$metadata_name] = $name;
 }
+
+$profile_columns_id = $profile_columns;
+unset($profile_columns_id["user_icon_full_path"]);
+unset($profile_columns_id["user_icon_relative_path"]);
 
 $body = "";
 
@@ -109,7 +115,7 @@ $body .= elgg_view("input/dropdown", array(
 $body .= elgg_view_icon("arrow-right");
 $body .= elgg_view("input/dropdown", array(
 	"name" => "profile_id",
-	"options_values" => $profile_columns,
+	"options_values" => $profile_columns_id,
 	"value" => $profile_id,
 	"required" => true
 ));

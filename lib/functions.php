@@ -259,11 +259,29 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 			continue;
 		}
 		
+		// start of profile sync
+		$special_sync_fields = array(
+			"name",
+			"username",
+			"email",
+			"user_icon_relative_path",
+			"user_icon_full_path"
+		);
+		
+		$base_location = "";
+		if ($datasource instanceof ProfileSyncCSV) {
+			// get base path
+			$csv_location = $datasource->csv_location;
+			$csv_filename = basename($csv_location);
+			
+			$base_location = rtrim(str_ireplace($csv_filename, "", $csv_location), DIRECTORY_SEPARATOR);
+		}
+		
 		foreach ($sync_match as $datasource_col => $profile_config) {
 			$profile_field = elgg_extract("profile_field", $profile_config);
 			$access = (int) elgg_extract("access", $profile_config, $default_access);
 			
-			if (!in_array($profile_field, array("name", "username", "email")) && !array_key_exists($profile_field, $profile_fields)) {
+			if (!in_array($profile_field, $special_sync_fields) && !array_key_exists($profile_field, $profile_fields)) {
 				$counters["invalid profile field"]++;
 				continue;
 			}
@@ -272,14 +290,16 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 				continue;
 			}
 			
+			$value = elgg_extract($datasource_col, $source_row);
+			
 			switch ($profile_field) {
 				case "email":
-					if (!is_email_address($source_row[$datasource_col])) {
+					if (!is_email_address($value)) {
 						continue(2);
 					}
 				case "name":
 				case "username":
-					if (empty($source_row[$datasource_col])) {
+					if (empty($value)) {
 						$counters["empty attributes"]++;
 						profile_sync_log($sync_config->getGUID(), "Empty user attribute: " . $datasource_id . " for user " . $user->name);
 						continue(2);
@@ -289,11 +309,85 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 					$user->$profile_field = $source_row[$datasource_col];
 					$user->save();
 					break;
+				case "user_icon_relative_path":
+					// get a user icon based on a relative file path/url
+					// only works with file based datasources (eg. csv)
+					if (!($datasource instanceof ProfileSyncCSV)) {
+						profile_sync_log($sync_config->getGUID(), "Can't fetch relative user icon path in non CSV datarouces: trying user " . $user->name);
+						continue(2);
+					}
+					
+					// make new icon path
+					if (!empty($value)) {
+						$value = sanitise_filepath($value, false); // prevent abuse (like ../../......)
+						$value = ltrim($value, DIRECTORY_SEPARATOR); // remove beginning /
+						$value = $base_location . DIRECTORY_SEPARATOR . $value; // concat base location and rel path
+					}
+					
+				case "user_icon_full_path":
+					// get a user icon based on a full file path/url
+					$icon_sizes = elgg_get_config("icon_sizes");
+					
+					$fh = new ElggFile();
+					$fh->owner_guid = $user->getGUID();
+						
+					if (empty($value) && $user->icontime) {
+						// no icon, so unset current icon
+						profile_sync_log($sync_config->getGUID(), "Removing icon for user: " . $user->name);
+						
+						foreach ($icon_sizes as $size => $icon_info) {
+							$fh->setFilename("profile/{$user->getGUID()}{$size}.jpg");
+							$fh->delete();
+						}
+						
+						unset($user->icontime);
+						unset($fh);
+						
+						// on to the next field
+						continue(2);
+					}
+					
+					// try to get the user icon
+					$icon_contents = file_get_contents($value);
+					if (empty($icon_contents)) {
+						profile_sync_log($sync_config->getGUID(), "Unable to fetch user icon: " . $datasource_id . " for user " . $user->name);
+						continue(2);
+					}
+					
+					// write icon to a temp location for further handling
+					$tmp_icon = tempnam(sys_get_temp_dir(), $user->getGUID());
+					file_put_contents($tmp_icon, $icon_contents);
+					
+					// resize icon
+					$icon_updated = false;
+					foreach ($icon_sizes as $size => $icon_info) {
+						$icon_contents = get_resized_image_from_existing_file($tmp_icon, $icon_info["w"], $icon_info["h"], $icon_info["square"], 0, 0, 0, 0, $icon_info["upscale"]);
+						
+						if (empty($icon_contents)) {
+							continue;
+						}
+						
+						$fh->setFilename("profile/{$user->getGUID()}{$size}.jpg");
+						$fh->open("write");
+						$fh->write($icon_contents);
+						$fh->close();
+						
+						$icon_updated = true;
+					}
+					
+					// did we have a successfull icon upload?
+					if ($icon_updated) {
+						$user->icontime = time();
+					}
+					
+					// cleanup
+					unlink($tmp_icon);
+					unset($fh);
+					
+					break;
 				default:
 					if ($profile_fields[$profile_field] == "tags") {
-						$value = string_to_tag_array($source_row[$datasource_col]);
-					} else {
-						$value = $source_row[$datasource_col];
+						$value = string_to_tag_array($value);
 					}
 					
 					// remove existing value

@@ -100,9 +100,19 @@ $body .= "</div>";
 // unique fields to match
 $body .= "<div class='mbs'>";
 $body .= "<label>" . elgg_echo("profile_sync:admin:sync_configs:edit:unique_id") . "</label><br />";
-$body .= elgg_view("input/dropdown", array("name" => "datasource_id", "options_values" => $datasource_columns, "value" => $datasource_id, "required" => true));
+$body .= elgg_view("input/dropdown", array(
+	"name" => "datasource_id",
+	"options_values" => $datasource_columns,
+	"value" => $datasource_id,
+	"required" => true
+));
 $body .= elgg_view_icon("arrow-right");
-$body .= elgg_view("input/dropdown", array("name" => "profile_id", "options_values" => $profile_columns, "value" => $profile_id, "required" => true));
+$body .= elgg_view("input/dropdown", array(
+	"name" => "profile_id",
+	"options_values" => $profile_columns,
+	"value" => $profile_id,
+	"required" => true
+));
 $body .= "</div>";
 
 // fields to sync
@@ -113,40 +123,70 @@ if ($ban_user) {
 $body .= "<div class='" . $field_class . "'>";
 $body .= "<label>" . elgg_echo("profile_sync:admin:sync_configs:edit:fields") . "</label>";
 
+$body .= "<table class='elgg-table-alt'>";
+$body .= "<thead><tr>";
+$body .= "<th>" . elgg_echo("profile_sync:admin:sync_configs:edit:datasource_column") . "</th>";
+$body .= "<th class='profile-sync-arrow'>&nbsp;</th>";
+$body .= "<th>" . elgg_echo("profile_sync:admin:sync_configs:edit:profile_column") . "</th>";
+$body .= "<th>" . elgg_echo("default_access:label") . "</th>";
+$body .= "</tr></thead>";
+
+$body .= "<tbody>";
 if (!empty($sync_config)) {
-	$body .= elgg_view("input/hidden", array("name" => "guid", "value" => $sync_config->getGUID()));
-	
 	$sync_match = json_decode($sync_config->sync_match, true);
 	
 	foreach ($sync_match as $datasource_name => $profile_config) {
 		$profile_name = elgg_extract("profile_field", $profile_config);
 		$access = (int) elgg_extract("access", $profile_config);
 		
-		$body .= "<div class='mbs'>";
-		$body .= elgg_view("input/dropdown", array("name" => "datasource_cols[]", "options_values" => $datasource_columns, "value" => $datasource_name));
-		$body .= elgg_view_icon("arrow-right");
-		$body .= elgg_view("input/dropdown", array("name" => "profile_cols[]", "options_values" => $profile_columns, "value" => $profile_name));
-		$body .= elgg_view_icon("lock-closed");
-		$body .= elgg_view("input/access", array("name" => "access[]", "value" => $access));
-		$body .= "</div>";
+		$body .= "<tr>";
+		$body .= "<td>" . elgg_view("input/dropdown", array(
+			"name" => "datasource_cols[]",
+			"options_values" => $datasource_columns,
+			"value" => $datasource_name
+		)) . "</td>";
+		$body .= "<td>" . elgg_view_icon("arrow-right") . "</td>";
+		$body .= "<td>" . elgg_view("input/dropdown", array(
+			"name" => "profile_cols[]",
+			"options_values" => $profile_columns,
+			"value" => $profile_name
+		)) . "</td>";
+		$body .= "<td>" . elgg_view("input/access", array(
+			"name" => "access[]",
+			"value" => $access
+		)) . "</td>";
+		$body .= "</tr>";
 	}
 } else {
-	$body .= "<div class='mbs'>";
-	$body .= elgg_view("input/dropdown", array("name" => "datasource_cols[]", "options_values" => $datasource_columns));
-	$body .= elgg_view_icon("arrow-right");
-	$body .= elgg_view("input/dropdown", array("name" => "profile_cols[]", "options_values" => $profile_columns));
-	$body .= elgg_view_icon("lock-closed");
-	$body .= elgg_view("input/access", array("name" => "access[]"));
-	$body .= "</div>";
+	$body .= "<tr>";
+	$body .= "<td>" . elgg_view("input/dropdown", array(
+		"name" => "datasource_cols[]",
+		"options_values" => $datasource_columns
+	)) . "</td>";
+	$body .= "<td>" . elgg_view_icon("arrow-right") . "</td>";
+	$body .= "<td>" . elgg_view("input/dropdown", array(
+		"name" => "profile_cols[]",
+		"options_values" => $profile_columns
+	)) . "</td>";
+	$body .= "<td>" . elgg_view("input/access", array("name" => "access[]")) . "</td>";
+	$body .= "</tr>";
 }
 
-$body .= "<div id='profile-sync-field-config-template' class='hidden mbs'>";
-$body .= elgg_view("input/dropdown", array("name" => "datasource_cols[]", "options_values" => $datasource_columns));
-$body .= elgg_view_icon("arrow-right");
-$body .= elgg_view("input/dropdown", array("name" => "profile_cols[]", "options_values" => $profile_columns));
-$body .= elgg_view_icon("lock-closed");
-$body .= elgg_view("input/access", array("name" => "access[]"));
-$body .= "</div>";
+$body .= "<tr id='profile-sync-field-config-template' class='hidden'>";
+$body .= "<td>" . elgg_view("input/dropdown", array(
+	"name" => "datasource_cols[]",
+	"options_values" => $datasource_columns
+)) . "</td>";
+$body .= "<td>" . elgg_view_icon("arrow-right") . "</td>";
+$body .= "<td>" . elgg_view("input/dropdown", array(
+	"name" => "profile_cols[]",
+	"options_values" => $profile_columns
+)) . "</td>";
+$body .= "<td>" . elgg_view("input/access", array("name" => "access[]")) . "</td>";
+$body .= "</tr>";
+
+$body .= "</tbody>";
+$body .= "</table>";
 
 $body .= "<div>";
 $body .= elgg_view("output/url", array(
@@ -214,6 +254,9 @@ $body .= "<div class='elgg-subtext'>" . elgg_echo("profile_sync:admin:sync_confi
 
 
 $body .= "<div class='elgg-foot'>";
+if (!empty($sync_config)) {
+	$body .= elgg_view("input/hidden", array("name" => "guid", "value" => $sync_config->getGUID()));
+}
 $body .= elgg_view("input/submit", array("value" => elgg_echo("save")));
 $body .= "</div>";
 

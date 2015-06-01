@@ -57,6 +57,11 @@ $schedule_options = array(
 	"manual" => elgg_echo("profile_sync:sync_configs:schedule:manual")
 );
 
+$override_options = array(
+	"1" => elgg_echo("option:yes"),
+	"0" => elgg_echo("option:no"),
+);
+
 // show which datasource
 echo "<div>";
 echo"<label class='mrs'>" . elgg_echo("profile_sync:admin:sync_configs:edit:datasource") . ":</label>";
@@ -135,6 +140,7 @@ $body .= "<th>" . elgg_echo("profile_sync:admin:sync_configs:edit:datasource_col
 $body .= "<th class='profile-sync-arrow'>&nbsp;</th>";
 $body .= "<th>" . elgg_echo("profile_sync:admin:sync_configs:edit:profile_column") . "</th>";
 $body .= "<th>" . elgg_echo("default_access:label") . "</th>";
+$body .= "<th>" . elgg_echo("profile_sync:admin:sync_configs:edit:always_override") . "</th>";
 $body .= "</tr></thead>";
 
 $body .= "<tbody>";
@@ -144,6 +150,7 @@ if (!empty($sync_config)) {
 	foreach ($sync_match as $datasource_name => $profile_config) {
 		$profile_name = elgg_extract("profile_field", $profile_config);
 		$access = (int) elgg_extract("access", $profile_config);
+		$always_override = (int) elgg_extract("always_override", $profile_config);
 		
 		$body .= "<tr>";
 		$body .= "<td>" . elgg_view("input/dropdown", array(
@@ -161,6 +168,11 @@ if (!empty($sync_config)) {
 			"name" => "access[]",
 			"value" => $access
 		)) . "</td>";
+		$body .= "<td class='center'>" . elgg_view("input/dropdown", array(
+			"name" => "always_override[]",
+			"value" => $always_override,
+			"options_values" => $override_options
+		)) . "</td>";
 		$body .= "</tr>";
 	}
 } else {
@@ -175,6 +187,10 @@ if (!empty($sync_config)) {
 		"options_values" => $profile_columns
 	)) . "</td>";
 	$body .= "<td>" . elgg_view("input/access", array("name" => "access[]")) . "</td>";
+	$body .= "<td class='center'>" . elgg_view("input/dropdown", array(
+		"name" => "always_override[]",
+		"options_values" => $override_options
+	)) . "</td>";
 	$body .= "</tr>";
 }
 
@@ -189,6 +205,10 @@ $body .= "<td>" . elgg_view("input/dropdown", array(
 	"options_values" => $profile_columns
 )) . "</td>";
 $body .= "<td>" . elgg_view("input/access", array("name" => "access[]")) . "</td>";
+$body .= "<td class='center'>" . elgg_view("input/dropdown", array(
+	"name" => "always_override[]",
+	"options_values" => $override_options
+)) . "</td>";
 $body .= "</tr>";
 
 $body .= "</tbody>";

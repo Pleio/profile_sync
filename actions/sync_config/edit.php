@@ -14,6 +14,7 @@ $profile_id = get_input("profile_id");
 $datasource_cols = get_input("datasource_cols");
 $profile_cols = get_input("profile_cols");
 $access = get_input("access");
+$always_override = get_input("always_override");
 
 $schedule = get_input("schedule");
 $create_user = (int) get_input("create_user");
@@ -65,7 +66,8 @@ foreach ($datasource_cols as $index => $datasource_col_name) {
 	
 	$sync_match[$datasource_col_name] = array(
 		"profile_field" => $profile_cols[$index],
-		"access" => (int) elgg_extract($index, $access, $default_access)
+		"access" => (int) elgg_extract($index, $access, $default_access),
+		"always_override" => (int) elgg_extract($index, $always_override, true)
 	);
 }
 

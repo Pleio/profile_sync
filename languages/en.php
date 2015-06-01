@@ -63,6 +63,7 @@ $english = array(
 	'profile_sync:admin:sync_configs:edit:profile_column:icon_full' => "User icon (full path)",
 	'profile_sync:admin:sync_configs:edit:profile_column:icon_relative' => "User icon (relative path)",
 	'profile_sync:admin:sync_configs:edit:fields' => "Field configuration",
+	'profile_sync:admin:sync_configs:edit:always_override' => "Always override",
 	'profile_sync:admin:sync_configs:edit:unique_id' => "Unique matching fields",
 	'profile_sync:admin:sync_configs:edit:schedule' => "Schedule",
 	'profile_sync:admin:sync_configs:edit:create_user' => "Create missing users",

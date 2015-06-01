@@ -280,6 +280,7 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 		foreach ($sync_match as $datasource_col => $profile_config) {
 			$profile_field = elgg_extract("profile_field", $profile_config);
 			$access = (int) elgg_extract("access", $profile_config, $default_access);
+			$override = (bool) elgg_extract("always_override", $profile_config, true);
 			
 			if (!in_array($profile_field, $special_sync_fields) && !array_key_exists($profile_field, $profile_fields)) {
 				$counters["invalid profile field"]++;
@@ -301,12 +302,18 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 				case "username":
 					if (empty($value)) {
 						$counters["empty attributes"]++;
-						profile_sync_log($sync_config->getGUID(), "Empty user attribute: " . $datasource_id . " for user " . $user->name);
+						profile_sync_log($sync_config->getGUID(), "Empty user attribute: " . $datasource_col . " for user " . $user->name);
+						continue(2);
+					}
+					
+					if (isset($user->$profile_field) && !$override) {
+						// don't override profile field
+// 						profile_sync_log($sync_config->getGUID(), "Profile field already set: " . $profile_field . " for user " . $user->name);
 						continue(2);
 					}
 					
 					// save user attribute
-					$user->$profile_field = $source_row[$datasource_col];
+					$user->$profile_field = $value;
 					$user->save();
 					break;
 				case "user_icon_relative_path":
@@ -326,6 +333,14 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 					
 				case "user_icon_full_path":
 					// get a user icon based on a full file path/url
+					
+					if (!empty($user->icontime) && !$override) {
+						// don't override icon
+// 						profile_sync_log($sync_config->getGUID(), "User already has an icon: " . $user->name);
+						continue(2);
+					}
+					
+					// upload new icon
 					$icon_sizes = elgg_get_config("icon_sizes");
 					
 					$fh = new ElggFile();
@@ -350,7 +365,7 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 					// try to get the user icon
 					$icon_contents = file_get_contents($value);
 					if (empty($icon_contents)) {
-						profile_sync_log($sync_config->getGUID(), "Unable to fetch user icon: " . $datasource_id . " for user " . $user->name);
+						profile_sync_log($sync_config->getGUID(), "Unable to fetch user icon: " . $datasource_col . " for user " . $user->name);
 						continue(2);
 					}
 					
@@ -386,6 +401,14 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 					
 					break;
 				default:
+					// check overrides
+					if (isset($user->$profile_field) && !$override) {
+						// don't override profile field
+// 						profile_sync_log($sync_config->getGUID(), "Profile field already set: " . $profile_field . " for user " . $user->name);
+						continue(2);
+					}
+					
+					// convert tags
 					if ($profile_fields[$profile_field] == "tags") {
 						$value = string_to_tag_array($value);
 					}

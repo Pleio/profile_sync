@@ -159,6 +159,6 @@ class ProfileSyncCSV extends ProfileSync {
 		
 		$this->delimiter = $datasource->csv_delimiter;
 		$this->enclosure = $datasource->csv_enclosure;
-		$this->first_row = (bool) $datasource->first_row;
+		$this->first_row = (bool) $datasource->csv_first_row;
 	}
 }

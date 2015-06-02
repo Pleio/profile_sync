@@ -27,7 +27,7 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 	$profile_id = $sync_config->profile_id;
 	$lastrun = (int) $sync_config->lastrun;
 	
-	profile_sync_log($sync_config->getGUID(), "Last run timestamp: " . $lastrun . " (" . date(elgg_echo("friendlytime:date_format"), $lastrun) . ")" . PHP_EOL);
+	profile_sync_log($sync_config->getGUID(), "Last run timestamp: {$lastrun} (" . date(elgg_echo("friendlytime:date_format"), $lastrun) . ")" . PHP_EOL);
 	
 	$profile_fields = elgg_get_config("profile_fields");
 	
@@ -84,7 +84,7 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 			}
 		}
 		
-		if (empty($create_user_name) || empty($create_user_username) || empty($create_user_email)) {
+		if (($create_user_name === false) || ($create_user_username === false) || ($create_user_email === false)) {
 			profile_sync_log($sync_config->getGUID(), "Missing information to create users");
 			$create_user = false;
 		}
@@ -147,18 +147,20 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 			continue;
 		}
 		
+		$datasource_unique_id = profile_sync_convert_string_encoding($source_row[$datasource_id]);
+		
 		$user = false;
 		switch ($profile_id) {
 			case "username":
-				$user = get_user_by_username($source_row[$datasource_id]);
+				$user = get_user_by_username($datasource_unique_id);
 				break;
 			case "email":
-				$users = get_user_by_email($source_row[$datasource_id]);
+				$users = get_user_by_email($datasource_unique_id);
 				if (count($users) == 1) {
 					$user = $users[0];
 				} else {
 					$counters["duplicate email"]++;
-					profile_sync_log($sync_config->getGUID(), "Duplicate email address: " . $source_row[$datasource_id]);
+					profile_sync_log($sync_config->getGUID(), "Duplicate email address: {$datasource_unique_id}");
 				}
 				break;
 			case "name":
@@ -166,14 +168,14 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 					"type" => "user",
 					"limit" => false,
 					"joins" => array("JOIN " . $dbprefix . "users_entity ue ON e.guid = ue.guid"),
-					"wheres" => array("ue.name LIKE '" . sanitise_string($source_row[$datasource_id]) . "'")
+					"wheres" => array("ue.name LIKE '" . sanitise_string($datasource_unique_id) . "'")
 				);
 				$users = elgg_get_entities($options);
 				if (count($users) == 1) {
 					$user = $users[0];
 				} else {
 					$counters["duplicate name"]++;
-					profile_sync_log($sync_config->getGUID(), "Duplicate name: " . $source_row[$datasource_id]);
+					profile_sync_log($sync_config->getGUID(), "Duplicate name: {$datasource_unique_id}");
 				}
 				break;
 			default:
@@ -182,7 +184,7 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 					"limit" => false,
 					"metadata_name_value_pairs" => array(
 						"name" => $profile_id,
-						"value" => $source_row[$datasource_id]
+						"value" => $datasource_unique_id
 					)
 				);
 				$users = elgg_get_entities_from_metadata($options);
@@ -190,7 +192,7 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 					$user = $users[0];
 				} else {
 					$counters["duplicate profile field"]++;
-					profile_sync_log($sync_config->getGUID(), "Duplicate profile field: " . $source_row[$datasource_id]);
+					profile_sync_log($sync_config->getGUID(), "Duplicate profile field: {$datasource_unique_id}");
 				}
 				break;
 		}
@@ -201,10 +203,15 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 			$pwd = generate_random_cleartext_password();
 			
 			try {
-				$user_guid = register_user($source_row[$create_user_username], $pwd, $source_row[$create_user_name], $source_row[$create_user_email]);
+				// convert to utf-8
+				$username = profile_sync_convert_string_encoding($source_row[$create_user_username]);
+				$name = profile_sync_convert_string_encoding($source_row[$create_user_name]);
+				$email = profile_sync_convert_string_encoding($source_row[$create_user_email]);
+				
+				$user_guid = register_user($username, $pwd, $name, $email);
 				if (!empty($user_guid)) {
 					$counters["user created"]++;
-					profile_sync_log($sync_config->getGUID(), "Created user: " . $source_row[$create_user_name]);
+					profile_sync_log($sync_config->getGUID(), "Created user: {$name}");
 					
 					$user = get_user($user_guid);
 					
@@ -222,14 +229,15 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 					}
 				}
 			} catch (RegistrationException $r) {
-				profile_sync_log($sync_config->getGUID(), "Failure creating user: " . $source_row[$create_user_name] . " - " . $r->getMessage());
+				$name = profile_sync_convert_string_encoding($source_row[$create_user_name]);
+				profile_sync_log($sync_config->getGUID(), "Failure creating user: {$name} - {$r->getMessage()}");
 			}
 		}
 		
 		// did we get a user
 		if (empty($user)) {
 			$counters["user not found"]++;
-			profile_sync_log($sync_config->getGUID(), "User not found: " . $datasource_id . " => " . $source_row[$datasource_id]);
+			profile_sync_log($sync_config->getGUID(), "User not found: {$datasource_id} => {$datasource_unique_id}");
 			continue;
 		} else {
 			$counters["processed users"]++;
@@ -241,7 +249,7 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 			if (!$user->isBanned()) {
 				$counters["user banned"]++;
 				$user->ban("Profile Sync: " . $sync_config->title);
-				profile_sync_log($sync_config->getGUID(), "User banned: " . $user->name . " ( " . $user->username . ")");
+				profile_sync_log($sync_config->getGUID(), "User banned: {$user->name} ({$user->username})");
 			}
 			
 			continue;
@@ -253,7 +261,7 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 			if ($user->isBanned()) {
 				$counters["user unbanned"]++;
 				$user->unban();
-				profile_sync_log($sync_config->getGUID(), "User unbanned: " . $user->name . " ( " . $user->username . ")");
+				profile_sync_log($sync_config->getGUID(), "User unbanned: {$user->name} ({$user->username})");
 			}
 			
 			continue;
@@ -292,6 +300,7 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 			}
 			
 			$value = elgg_extract($datasource_col, $source_row);
+			$value = profile_sync_convert_string_encoding($value);
 			
 			switch ($profile_field) {
 				case "email":
@@ -302,7 +311,7 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 				case "username":
 					if (empty($value)) {
 						$counters["empty attributes"]++;
-						profile_sync_log($sync_config->getGUID(), "Empty user attribute: " . $datasource_col . " for user " . $user->name);
+						profile_sync_log($sync_config->getGUID(), "Empty user attribute: {$datasource_col} for user {$user->name}");
 						continue(2);
 					}
 					
@@ -320,7 +329,7 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 					// get a user icon based on a relative file path/url
 					// only works with file based datasources (eg. csv)
 					if (!($datasource instanceof ProfileSyncCSV)) {
-						profile_sync_log($sync_config->getGUID(), "Can't fetch relative user icon path in non CSV datarouces: trying user " . $user->name);
+						profile_sync_log($sync_config->getGUID(), "Can't fetch relative user icon path in non CSV datarouces: trying user {$user->name}");
 						continue(2);
 					}
 					
@@ -348,7 +357,7 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 						
 					if (empty($value) && $user->icontime) {
 						// no icon, so unset current icon
-						profile_sync_log($sync_config->getGUID(), "Removing icon for user: " . $user->name);
+						profile_sync_log($sync_config->getGUID(), "Removing icon for user: {$user->name}");
 						
 						foreach ($icon_sizes as $size => $icon_info) {
 							$fh->setFilename("profile/{$user->getGUID()}{$size}.jpg");
@@ -365,7 +374,7 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 					// try to get the user icon
 					$icon_contents = file_get_contents($value);
 					if (empty($icon_contents)) {
-						profile_sync_log($sync_config->getGUID(), "Unable to fetch user icon: " . $datasource_col . " for user " . $user->name);
+						profile_sync_log($sync_config->getGUID(), "Unable to fetch user icon: {$datasource_col} for user {$user->name}");
 						continue(2);
 					}
 					
@@ -593,4 +602,26 @@ function profile_sync_cleanup_logs(ElggObject $sync_config) {
 	}
 	
 	return $result;
+}
+
+/**
+ * Convert string to UTF-8 charset
+ *
+ * @param string $string the input string
+ *
+ * @return string
+ */
+function profile_sync_convert_string_encoding($string) {
+	
+	if (function_exists('mb_convert_encoding')) {
+		$source_encoding = mb_detect_encoding($string);
+		if (!empty($source_encoding)) {
+			$source_aliases = mb_encoding_aliases($source_encoding);
+			
+			return mb_convert_encoding($string, 'UTF-8', $source_aliases);
+		}
+	}
+	
+	// if no mbstring extension, we just try to convert to UTF-8 (from ISO-8859-1)
+	return utf8_encode($string);
 }

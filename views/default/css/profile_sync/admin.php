@@ -24,4 +24,6 @@ a.profile-sync-admin-title-button {
 .profile-sync-log-wrapper,
 .profile-sync-config-wrapper {
 	width: 700px;
+	max-height: 600px;
+	overflow-y: auto;
 }

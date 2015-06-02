@@ -60,7 +60,7 @@ if ($ban_user && $unban_user) {
 $default_access = get_default_access();
 $sync_match = array();
 foreach ($datasource_cols as $index => $datasource_col_name) {
-	if (empty($datasource_col_name) || empty($profile_cols[$index])) {
+	if (($datasource_col_name === "") || ($profile_cols[$index] === "")) {
 		continue;
 	}
 	

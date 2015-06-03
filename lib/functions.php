@@ -453,6 +453,15 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 					break;
 			}
 		}
+		
+		// let others know we updated the user
+		$update_event_params = array(
+			'entity' => $user,
+			'source_row' => $source_row,
+			'sync_config' => $sync_config,
+			'datasource' => $datasource
+		);
+		elgg_trigger_event('update_user', 'profile_sync', $update_event_params);
 	}
 	
 	profile_sync_log($sync_config->getGUID(), PHP_EOL . "End processing: " . date(elgg_echo("friendlytime:date_format")) . PHP_EOL);

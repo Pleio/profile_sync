@@ -142,7 +142,15 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 	while (($source_row = $sync_source->fetchRow()) !== false) {
 		$counters["source rows"]++;
 		
-		if (empty($source_row[$datasource_id])) {
+		// let other plugins change the row data
+		$params = array(
+			'datasource' => $datasource,
+			'sync_config' => $sync_config,
+			'source_row' => $source_row
+		);
+		$source_row = elgg_trigger_plugin_hook('source_row', 'profile_sync', $params, $source_row);
+		
+		if (!is_array($source_row) || empty($source_row[$datasource_id])) {
 			$counters["empty source id"]++;
 			continue;
 		}

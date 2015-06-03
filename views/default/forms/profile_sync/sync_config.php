@@ -6,7 +6,9 @@ $sync_config = elgg_extract("sync_config", $vars);
 $title = "";
 $schedule = "daily";
 $datasource_id = "";
+$datasource_id_fallback = "";
 $profile_id = "";
+$profile_id_fallback = "";
 $create_user = false;
 $ban_user = false;
 $unban_user = false;
@@ -19,7 +21,9 @@ if (!empty($sync_config)) {
 	$title = $sync_config->title;
 	$schedule = $sync_config->schedule;
 	$datasource_id = $sync_config->datasource_id;
+	$datasource_id_fallback = $sync_config->datasource_id_fallback;
 	$profile_id = $sync_config->profile_id;
+	$profile_id_fallback = $sync_config->profile_id_fallback;
 	$create_user = (bool) $sync_config->create_user;
 	$ban_user = (bool) $sync_config->ban_user;
 	$unban_user = (bool) $sync_config->unban_user;
@@ -102,7 +106,7 @@ unset($profile_columns_id["user_icon_relative_path"]);
 
 $body = "";
 
-// unique fields to match
+// unique title
 $body .= "<div class='mbs'>";
 $body .= "<label>" . elgg_echo("title") . "</label>";
 $body .= elgg_view("input/text", array("name" => "title", "value" => $title, "required" => true));
@@ -123,6 +127,23 @@ $body .= elgg_view("input/dropdown", array(
 	"options_values" => $profile_columns_id,
 	"value" => $profile_id,
 	"required" => true
+));
+$body .= "</div>";
+
+// fallback fields to match
+$body .= "<div class='mbs'>";
+$body .= "<label>" . elgg_echo("profile_sync:admin:sync_configs:edit:unique_id_fallback") . "</label>";
+$body .= "<div class='elgg-subtext'>" . elgg_echo("profile_sync:admin:sync_configs:edit:unique_id_fallback:description") . "</div>";
+$body .= elgg_view("input/dropdown", array(
+	"name" => "datasource_id_fallback",
+	"options_values" => $datasource_columns,
+	"value" => $datasource_id_fallback
+));
+$body .= elgg_view_icon("arrow-right");
+$body .= elgg_view("input/dropdown", array(
+	"name" => "profile_id_fallback",
+	"options_values" => $profile_columns_id,
+	"value" => $profile_id_fallback
 ));
 $body .= "</div>";
 

@@ -9,7 +9,9 @@ $datasource_guid = (int) get_input("datasource_guid");
 $title = get_input("title");
 
 $datasource_id = get_input("datasource_id");
+$datasource_id_fallback = get_input("datasource_id_fallback");
 $profile_id = get_input("profile_id");
+$profile_id_fallback = get_input("profile_id_fallback");
 
 $datasource_cols = get_input("datasource_cols");
 $profile_cols = get_input("profile_cols");
@@ -101,7 +103,9 @@ if (empty($guid)) {
 // save all the data
 $entity->title = $title;
 $entity->datasource_id = $datasource_id;
+$entity->datasource_id_fallback = $datasource_id_fallback;
 $entity->profile_id = $profile_id;
+$entity->profile_id_fallback = $profile_id_fallback;
 
 $entity->sync_match = json_encode($sync_match);
 $entity->schedule = $schedule;

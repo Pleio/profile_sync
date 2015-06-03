@@ -59,10 +59,14 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 		return;
 	}
 	
+	$datasource_id_fallback = $sync_config->datasource_id_fallback;
+	$profile_id_fallback = $sync_config->profile_id_fallback;
+	
 	$create_user = (bool) $sync_config->create_user;
 	$ban_user = (bool) $sync_config->ban_user;
 	$unban_user = (bool) $sync_config->unban_user;
 	$notify_user = (bool) $sync_config->notify_user;
+	
 	$create_user_name = false;
 	$create_user_email = false;
 	$create_user_username = false;
@@ -155,54 +159,22 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 			continue;
 		}
 		
-		$datasource_unique_id = profile_sync_convert_string_encoding($source_row[$datasource_id]);
+		// find user
+		$datasource_used_id = $datasource_id;
+		$profile_used_id = $profile_id;
+		$datasource_unique_id = elgg_extract($datasource_id, $source_row);
 		
-		$user = false;
-		switch ($profile_id) {
-			case "username":
-				$user = get_user_by_username($datasource_unique_id);
-				break;
-			case "email":
-				$users = get_user_by_email($datasource_unique_id);
-				if (count($users) == 1) {
-					$user = $users[0];
-				} else {
-					$counters["duplicate email"]++;
-					profile_sync_log($sync_config->getGUID(), "Duplicate email address: {$datasource_unique_id}");
-				}
-				break;
-			case "name":
-				$options = array(
-					"type" => "user",
-					"limit" => false,
-					"joins" => array("JOIN " . $dbprefix . "users_entity ue ON e.guid = ue.guid"),
-					"wheres" => array("ue.name LIKE '" . sanitise_string($datasource_unique_id) . "'")
-				);
-				$users = elgg_get_entities($options);
-				if (count($users) == 1) {
-					$user = $users[0];
-				} else {
-					$counters["duplicate name"]++;
-					profile_sync_log($sync_config->getGUID(), "Duplicate name: {$datasource_unique_id}");
-				}
-				break;
-			default:
-				$options = array(
-					"type" => "user",
-					"limit" => false,
-					"metadata_name_value_pairs" => array(
-						"name" => $profile_id,
-						"value" => $datasource_unique_id
-					)
-				);
-				$users = elgg_get_entities_from_metadata($options);
-				if (count($users) == 1) {
-					$user = $users[0];
-				} else {
-					$counters["duplicate profile field"]++;
-					profile_sync_log($sync_config->getGUID(), "Duplicate profile field: {$datasource_unique_id}");
-				}
-				break;
+		$user = profile_sync_find_user($profile_id, $datasource_unique_id, $sync_config, $counters);
+		
+		// fallback user
+		if (empty($user) && ($datasource_id_fallback !== '') && !empty($source_row[$datasource_id_fallback]) && !empty($profile_id_fallback)) {
+			profile_sync_log($sync_config->getGUID(), "User not found: {$profile_id} => {$datasource_unique_id} trying fallback");
+			
+			$profile_used_id = $profile_id_fallback;
+			$datasource_used_id = $datasource_id_fallback;
+			$datasource_unique_id = elgg_extract($datasource_id_fallback, $source_row);
+			
+			$user = profile_sync_find_user($profile_id_fallback, $datasource_unique_id, $sync_config, $counters);
 		}
 		
 		// check if we need to create a user
@@ -245,7 +217,7 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 		// did we get a user
 		if (empty($user)) {
 			$counters["user not found"]++;
-			profile_sync_log($sync_config->getGUID(), "User not found: {$datasource_id} => {$datasource_unique_id}");
+			profile_sync_log($sync_config->getGUID(), "User not found: {$profile_used_id} => {$datasource_unique_id}");
 			continue;
 		} else {
 			$counters["processed users"]++;
@@ -641,4 +613,93 @@ function profile_sync_convert_string_encoding($string) {
 	
 	// if no mbstring extension, we just try to convert to UTF-8 (from ISO-8859-1)
 	return utf8_encode($string);
+}
+
+/**
+ * Find a user based on a profile field and it's value
+ *
+ * @param stirng     $profile_field profile field name
+ * @param string     $field_value   profile field value
+ * @param ElggObject $sync_config   sync configuration (for logging)
+ * @param array      $log_counters  array with logging counters
+ *
+ * @return false|ElggUser
+ */
+function profile_sync_find_user($profile_field, $field_value, ElggObject $sync_config, &$log_counters) {
+	static $profile_fields;
+	static $dbprefix;
+	
+	if (!isset($profile_fields)) {
+		$profile_fields = elgg_get_config('profile_fields');
+	}
+	if (!isset($dbprefix)) {
+		$dbprefix = elgg_get_config('dbprefix');
+	}
+	
+	if (empty($sync_config) || !elgg_instanceof($sync_config, 'object', 'profile_sync_config')) {
+		return false;
+	}
+	
+	if (empty($log_counters) || !is_array($log_counters)) {
+		return false;
+	}
+	
+	if (!in_array($profile_field, array("name", "username", "email")) && !array_key_exists($profile_field, $profile_fields)) {
+		return false;
+	}
+	
+	$field_value = profile_sync_convert_string_encoding($field_value);
+	if (empty($field_value)) {
+		return false;
+	}
+	
+	$user = false;
+	switch ($profile_field) {
+		case "username":
+			$user = get_user_by_username($field_value);
+			break;
+		case "email":
+			$users = get_user_by_email($field_value);
+			if (count($users) > 1) {
+				$log_counters["duplicate email"]++;
+				profile_sync_log($sync_config->getGUID(), "Duplicate email address: {$field_value}");
+			} elseif (count($users) == 1) {
+				$user = $users[0];
+			}
+			break;
+		case "name":
+			$options = array(
+				"type" => "user",
+				"limit" => 2,
+				"joins" => array("JOIN " . $dbprefix . "users_entity ue ON e.guid = ue.guid"),
+				"wheres" => array("ue.name LIKE '" . sanitise_string($field_value) . "'")
+			);
+			$users = elgg_get_entities($options);
+			if (count($users) > 1) {
+				$log_counters["duplicate name"]++;
+				profile_sync_log($sync_config->getGUID(), "Duplicate name: {$field_value}");
+			} elseif(count($users) == 1) {
+				$user = $users[0];
+			}
+			break;
+		default:
+			$options = array(
+				"type" => "user",
+				"limit" => 2,
+				"metadata_name_value_pairs" => array(
+					"name" => $profile_field,
+					"value" => $field_value
+				)
+			);
+			$users = elgg_get_entities_from_metadata($options);
+			if (count($users) > 1) {
+				$log_counters["duplicate profile field"]++;
+				profile_sync_log($sync_config->getGUID(), "Duplicate profile field: {$profile_field} => {$field_value}");
+			} elseif(count($users) == 1) {
+				$user = $users[0];
+			}
+			break;
+	}
+	
+	return $user;
 }

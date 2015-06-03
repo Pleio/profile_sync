@@ -257,7 +257,7 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 		);
 		
 		$base_location = "";
-		if ($datasource instanceof ProfileSyncCSV) {
+		if ($sync_source instanceof ProfileSyncCSV) {
 			// get base path
 			$csv_location = $datasource->csv_location;
 			$csv_filename = basename($csv_location);
@@ -308,8 +308,8 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 				case "user_icon_relative_path":
 					// get a user icon based on a relative file path/url
 					// only works with file based datasources (eg. csv)
-					if (!($datasource instanceof ProfileSyncCSV)) {
-						profile_sync_log($sync_config->getGUID(), "Can't fetch relative user icon path in non CSV datarouces: trying user {$user->name}");
+					if (!($sync_source instanceof ProfileSyncCSV)) {
+						profile_sync_log($sync_config->getGUID(), "Can't fetch relative user icon path in non CSV datasouces: trying user {$user->name}");
 						continue(2);
 					}
 					
@@ -354,7 +354,7 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 					// try to get the user icon
 					$icon_contents = file_get_contents($value);
 					if (empty($icon_contents)) {
-						profile_sync_log($sync_config->getGUID(), "Unable to fetch user icon: {$datasource_col} for user {$user->name}");
+						profile_sync_log($sync_config->getGUID(), "Unable to fetch user icon: {$value} for user {$user->name}");
 						continue(2);
 					}
 					

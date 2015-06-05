@@ -15,7 +15,10 @@ echo "</div>";
 
 ?>
 <script>
-	elgg.action("action/profile_sync/sync_config/run?guid=<?php echo $guid; ?>", {
+	elgg.action("action/profile_sync/sync_config/run", {
+		data: {
+			guid: <?php echo $guid; ?>
+		},
 		success: function(json, one, two, three) {
 			if (json && json.system_messages) {
 				if (json.system_messages.error && json.system_messages.error.length) {

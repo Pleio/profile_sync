@@ -14,6 +14,8 @@ class ProfileSyncCSV extends ProfileSync {
 	protected $enclosure;
 	protected $first_row;
 	
+	protected $named_columns;
+	
 	/**
 	 * Connect to the datasource
 	 *
@@ -75,7 +77,9 @@ class ProfileSyncCSV extends ProfileSync {
 		
 		if ($this->first_row) {
 			// first row contain header fields
-			return $fields;
+			$this->named_columns = $fields;
+			
+			return array_combine($fields, $fields);
 		}
 		
 		foreach ($fields as $index => $data) {
@@ -117,6 +121,24 @@ class ProfileSyncCSV extends ProfileSync {
 		// set offset for next run
 		$this->offset = ftell($this->fh);
 		
+		if ($fields === false) {
+			// some error occured
+			return false;
+		}
+		
+		// return named columns?
+		if ($this->first_row) {
+			if (!isset($this->named_columns)) {
+				$this->named_columns = false;
+				
+				$this->getColumns();
+			}
+			
+			if (!empty($this->named_columns)) {
+				return array_combine($this->named_columns, $fields);
+			}
+		}
+		
 		// return row
 		return $fields;
 	}
@@ -139,6 +161,8 @@ class ProfileSyncCSV extends ProfileSync {
 		unset($this->delimiter);
 		unset($this->enclosure);
 		unset($this->first_row);
+		
+		unset($this->named_columns);
 	}
 	
 	/**

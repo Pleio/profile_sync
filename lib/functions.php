@@ -143,6 +143,15 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 		"processed users" => 0
 	);
 	
+	$base_location = "";
+	if ($sync_source instanceof ProfileSyncCSV) {
+		// get base path
+		$csv_location = $datasource->csv_location;
+		$csv_filename = basename($csv_location);
+			
+		$base_location = rtrim(str_ireplace($csv_filename, "", $csv_location), DIRECTORY_SEPARATOR);
+	}
+	
 	while (($source_row = $sync_source->fetchRow()) !== false) {
 		$counters["source rows"]++;
 		
@@ -255,15 +264,6 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 			"user_icon_relative_path",
 			"user_icon_full_path"
 		);
-		
-		$base_location = "";
-		if ($sync_source instanceof ProfileSyncCSV) {
-			// get base path
-			$csv_location = $datasource->csv_location;
-			$csv_filename = basename($csv_location);
-			
-			$base_location = rtrim(str_ireplace($csv_filename, "", $csv_location), DIRECTORY_SEPARATOR);
-		}
 		
 		foreach ($sync_match as $datasource_col => $profile_config) {
 			$profile_field = elgg_extract("profile_field", $profile_config);

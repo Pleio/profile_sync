@@ -358,6 +358,23 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 						continue(2);
 					}
 					
+					// was csv image updated
+					$csv_icontime = @filemtime($value);
+					if (($csv_icontime !== false) && isset($user->icontime)) {
+						$csv_icontime = sanitise_int($csv_icontime);
+						$icontime = sanitise_int($user->icontime);
+						
+						if ($csv_icontime === $icontime) {
+							// base image has same modified time as user icontime, so skipp
+// 							profile_sync_log($sync_config->getGUID(), "No need to update user icon for user: {$user->name}");
+							continue(2);
+						}
+					}
+					
+					if ($csv_icontime === false) {
+						$csv_icontime = time();
+					}
+					
 					// write icon to a temp location for further handling
 					$tmp_icon = tempnam(sys_get_temp_dir(), $user->getGUID());
 					file_put_contents($tmp_icon, $icon_contents);
@@ -381,7 +398,7 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 					
 					// did we have a successfull icon upload?
 					if ($icon_updated) {
-						$user->icontime = time();
+						$user->icontime = $csv_icontime;
 					}
 					
 					// cleanup

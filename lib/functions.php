@@ -398,13 +398,19 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 					}
 					
 					// convert tags
-					if ($profile_fields[$profile_field] == "tags") {
+					if ($profile_fields[$profile_field] === "tags") {
 						$value = string_to_tag_array($value);
 					}
 					
 					// remove existing value
 					if (empty($value)) {
 						unset($user->$profile_field);
+						continue(2);
+					}
+					
+					// check for the same value
+					if ($user->$profile_field === $value) {
+						// same value, no need to update
 						continue(2);
 					}
 					

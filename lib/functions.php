@@ -177,7 +177,7 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 		
 		// fallback user
 		if (empty($user) && ($datasource_id_fallback !== '') && !empty($source_row[$datasource_id_fallback]) && !empty($profile_id_fallback)) {
-			profile_sync_log($sync_config->getGUID(), "User not found: {$profile_id} => {$datasource_unique_id} trying fallback");
+// 			profile_sync_log($sync_config->getGUID(), "User not found: {$profile_id} => {$datasource_unique_id} trying fallback");
 			
 			$profile_used_id = $profile_id_fallback;
 			$datasource_used_id = $datasource_id_fallback;

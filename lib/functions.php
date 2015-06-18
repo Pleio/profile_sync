@@ -37,7 +37,7 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 	}
 	
 	if (!in_array($profile_id, array("name", "username", "email")) && !array_key_exists($profile_id, $profile_fields)) {
-		profile_sync_log($sync_config->getGUID(), "Invalid profile identifier", true);
+		profile_sync_log($sync_config->getGUID(), "Invalid profile identifier: {$profile_id}", true);
 		return;
 	}
 	
@@ -49,7 +49,7 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 			$sync_source = new ProfileSyncCSV($datasource, $lastrun);
 			break;
 		default:
-			profile_sync_log($sync_config->getGUID(), "Invalid datasource type", true);
+			profile_sync_log($sync_config->getGUID(), "Invalid datasource type: {$datasource->datasource_type}", true);
 			return;
 			break;
 	}
@@ -90,6 +90,9 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 		
 		if (($create_user_name === false) || ($create_user_username === false) || ($create_user_email === false)) {
 			profile_sync_log($sync_config->getGUID(), "Missing information to create users");
+			profile_sync_log($sync_config->getGUID(), "- name: {$create_user_name}");
+			profile_sync_log($sync_config->getGUID(), "- email: {$create_user_email}");
+			profile_sync_log($sync_config->getGUID(), "- username: {$create_user_username}");
 			$create_user = false;
 		}
 	}

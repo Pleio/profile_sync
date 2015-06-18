@@ -193,9 +193,9 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 			
 			try {
 				// convert to utf-8
-				$username = profile_sync_convert_string_encoding($source_row[$create_user_username]);
-				$name = profile_sync_convert_string_encoding($source_row[$create_user_name]);
-				$email = profile_sync_convert_string_encoding($source_row[$create_user_email]);
+				$username = profile_sync_filter_var($source_row[$create_user_username]);
+				$name = profile_sync_filter_var($source_row[$create_user_name]);
+				$email = profile_sync_filter_var($source_row[$create_user_email]);
 				
 				$user_guid = register_user($username, $pwd, $name, $email);
 				if (!empty($user_guid)) {
@@ -218,7 +218,7 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 					}
 				}
 			} catch (RegistrationException $r) {
-				$name = profile_sync_convert_string_encoding($source_row[$create_user_name]);
+				$name = profile_sync_filter_var($source_row[$create_user_name]);
 				profile_sync_log($sync_config->getGUID(), "Failure creating user: {$name} - {$r->getMessage()}");
 			}
 		}
@@ -280,7 +280,7 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 			}
 			
 			$value = elgg_extract($datasource_col, $source_row);
-			$value = profile_sync_convert_string_encoding($value);
+			$value = profile_sync_filter_var($value);
 			
 			switch ($profile_field) {
 				case "email":
@@ -671,7 +671,7 @@ function profile_sync_find_user($profile_field, $field_value, ElggObject $sync_c
 		return false;
 	}
 	
-	$field_value = profile_sync_convert_string_encoding($field_value);
+	$field_value = profile_sync_filter_var($field_value);
 	if (empty($field_value)) {
 		return false;
 	}
@@ -725,4 +725,44 @@ function profile_sync_find_user($profile_field, $field_value, ElggObject $sync_c
 	}
 	
 	return $user;
+}
+
+/**
+ * Do the same as get_input() and /action/profile/edit on sync data values
+ *
+ * @param string $value the value to filter
+ *
+ * @see get_input()
+ *
+ * @return string
+ */
+function profile_sync_filter_var($value) {
+	
+	// convert to UTF-8
+	$value = profile_sync_convert_string_encoding($value);
+	
+	// filter tags
+	$value = filter_tags($value);
+	
+	// correct html encoding
+	if (is_array($value)) {
+		array_walk_recursive($value, 'profile_sync_array_decoder');
+	} else {
+		$value = _elgg_html_decode($value);
+	}
+	
+	return $value;
+}
+
+/**
+ * Wrapper for recursive array walk decoding
+ *
+ * @param string $value the value of array_walk_recursive
+ *
+ * @see array_walk_recursive()
+ *
+ * @return void
+ */
+function profile_sync_array_decoder(&$value) {
+	$value = _elgg_html_decode($value);
 }

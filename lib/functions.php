@@ -130,6 +130,10 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 	$ia = elgg_set_ignore_access(true);
 	$site = elgg_get_site_entity();
 	
+	// we want to cache entity metadata on first __get()
+	$metadata_cache = elgg_get_metadata_cache();
+	$metadata_cache->setIgnoreAccess(false);
+	
 	$counters = array(
 		"source rows" => 0,
 		"empty source id" => 0,
@@ -424,7 +428,9 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 					
 					// remove existing value
 					if (empty($value)) {
-						unset($user->$profile_field);
+						if (isset($user->$profile_field)) {
+							unset($user->$profile_field);
+						}
 						continue(2);
 					}
 					
@@ -435,15 +441,7 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 					}
 					
 					// get the access of existing profile data
-					if (isset($user->$profile_field)) {
-						$metadata_options = array(
-							"guid" => $user->getGUID(),
-							"metadata_name" => $profile_field,
-							"limit" => 1
-						);
-						$metadata = elgg_get_metadata($metadata_options);
-						$access = (int) $metadata[0]->access_id;
-					}
+					$access = profile_sync_get_profile_field_access($user->getGUID(), $profile_field, $access);
 					
 					// save new value
 					$user->setMetadata($profile_field, $value, '', false, $user->getGUID(), $access);
@@ -460,6 +458,10 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 			'datasource' => $datasource
 		);
 		elgg_trigger_event('update_user', 'profile_sync', $update_event_params);
+		
+		// cache cleanup
+		_elgg_invalidate_cache_for_entity($user->getGUID());
+		$metadata_cache->clear($user->getGUID());
 	}
 	
 	profile_sync_log($sync_config->getGUID(), PHP_EOL . "End processing: " . date(elgg_echo("friendlytime:date_format")) . PHP_EOL);
@@ -467,8 +469,10 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 		profile_sync_log($sync_config->getGUID(), $name . ": " . $count);
 	}
 	
+	// close logfile
 	profile_sync_log($sync_config->getGUID(), null, true);
 	
+	// save last run
 	$sync_config->lastrun = time();
 	
 	// cleanup datasource cache
@@ -477,6 +481,7 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 	$DB_QUERY_CACHE = $query_backup;
 	// restore access
 	elgg_set_ignore_access($ia);
+	$metadata_cache->unsetIgnoreAccess();
 }
 
 /**
@@ -696,7 +701,7 @@ function profile_sync_find_user($profile_field, $field_value, ElggObject $sync_c
 		case "name":
 			$options = array(
 				"type" => "user",
-				"limit" => 2,
+				"limit" => false,
 				"joins" => array("JOIN " . $dbprefix . "users_entity ue ON e.guid = ue.guid"),
 				"wheres" => array("ue.name LIKE '" . sanitise_string($field_value) . "'")
 			);
@@ -711,7 +716,7 @@ function profile_sync_find_user($profile_field, $field_value, ElggObject $sync_c
 		default:
 			$options = array(
 				"type" => "user",
-				"limit" => 2,
+				"limit" => false,
 				"metadata_name_value_pairs" => array(
 					"name" => $profile_field,
 					"value" => $field_value
@@ -768,4 +773,53 @@ function profile_sync_filter_var($value) {
  */
 function profile_sync_array_decoder(&$value) {
 	$value = _elgg_html_decode($value);
+}
+
+/**
+ * Get the access of a profile field (if exists) for the given user
+ *
+ * @param int    $user_guid      the user_guid to check
+ * @param string $profile_field  the name of the profile field
+ * @param int    $default_access the default access if profile field doesn't exist for the user
+ *
+ * @return int
+ */
+function profile_sync_get_profile_field_access($user_guid, $profile_field, $default_access) {
+	static $field_access;
+	static $running_user_guid;
+	
+	$user_guid = sanitise_int($user_guid, false);
+	$default_access = sanitise_int($default_access);
+	
+	if (empty($user_guid)) {
+		return $default_access;
+	}
+	
+	if (empty($profile_field) || !is_string($profile_field)) {
+		return $default_access;
+	}
+	
+	$update = ($running_user_guid !== $user_guid);
+	
+	if ($update) {
+		$field_access = array();
+		$running_user_guid = $user_guid;
+		
+		$profile_fields = elgg_get_config('profile_fields');
+		$profile_names = array_keys($profile_fields);
+		
+		$options = array(
+			'guid' => $user_guid,
+			'metadata_names' => $profile_names,
+			'limit' => false
+		);
+		$metadata = elgg_get_metadata($options);
+		if (!empty($metadata)) {
+			foreach ($metadata as $md) {
+				$field_access[$md->name] = (int) $md->access_id;
+			}
+		}
+	}
+	
+	return elgg_extract($profile_field, $field_access, $default_access);
 }

@@ -440,6 +440,8 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 						continue(2);
 					}
 					
+					profile_sync_log($sync_config->getGUID(), "Updating {$profile_field} with value {$value} old value {$user->$profile_field}");
+					
 					// get the access of existing profile data
 					$access = profile_sync_get_profile_field_access($user->getGUID(), $profile_field, $access);
 					
@@ -756,7 +758,7 @@ function profile_sync_filter_var($value) {
 	if (is_array($value)) {
 		array_walk_recursive($value, 'profile_sync_array_decoder');
 	} else {
-		$value = _elgg_html_decode($value);
+		$value = trim(_elgg_html_decode($value));
 	}
 	
 	return $value;
@@ -772,7 +774,7 @@ function profile_sync_filter_var($value) {
  * @return void
  */
 function profile_sync_array_decoder(&$value) {
-	$value = _elgg_html_decode($value);
+	$value = trim(_elgg_html_decode($value));
 }
 
 /**

@@ -1,6 +1,6 @@
 <?php
 
-admin_gatekeeper();
+elgg_admin_gatekeeper();
 
 $guid = (int) get_input("guid");
 $entity = get_entity($guid);
@@ -35,7 +35,3 @@ foreach ($files as $file => $datetime) {
 $content .= "</table>";
 
 echo elgg_view_module("inline", elgg_echo("profile_sync:sync_logs:title", array($entity->title)), $content, array("class" => "profile-sync-logs-wrapper"));
-?>
-<script>
-	elgg.ui.lightbox_init();
-</script>

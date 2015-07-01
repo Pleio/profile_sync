@@ -115,14 +115,14 @@ $body .= "</div>";
 // unique fields to match
 $body .= "<div class='mbs'>";
 $body .= "<label>" . elgg_echo("profile_sync:admin:sync_configs:edit:unique_id") . "</label><br />";
-$body .= elgg_view("input/dropdown", array(
+$body .= elgg_view("input/select", array(
 	"name" => "datasource_id",
 	"options_values" => $datasource_columns,
 	"value" => $datasource_id,
 	"required" => true
 ));
 $body .= elgg_view_icon("arrow-right");
-$body .= elgg_view("input/dropdown", array(
+$body .= elgg_view("input/select", array(
 	"name" => "profile_id",
 	"options_values" => $profile_columns_id,
 	"value" => $profile_id,
@@ -134,13 +134,13 @@ $body .= "</div>";
 $body .= "<div class='mbs'>";
 $body .= "<label>" . elgg_echo("profile_sync:admin:sync_configs:edit:unique_id_fallback") . "</label>";
 $body .= "<div class='elgg-subtext'>" . elgg_echo("profile_sync:admin:sync_configs:edit:unique_id_fallback:description") . "</div>";
-$body .= elgg_view("input/dropdown", array(
+$body .= elgg_view("input/select", array(
 	"name" => "datasource_id_fallback",
 	"options_values" => $datasource_columns,
 	"value" => $datasource_id_fallback
 ));
 $body .= elgg_view_icon("arrow-right");
-$body .= elgg_view("input/dropdown", array(
+$body .= elgg_view("input/select", array(
 	"name" => "profile_id_fallback",
 	"options_values" => $profile_columns_id,
 	"value" => $profile_id_fallback
@@ -174,13 +174,13 @@ if (!empty($sync_config)) {
 		$always_override = (int) elgg_extract("always_override", $profile_config);
 		
 		$body .= "<tr>";
-		$body .= "<td>" . elgg_view("input/dropdown", array(
+		$body .= "<td>" . elgg_view("input/select", array(
 			"name" => "datasource_cols[]",
 			"options_values" => $datasource_columns,
 			"value" => $datasource_name
 		)) . "</td>";
 		$body .= "<td>" . elgg_view_icon("arrow-right") . "</td>";
-		$body .= "<td>" . elgg_view("input/dropdown", array(
+		$body .= "<td>" . elgg_view("input/select", array(
 			"name" => "profile_cols[]",
 			"options_values" => $profile_columns,
 			"value" => $profile_name
@@ -189,7 +189,7 @@ if (!empty($sync_config)) {
 			"name" => "access[]",
 			"value" => $access
 		)) . "</td>";
-		$body .= "<td class='center'>" . elgg_view("input/dropdown", array(
+		$body .= "<td class='center'>" . elgg_view("input/select", array(
 			"name" => "always_override[]",
 			"value" => $always_override,
 			"options_values" => $override_options
@@ -198,17 +198,17 @@ if (!empty($sync_config)) {
 	}
 } else {
 	$body .= "<tr>";
-	$body .= "<td>" . elgg_view("input/dropdown", array(
+	$body .= "<td>" . elgg_view("input/select", array(
 		"name" => "datasource_cols[]",
 		"options_values" => $datasource_columns
 	)) . "</td>";
 	$body .= "<td>" . elgg_view_icon("arrow-right") . "</td>";
-	$body .= "<td>" . elgg_view("input/dropdown", array(
+	$body .= "<td>" . elgg_view("input/select", array(
 		"name" => "profile_cols[]",
 		"options_values" => $profile_columns
 	)) . "</td>";
 	$body .= "<td>" . elgg_view("input/access", array("name" => "access[]")) . "</td>";
-	$body .= "<td class='center'>" . elgg_view("input/dropdown", array(
+	$body .= "<td class='center'>" . elgg_view("input/select", array(
 		"name" => "always_override[]",
 		"options_values" => $override_options
 	)) . "</td>";
@@ -216,17 +216,17 @@ if (!empty($sync_config)) {
 }
 
 $body .= "<tr id='profile-sync-field-config-template' class='hidden'>";
-$body .= "<td>" . elgg_view("input/dropdown", array(
+$body .= "<td>" . elgg_view("input/select", array(
 	"name" => "datasource_cols[]",
 	"options_values" => $datasource_columns
 )) . "</td>";
 $body .= "<td>" . elgg_view_icon("arrow-right") . "</td>";
-$body .= "<td>" . elgg_view("input/dropdown", array(
+$body .= "<td>" . elgg_view("input/select", array(
 	"name" => "profile_cols[]",
 	"options_values" => $profile_columns
 )) . "</td>";
 $body .= "<td>" . elgg_view("input/access", array("name" => "access[]")) . "</td>";
-$body .= "<td class='center'>" . elgg_view("input/dropdown", array(
+$body .= "<td class='center'>" . elgg_view("input/select", array(
 	"name" => "always_override[]",
 	"options_values" => $override_options
 )) . "</td>";
@@ -248,7 +248,7 @@ $body .= "</div>";
 // schedule
 $body .= "<div class='mbs'>";
 $body .= "<label>" . elgg_echo("profile_sync:admin:sync_configs:edit:schedule") . "</label>";
-$body .= elgg_view("input/dropdown", array("name" => "schedule", "value" => $schedule, "options_values" => $schedule_options, "class" => "mls"));
+$body .= elgg_view("input/select", array("name" => "schedule", "value" => $schedule, "options_values" => $schedule_options, "class" => "mls"));
 $body .= "</div>";
 
 // special actions

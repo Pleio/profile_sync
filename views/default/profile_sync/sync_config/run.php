@@ -3,15 +3,13 @@
  * Start a sync config now
  */
 
-admin_gatekeeper();
+elgg_admin_gatekeeper();
 
 $guid = (int) get_input("guid");
 
 echo elgg_view("graphics/ajax_loader", array("hidden" => false));
 
-echo "<div class='center'>";
-echo elgg_echo("profile_sync:sync_config:processing");
-echo "</div>";
+echo elgg_format_element("div", array("class" => "center"), elgg_echo("profile_sync:sync_config:processing"));
 
 ?>
 <script>
@@ -22,12 +20,12 @@ echo "</div>";
 		success: function(json, one, two, three) {
 			if (json && json.system_messages) {
 				if (json.system_messages.error && json.system_messages.error.length) {
-					$.fancybox.close();
+					$.colorbox.close();
 					return;
 				}
 			}
 			
-			elgg.forward("admin/administer_utilities/profile_sync");
+			elgg.forward("admin/configure_utilities/profile_sync");
 		}
 	});
 </script>

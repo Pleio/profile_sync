@@ -31,7 +31,7 @@ $form_body .= "</div>";
 
 $form_body .= "<div>";
 $form_body .= "<label>" . elgg_echo("profile_sync:admin:datasources:type") . "</label>";
-$form_body .= elgg_view("input/dropdown", array(
+$form_body .= elgg_view("input/select", array(
 	"id" => "profile-sync-edit-datasource-type",
 	"name" => "params[datasource_type]",
 	"options_values" => $type_options,

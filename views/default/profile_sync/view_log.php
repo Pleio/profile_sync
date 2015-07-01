@@ -1,6 +1,6 @@
 <?php
 
-admin_gatekeeper();
+elgg_admin_gatekeeper();
 
 $guid = (int) get_input("guid");
 $filename = get_input("file");
@@ -32,7 +32,3 @@ $content .= elgg_view("output/url", array(
 ));
 
 echo elgg_view_module("inline", elgg_echo("profile_sync:view_log:title", array($entity->title, $datetime)), $content, array("class" => "profile-sync-log-wrapper"));
-?>
-<script>
-	elgg.ui.lightbox_init();
-</script>

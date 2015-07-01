@@ -53,7 +53,7 @@ elgg.profile_sync.admin.check_ban_user = function(event) {
 		$(".profile-sync-edit-sync-fields").show();
 	}
 	
-	$.fancybox.resize();
+	$.colorbox.resize();
 };
 
 /**
@@ -84,7 +84,7 @@ elgg.profile_sync.admin.check_unban_user = function(event) {
 		$(".profile-sync-edit-sync-fields").show();
 	}
 	
-	$.fancybox.resize();
+	$.colorbox.resize();
 };
 
 /**
@@ -97,21 +97,24 @@ elgg.profile_sync.admin.add_field_config = function() {
 	$clone.removeAttr("id").removeClass("hidden");
 	$clone.insertBefore("#profile-sync-field-config-template");
 
-	$.fancybox.resize();
+	$.colorbox.resize();
 
 	return false
 };
 
 elgg.profile_sync.admin.datasource_type = function() {
-	var $form = $(this).parents("form");
+	var $form = $('form.elgg-form-profile-sync-datasource-edit');
 	
 	$form.find(".profile-sync-datasource-type").hide();
-	var type = $(this).val();
+	var type = $('#profile-sync-edit-datasource-type').val();
 	if (type !== "") {
 		$form.find(".profile-sync-datasource-type-" + type).show();
 	}
 
-	$.fancybox.resize();
+	$form.find('[required]').attr('disabled', 'disabled');
+	$form.find('[required]:visible').removeAttr('disabled');
+
+	$.colorbox.resize();
 };
 
 /**
@@ -121,11 +124,12 @@ elgg.profile_sync.admin.datasource_type = function() {
  */
 elgg.profile_sync.admin.init = function() {
 
-	$("#profile-sync-edit-sync-create-user").live("change", elgg.profile_sync.admin.check_create_user);
-	$("#profile-sync-edit-sync-ban-user").live("change", elgg.profile_sync.admin.check_ban_user);
-	$("#profile-sync-edit-sync-unban-user").live("change", elgg.profile_sync.admin.check_unban_user);
-	$("#profile-sync-edit-datasource-type").live("change", elgg.profile_sync.admin.datasource_type);
-	$("#profile-sync-edit-sync-add-field").live("click", elgg.profile_sync.admin.add_field_config);
+	$(document).on("change", "#profile-sync-edit-sync-create-user", elgg.profile_sync.admin.check_create_user);
+	$(document).on("change", "#profile-sync-edit-sync-ban-user", elgg.profile_sync.admin.check_ban_user);
+	$(document).on("change", "#profile-sync-edit-sync-unban-user", elgg.profile_sync.admin.check_unban_user);
+	$(document).on("change", "#profile-sync-edit-datasource-type", elgg.profile_sync.admin.datasource_type);
+	$(document).on("click", "#profile-sync-edit-sync-add-field", elgg.profile_sync.admin.add_field_config);
+	$(document).bind("cbox_complete", elgg.profile_sync.admin.datasource_type);
 };
 
 

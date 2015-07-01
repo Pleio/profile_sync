@@ -23,7 +23,8 @@ echo "<div>";
 echo "<label>" . elgg_echo("profile_sync:admin:datasources:edit:csv:location") . "</label>";
 echo elgg_view("input/text", array(
 	"name" => "params[csv_location]",
-	"value" => $csv_location
+	"value" => $csv_location,
+	"required" => true
 ));
 echo "</div>";
 
@@ -32,7 +33,8 @@ echo "<label>" . elgg_echo("profile_sync:admin:datasources:edit:csv:delimiter") 
 echo elgg_view("input/text", array(
 	"name" => "params[csv_delimiter]",
 	"value" => $csv_delimiter,
-	"maxlength" => 1
+	"maxlength" => 1,
+	"required" => true
 ));
 echo "</div>";
 

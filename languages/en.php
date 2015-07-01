@@ -1,9 +1,9 @@
 <?php
 
-$english = array(
+return array(
 
 	'profile_sync' => "Profile Sync",
-	'admin:administer_utilities:profile_sync' => "Profile Sync",
+	'admin:configure_utilities:profile_sync' => "Profile Sync",
 	'item:object:profile_sync_datasource' => "Profile Sync Datasource",
 	'item:object:profile_sync_config' => "Profile Sync Configuration",
 	
@@ -103,5 +103,3 @@ $english = array(
 	
 	'profile_sync:action:sync_config:run' => "Synchronisation run",
 );
-
-add_translation("en", $english);

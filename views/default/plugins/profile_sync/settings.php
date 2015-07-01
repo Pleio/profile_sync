@@ -12,7 +12,7 @@ $memory_limit_options = array(
 
 echo "<div>";
 echo elgg_echo("profile_sync:settings:memory_limit");
-echo elgg_view("input/dropdown", array(
+echo elgg_view("input/select", array(
 	"name" => "params[memory_limit]",
 	"value" => $plugin->memory_limit,
 	"options_values" => $memory_limit_options,

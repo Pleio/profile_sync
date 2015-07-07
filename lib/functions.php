@@ -291,8 +291,16 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 					if (!is_email_address($value)) {
 						continue(2);
 					}
-				case "name":
 				case "username":
+					if ($override && ($user->username !== $value)) {
+						// new username, check for availability
+						if (get_user_by_username($value)) {
+							// already taken
+							profile_sync_log($sync_config->getGUID(), "New username: {$value} for {$user->name} is already taken");
+							continue(2);
+						}
+					}
+				case "name":
 					if (empty($value)) {
 						$counters["empty attributes"]++;
 						profile_sync_log($sync_config->getGUID(), "Empty user attribute: {$datasource_col} for user {$user->name}");
@@ -302,6 +310,12 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 					if (isset($user->$profile_field) && !$override) {
 						// don't override profile field
 // 						profile_sync_log($sync_config->getGUID(), "Profile field already set: " . $profile_field . " for user " . $user->name);
+						continue(2);
+					}
+					
+					// check for the same value
+					if ($user->$profile_field === $value) {
+						// same value, no need to update
 						continue(2);
 					}
 					

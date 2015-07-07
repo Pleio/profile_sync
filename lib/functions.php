@@ -454,7 +454,7 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 						continue(2);
 					}
 					
-					profile_sync_log($sync_config->getGUID(), "Updating {$profile_field} with value {$value} old value {$user->$profile_field}");
+// 					profile_sync_log($sync_config->getGUID(), "Updating {$profile_field} with value {$value} old value {$user->$profile_field}");
 					
 					// get the access of existing profile data
 					$access = profile_sync_get_profile_field_access($user->getGUID(), $profile_field, $access);

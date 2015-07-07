@@ -171,7 +171,7 @@ if (!empty($sync_config)) {
 	foreach ($sync_match as $datasource_name => $profile_config) {
 		$profile_name = elgg_extract("profile_field", $profile_config);
 		$access = (int) elgg_extract("access", $profile_config);
-		$always_override = (int) elgg_extract("always_override", $profile_config);
+		$always_override = (int) elgg_extract("always_override", $profile_config, true);
 		
 		$body .= "<tr>";
 		$body .= "<td>" . elgg_view("input/dropdown", array(

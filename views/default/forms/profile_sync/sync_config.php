@@ -285,7 +285,7 @@ $body .= "<label>" . elgg_view("input/checkbox", array(
 	"id" => "profile-sync-edit-sync-unban-user",
 	"name" => "unban_user",
 	"value" => 1,
-	"checked" => $ban_user
+	"checked" => $unban_user
 ));
 $body .= elgg_echo("profile_sync:admin:sync_configs:edit:unban_user") . "</label>";
 $body .= "<div class='elgg-subtext'>" . elgg_echo("profile_sync:admin:sync_configs:edit:unban_user:description") . "</div>";

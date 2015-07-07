@@ -162,3 +162,31 @@ function profile_sync_cron_handler($hook, $type, $return, $params) {
 	// reset memory limit
 	ini_set("memory_limit", $old_memory_limit);
 }
+
+/**
+ * Disallow commenting on profile_sync objects
+ *
+ * @param string $hook   the name of the hook
+ * @param string $type   the type of the hook
+ * @param string $return current return value
+ * @param array  $params parameters
+ *
+ * @return void
+ */
+function profile_sync_can_comment($hook, $type, $return, $params) {
+	
+	if ($return === false) {
+		return;
+	}
+	
+	$entity = elgg_extract('entity', $params);
+	if (empty($entity) || !($entity instanceof ElggObject)) {
+		return;
+	}
+	
+	if (!elgg_instanceof($entity, 'object', 'profile_sync_datasource') && !elgg_instanceof($entity, 'object', 'profile_sync_config')) {
+		return;
+	}
+	
+	return false;
+}

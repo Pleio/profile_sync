@@ -34,6 +34,7 @@ function profile_sync_init() {
 	// register hooks
 	elgg_register_plugin_hook_handler("register", "menu:entity", "profile_sync_entity_register_menu");
 	elgg_register_plugin_hook_handler("cron", "all", "profile_sync_cron_handler");
+	elgg_register_plugin_hook_handler("permissions_check:comment", "object", "profile_sync_can_comment");
 	
 	// register actions
 	elgg_register_action("profile_sync/datasource/edit", dirname(__FILE__) . "/actions/datasource/edit.php", "admin");

@@ -1,10 +1,24 @@
 <?php
 /**
- * This file was created by Translation Editor v2.0.1
- * On 2015-02-26 15:52
+ * This file was created by Translation Editor v4.0
+ * On 2015-07-07 15:00
  */
 
 return array (
+  'profile_sync:interval:friendly' => 'Laatste keer uitgevoerd',
+  'profile_sync:interval:date' => 'Datum',
+  'profile_sync:interval:hourly' => 'Elk uur',
+  'profile_sync:interval:daily' => 'Elke dag',
+  'profile_sync:interval:weekly' => 'Elke week',
+  'profile_sync:interval:monthly' => 'Elke maand',
+  'profile_sync:interval:yearly' => 'Elk jaar',
+  'profile_sync:admin:sync_configs:edit:datasource_column' => 'Databron kolom',
+  'profile_sync:admin:sync_configs:edit:profile_column' => 'Profiel veld',
+  'profile_sync:admin:sync_configs:edit:profile_column:icon_full' => 'Gebruikers avatar (volledig pad)',
+  'profile_sync:admin:sync_configs:edit:profile_column:icon_relative' => 'Gebruikers avatar (relatief pad)',
+  'profile_sync:admin:sync_configs:edit:always_override' => 'Altijd overschrijven',
+  'profile_sync:admin:sync_configs:edit:unique_id_fallback' => 'Uitval identificatie veld',
+  'profile_sync:admin:sync_configs:edit:unique_id_fallback:description' => 'Als er geen gebruiker kon worden gevonden met het unieke veld, probeer dit uitval veld (optioneel).',
   'profile_sync:sync_config:processing' => 'Bezig met verwerken.....',
   'profile_sync:admin:sync_configs:edit:log_cleanup_count' => 'Aantal logbestanden om te behouden',
   'profile_sync:admin:sync_configs:edit:log_cleanup_count:description' => 'Als je oudere logbestanden wilt opruimen kun je hier aangeven hoeveel logbestanden je wilt behouden. Laat dit veld leeg om alle logbestanden te behouden.',

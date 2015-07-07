@@ -1,7 +1,7 @@
 <?php
 
 $guid = (int) get_input("guid");
-$params = get_input("params");
+$params = get_input("params", array(), false);
 $title = get_input("title");
 
 if (!is_array($params)) {
@@ -39,7 +39,17 @@ if ($entity) {
 	
 	$entity->title = $title;
 	
+	// some inputs need to be unfiltered
+	$unfiltered_params = array(
+		'dbquery',
+	);
+	
 	foreach ($params as $key => $param) {
+		// filter input
+		if (!in_array($key, $unfiltered_params)) {
+			$param = filter_tags($param);
+		}
+		
 		if (empty($param)) {
 			unset($entity->{$key});
 		} else {

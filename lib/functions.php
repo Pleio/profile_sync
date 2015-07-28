@@ -128,8 +128,11 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 	$site = elgg_get_site_entity();
 	
 	// we want to cache entity metadata on first __get()
-	$metadata_cache = _elgg_get_metadata_cache();
-	$metadata_cache->setIgnoreAccess(false);
+	$metadata_cache = _elgg_services()->metadataCache;
+	if ($metadata_cache instanceof ElggVolatileMetadataCache) {
+		// elgg 1.10
+		$metadata_cache->setIgnoreAccess(false);
+	}
 	
 	$counters = array(
 		"source rows" => 0,
@@ -494,7 +497,14 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 	_elgg_services()->db->enableQueryCache();
 	// restore access
 	elgg_set_ignore_access($ia);
-	$metadata_cache->unsetIgnoreAccess();
+	
+	if ($metadata_cache instanceof ElggVolatileMetadataCache) {
+		// elgg 1.10
+		$metadata_cache->unsetIgnoreAccess();
+	} elseif ($metadata_cache instanceof \Elgg\Cache\MetadataCache) {
+		// elgg 1.11+
+		$metadata_cache->clearAll();
+	}
 }
 
 /**

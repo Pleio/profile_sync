@@ -93,15 +93,13 @@ function profile_sync_entity_register_menu($hook, $type, $return, $params) {
 			"link_class" => "elgg-lightbox"
 		));
 		
-		if ($entity->lastrun) {
-			$return[] = ElggMenuItem::factory(array(
-				"name" => "logs",
-				"text" => elgg_echo("profile_sync:sync_config:logs"),
-				"href" => "ajax/view/profile_sync/sync_logs/?guid=" . $entity->getGUID(),
-				"priority" => 100,
-				"link_class" => "elgg-lightbox"
-			));
-		}
+		$return[] = ElggMenuItem::factory(array(
+			"name" => "logs",
+			"text" => elgg_echo("profile_sync:sync_config:logs"),
+			"href" => "ajax/view/profile_sync/sync_logs/?guid=" . $entity->getGUID(),
+			"priority" => 100,
+			"link_class" => "elgg-lightbox"
+		));
 		
 	}
 	

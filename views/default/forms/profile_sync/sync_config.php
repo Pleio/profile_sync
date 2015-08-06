@@ -149,7 +149,7 @@ $body .= "</div>";
 
 // fields to sync
 $field_class = "profile-sync-edit-sync-fields";
-if ($ban_user) {
+if ($ban_user || $unban_user) {
 	$field_class .= " hidden";
 }
 $body .= "<div class='" . $field_class . "'>";

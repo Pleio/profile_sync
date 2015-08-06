@@ -1,10 +1,11 @@
 <?php
 /**
  * This file was created by Translation Editor v4.0
- * On 2015-07-07 15:00
+ * On 2015-08-06 15:22
  */
 
 return array (
+  'profile_sync:sync_config:sync_status:unban' => 'Gebruikers deblokkeren',
   'profile_sync:interval:friendly' => 'Laatste keer uitgevoerd',
   'profile_sync:interval:date' => 'Datum',
   'profile_sync:interval:hourly' => 'Elk uur',

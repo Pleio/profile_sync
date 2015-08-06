@@ -17,6 +17,8 @@ if ($entity->create_user) {
 	$title .= " - " . elgg_echo("profile_sync:sync_config:sync_status:create");
 } elseif ($entity->ban_user) {
 	$title .= " - " . elgg_echo("profile_sync:sync_config:sync_status:ban");
+} elseif ($entity->unban_user) {
+	$title .= " - " . elgg_echo("profile_sync:sync_config:sync_status:unban");
 } else {
 	$title .= " - " . elgg_echo("profile_sync:sync_config:sync_status:default");
 }

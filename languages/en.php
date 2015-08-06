@@ -84,6 +84,7 @@ return array(
 	
 	'profile_sync:sync_config:sync_status:create' => "Sync data and create users",
 	'profile_sync:sync_config:sync_status:ban' => "Ban users",
+	'profile_sync:sync_config:sync_status:unban' => "Unban users",
 	'profile_sync:sync_config:sync_status:default' => "Sync data",
 	
 	// actions

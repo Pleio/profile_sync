@@ -460,11 +460,17 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 					$access = profile_sync_get_profile_field_access($user->getGUID(), $profile_field, $access);
 					
 					// save new value
-// 					$user->setMetadata($profile_field, $value, '', false, $user->getGUID(), $access);
-					
 					// need to delete and recreate as there is no way to update the field and keep access intact in Elgg 1.8
 					unset($user->$profile_field);
-					create_metadata($user->getGUID(), $profile_field, $value, '', $user->getGUID(), $access, true);
+					if (is_array($value)) {
+						$multiple = false;
+						foreach ($value as $interval) {
+							create_metadata($user->getGUID(), $profile_field, $interval, '', $user->getGUID(), $access, $multiple);
+							$multiple = true;
+						}
+					} else {
+						create_metadata($user->getGUID(), $profile_field, $value, '', $user->getGUID(), $access);
+					}
 					
 					break;
 			}

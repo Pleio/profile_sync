@@ -6,10 +6,42 @@
 // load libs
 require_once(dirname(__FILE__) . "/lib/functions.php");
 require_once(dirname(__FILE__) . "/lib/hooks.php");
-@include_once(dirname(__FILE__) . "/vendor/autoload.php");
 
 // register default Elgg events
+elgg_register_event_handler("plugins_boot", "system", "profile_sync_boot");
 elgg_register_event_handler("init", "system", "profile_sync_init");
+
+/**
+ * Called during plugins_boot (before init)
+ *
+ * @return void
+ */
+function profile_sync_boot() {
+	
+	// try to load composer autoloader
+	if (file_exists(dirname(__FILE__) . "/vendor/autoload.php")) {
+		// plugins own version of composer (supplied with the plugin)
+		require_once(dirname(__FILE__) . "/vendor/autoload.php");
+	} elseif (file_exists(dirname(dirname(dirname(__FILE__))) . "/vendor/autoload.php")) {
+		// core autoloader
+		require_once(dirname(dirname(dirname(__FILE__))) . "/vendor/autoload.php");
+	} else {
+		// missing required files, so disable the plugin
+		elgg_add_admin_notice('profile_sync_missing_autoload', 'No composer autoloader found. This is required for the operation of this plugin, please run composer install. Or contact your system administrator.');
+		
+		$plugin = elgg_get_plugin_from_id('profile_sync');
+		$plugin->deactivate();
+	}
+	
+	// is the autoloader working correctly
+	if (!class_exists('\ColdTrick\ProfileSync\Logger')) {
+		// missing required files, so disable the plugin
+		elgg_add_admin_notice('profile_sync_incomplete_autoload', 'The composer autoloader is not up-to-date. please run composer install. Or contact your system administrator.');
+		
+		$plugin = elgg_get_plugin_from_id('profile_sync');
+		$plugin->deactivate();
+	}
+}
 
 /**
  * Init function for Profile Sync

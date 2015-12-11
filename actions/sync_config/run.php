@@ -23,7 +23,11 @@ if (!empty($setting)) {
 	ini_set("memory_limit", $setting);
 }
 
+// start processing data
 profile_sync_proccess_configuration($entity);
+
+// close logfile
+profile_sync_close_log($entity->getGUID());
 
 // log cleanup
 profile_sync_cleanup_logs($entity);

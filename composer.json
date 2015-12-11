@@ -10,9 +10,18 @@
 	},
 	"require": {
 		"composer/installers": "^1.0.8",
+		"php": ">=5.3",
 		"ext-mysqli": "*"
 	},
 	"require-dev": {
 		"coldtrick/sniffs": "dev-master"
+	},
+	"suggest": {
+		"coldtrick/ws_pack": "dev-elgg1.8"
+	},
+	"autoload": {
+		"psr-4": {
+			"ColdTrick\\ProfileSync\\": "classes/ColdTrick/ProfileSync/"
+		}
 	}
 }

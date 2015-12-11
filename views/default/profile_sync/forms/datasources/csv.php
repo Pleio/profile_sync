@@ -8,7 +8,7 @@ $csv_first_row = false;
 $class = "hidden";
 
 $entity = elgg_extract("entity", $vars);
-if ($entity && ($entity->datasource_type === "csv")) {
+if (!empty($entity) && ($entity->datasource_type === "csv")) {
 	$csv_location = $entity->csv_location;
 	$csv_delimiter = $entity->csv_delimiter;
 	$csv_enclosure = $entity->csv_enclosure;

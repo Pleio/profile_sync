@@ -50,6 +50,8 @@ function profile_sync_entity_register_menu($hook, $type, $return, $params) {
 			elgg_load_js("lightbox");
 			elgg_load_css("lightbox");
 			
+			$datasource = $entity->getContainerEntity();
+			
 			foreach ($return as $key => $menu_item) {
 				$name = $menu_item->getName();
 				switch ($name) {
@@ -67,35 +69,35 @@ function profile_sync_entity_register_menu($hook, $type, $return, $params) {
 				}
 			}
 			
-			$schedule_text = elgg_echo("profile_sync:interval:" . $entity->schedule);
-			if ($entity->schedule == "manual") {
-				$schedule_text = elgg_echo("profile_sync:sync_configs:schedule:manual");
-			}
-			$return[] = ElggMenuItem::factory(array(
-				"name" => "sync_config_interval",
-				"text" => $schedule_text,
-				"href" => false,
-				"priority" => 10,
-			));
-			
-			$return[] = ElggMenuItem::factory(array(
-				"name" => "run",
-				"text" => elgg_echo("profile_sync:sync_config:run"),
-				"href" => "ajax/view/profile_sync/sync_config/run?guid=" . $entity->getGUID(),
-				"priority" => 50,
-				"is_action" => true,
-				"link_class" => "elgg-lightbox"
-			));
-			
-			if ($entity->lastrun) {
+			if ($datasource->datasource_type !== 'api') {
+				$schedule_text = elgg_echo("profile_sync:interval:" . $entity->schedule);
+				if ($entity->schedule == "manual") {
+					$schedule_text = elgg_echo("profile_sync:sync_configs:schedule:manual");
+				}
 				$return[] = ElggMenuItem::factory(array(
-					"name" => "logs",
-					"text" => elgg_echo("profile_sync:sync_config:logs"),
-					"href" => "ajax/view/profile_sync/sync_logs/?guid=" . $entity->getGUID(),
-					"priority" => 100,
+					"name" => "sync_config_interval",
+					"text" => $schedule_text,
+					"href" => false,
+					"priority" => 10,
+				));
+			
+				$return[] = ElggMenuItem::factory(array(
+					"name" => "run",
+					"text" => elgg_echo("profile_sync:sync_config:run"),
+					"href" => "ajax/view/profile_sync/sync_config/run?guid=" . $entity->getGUID(),
+					"priority" => 50,
+					"is_action" => true,
 					"link_class" => "elgg-lightbox"
 				));
 			}
+			
+			$return[] = ElggMenuItem::factory(array(
+				"name" => "logs",
+				"text" => elgg_echo("profile_sync:sync_config:logs"),
+				"href" => "ajax/view/profile_sync/sync_logs/?guid=" . $entity->getGUID(),
+				"priority" => 100,
+				"link_class" => "elgg-lightbox"
+			));
 			
 		}
 	}
@@ -148,7 +150,22 @@ function profile_sync_cron_handler($hook, $type, $return, $params) {
 	);
 	$batch = new ElggBatch("elgg_get_entities_from_metadata", $options);
 	foreach ($batch as $sync_config) {
+		
+		$datasource = $sync_config->getContainerEntity();
+		if (empty($datasource)) {
+			continue;
+		}
+		
+		if ($datasource->datasource_type === 'api') {
+			// this shouldn't happen, and isn't allowed
+			continue;
+		}
+		
+		// start processing data
 		profile_sync_proccess_configuration($sync_config);
+		
+		// close log file
+		profile_sync_close_log($sync_config->getGUID());
 		
 		// log cleanup
 		profile_sync_cleanup_logs($sync_config);
@@ -184,4 +201,39 @@ function profile_sync_can_comment($hook, $type, $return, $params) {
 	}
 	
 	return false;
+}
+
+/**
+ * Called during the init of the REST API
+ *
+ * @param string $hook   the name of the hook
+ * @param string $type   the type of the hook
+ * @param string $return current return value
+ * @param array  $params parameters
+ *
+ * @return void
+ */
+function profile_sync_rest_init($hook, $type, $return, $params) {
+	
+	expose_function(
+		'profile_sync.sync_data',
+		'profile_sync_process_api',
+		array(
+			'sync_config_id' => array(
+				'type' => 'int',
+				'required' => true,
+			),
+			'sync_secret' => array(
+				'type' => 'string',
+				'required' => true,
+			),
+			'profile_data' => array(
+				'type' => 'array',
+				'required' => true,
+			),
+		),
+		elgg_echo('profile_sync:rest:api:sync_data'),
+		'POST',
+		true // api auth
+	);
 }

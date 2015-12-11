@@ -15,7 +15,15 @@ $unban_user = false;
 $notify_user = false;
 $log_cleanup_count = "";
 
-$ps = false;
+// get field config
+$ps = profile_sync_get_datasource_handler($datasource);
+
+if (empty($ps)) {
+	echo elgg_view("output/longtext", array(
+		"value" => elgg_echo("profile_sync:admin:sync_configs:edit:no_datasource"),
+	));
+	return;
+}
 
 if (!empty($sync_config)) {
 	$title = $sync_config->title;
@@ -32,21 +40,6 @@ if (!empty($sync_config)) {
 	if (empty($log_cleanup_count)) {
 		$log_cleanup_count = "";
 	}
-}
-
-// get field config
-switch ($datasource->datasource_type) {
-	case "mysql":
-		$ps = new ProfileSyncMySQL($datasource);
-		break;
-	case "csv":
-		$ps = new ProfileSyncCSV($datasource);
-		break;
-}
-
-if (empty($ps)) {
-	echo elgg_view("output/longtext", array("value" => elgg_echo("profile_sync:admin:sync_configs:edit:no_datasource")));
-	return;
 }
 
 $datasource_cols = $ps->getColumns();
@@ -70,11 +63,19 @@ $override_options = array(
 echo "<div>";
 echo"<label class='mrs'>" . elgg_echo("profile_sync:admin:sync_configs:edit:datasource") . ":</label>";
 echo $datasource->title;
-echo elgg_view("input/hidden", array("name" => "datasource_guid", "value" => $datasource->getGUID()));
+echo elgg_view("input/hidden", array(
+	"name" => "datasource_guid",
+	 "value" => $datasource->getGUID(),
+));
 echo "</div>";
 
+// additional information
+echo elgg_view("profile_sync/sync_config/info", $vars);
+
 if (empty($datasource_cols) || empty($profile_fields)) {
-	echo elgg_view("output/longtext", array("value" => elgg_echo("profile_sync:admin:sync_configs:edit:no_columns")));
+	echo elgg_view("output/longtext", array(
+		"value" => elgg_echo("profile_sync:admin:sync_configs:edit:no_columns"),
+	));
 	return;
 }
 
@@ -90,6 +91,7 @@ $profile_columns = array(
 	"email" => elgg_echo("email"),
 	"user_icon_full_path" => elgg_echo("profile_sync:admin:sync_configs:edit:profile_column:icon_full"),
 	"user_icon_relative_path" => elgg_echo("profile_sync:admin:sync_configs:edit:profile_column:icon_relative"),
+	"user_icon_base64" => elgg_echo("profile_sync:admin:sync_configs:edit:profile_column:icon_base64"),
 );
 foreach ($profile_fields as $metadata_name => $type) {
 	$lan_key = "profile:" . $metadata_name;
@@ -103,13 +105,18 @@ foreach ($profile_fields as $metadata_name => $type) {
 $profile_columns_id = $profile_columns;
 unset($profile_columns_id["user_icon_full_path"]);
 unset($profile_columns_id["user_icon_relative_path"]);
+unset($profile_columns_id["user_icon_base64"]);
 
 $body = "";
 
 // unique title
 $body .= "<div class='mbs'>";
 $body .= "<label>" . elgg_echo("title") . "</label>";
-$body .= elgg_view("input/text", array("name" => "title", "value" => $title, "required" => true));
+$body .= elgg_view("input/text", array(
+	"name" => "title",
+	"value" => $title,
+	"required" => true,
+));
 $body .= "</div>";
 
 // unique fields to match
@@ -246,10 +253,17 @@ $body .= "</div>";
 $body .= "</div>";
 
 // schedule
-$body .= "<div class='mbs'>";
-$body .= "<label>" . elgg_echo("profile_sync:admin:sync_configs:edit:schedule") . "</label>";
-$body .= elgg_view("input/dropdown", array("name" => "schedule", "value" => $schedule, "options_values" => $schedule_options, "class" => "mls"));
-$body .= "</div>";
+if (!($ps instanceof ProfileSyncAPI)) {
+	$body .= "<div class='mbs'>";
+	$body .= "<label>" . elgg_echo("profile_sync:admin:sync_configs:edit:schedule") . "</label>";
+	$body .= elgg_view("input/dropdown", array(
+		"name" => "schedule",
+		"value" => $schedule,
+		"options_values" => $schedule_options,
+		"class" => "mls",
+	));
+	$body .= "</div>";
+}
 
 // special actions
 $body .= "<div class='mbs'>";
@@ -299,10 +313,13 @@ $body .= elgg_view("input/text", array(
 ));
 $body .= "<div class='elgg-subtext'>" . elgg_echo("profile_sync:admin:sync_configs:edit:log_cleanup_count:description") . "</div>";
 
-
+// footer
 $body .= "<div class='elgg-foot'>";
 if (!empty($sync_config)) {
-	$body .= elgg_view("input/hidden", array("name" => "guid", "value" => $sync_config->getGUID()));
+	$body .= elgg_view("input/hidden", array(
+		"name" => "guid",
+		"value" => $sync_config->getGUID(),
+	));
 }
 $body .= elgg_view("input/submit", array("value" => elgg_echo("save")));
 $body .= "</div>";

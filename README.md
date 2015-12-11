@@ -16,3 +16,11 @@ Features
 	- mysql
 	- csv
 - cron based profile sync schedules or manual syncs
+
+Requirements
+------------
+
+This plugin requires: 
+
+- PHP version: 5.3+
+- PHP extension: mysqli

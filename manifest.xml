@@ -21,5 +21,10 @@
 		<name>mysqli</name>
 	</requires>
 	
+	<suggests>
+		<type>plugin</type>
+		<name>ws_pack</name>
+	</suggests>
+	
 	<category>ColdTrick</category>
 </plugin_manifest>

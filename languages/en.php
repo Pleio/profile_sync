@@ -16,7 +16,7 @@ $english = array(
 	'profile_sync:interval:yearly' => "Yearly",
 	
 	'profile_sync:csv:column' => "Column %d: %s",
-
+	
 	'profile_sync:settings:memory_limit' => "Set PHP memory limit for sync jobs",
 	'profile_sync:settings:memory_limit:description' => "Increase the limit if your sync jobs fail and you find Out of Memory error in the errorlog.",
 	'profile_sync:settings:memory_limit:64' => "64M",
@@ -38,6 +38,7 @@ $english = array(
 	'profile_sync:admin:datasources:type:choose' => "Pick a datasource type",
 	'profile_sync:admin:datasources:type:mysql' => "MySQL",
 	'profile_sync:admin:datasources:type:csv' => "CSV",
+	'profile_sync:admin:datasources:type:api' => "REST/API",
 	
 	'profile_sync:admin:datasources:edit:mysql:dbhost' => "Database host",
 	'profile_sync:admin:datasources:edit:mysql:dbport' => "Database port",
@@ -53,6 +54,11 @@ $english = array(
 	'profile_sync:admin:datasources:edit:csv:enclosure' => "Text enclosure",
 	'profile_sync:admin:datasources:edit:csv:first_row' => "First row contains headers",
 	
+	'profile_sync:admin:datasources:edit:api:description' => "The REST/API datasource type is different from the other datasource types in that it is not a datasource that requests (pulls) data, but the data is delivered (pushed). You need to have an application that can push data to the Elgg REST API.",
+	'profile_sync:admin:datasources:edit:api:disabled' => "The API has been disabled by the site administrator, so this datasource will not work.",
+	'profile_sync:admin:datasources:edit:api:available_fields' => "List the available fields",
+	'profile_sync:admin:datasources:edit:api:available_fields:description' => "Here you need to define the names of the fields that are being pushed to the API. This is required for further configuration. You can seperate the fields by using a comma or a new line.",
+	
 	'profile_sync:admin:sync_configs:edit:no_datasource' => "No datasource could be created.",
 	'profile_sync:admin:sync_configs:edit:no_columns' => "No columns found in the datasource.",
 	'profile_sync:admin:sync_configs:edit:datasource' => "Using datasource",
@@ -62,6 +68,7 @@ $english = array(
 	'profile_sync:admin:sync_configs:edit:select_profile_column' => "Select a target profile field",
 	'profile_sync:admin:sync_configs:edit:profile_column:icon_full' => "User icon (full path)",
 	'profile_sync:admin:sync_configs:edit:profile_column:icon_relative' => "User icon (relative path)",
+	'profile_sync:admin:sync_configs:edit:profile_column:icon_base64' => "User icon (base64-encoded)",
 	'profile_sync:admin:sync_configs:edit:fields' => "Field configuration",
 	'profile_sync:admin:sync_configs:edit:always_override' => "Always override",
 	'profile_sync:admin:sync_configs:edit:unique_id' => "Unique matching fields",
@@ -78,6 +85,10 @@ $english = array(
 	'profile_sync:admin:sync_configs:edit:log_cleanup_count' => "Number of logfiles to keep",
 	'profile_sync:admin:sync_configs:edit:log_cleanup_count:description' => "If you wish to remove older log files enter the amount of logfiles you wish to keep. Leave empty to keep them all.",
 	
+	'profile_sync:admin:sync_configs:info:api:description' => "This data is needed to successfully call the API.",
+	'profile_sync:admin:sync_configs:info:api:sync_config_id' => "The value for sync_config_id is: %d",
+	'profile_sync:admin:sync_configs:info:api:sync_secret' => "The value for sync_secret is: %s",
+	
 	'profile_sync:sync_config:logs' => "List logs",
 	'profile_sync:sync_logs:title' => "Sync logs: %s",
 	'profile_sync:view_log:title' => "Log file for %s from %s",
@@ -85,6 +96,11 @@ $english = array(
 	'profile_sync:sync_config:sync_status:create' => "Sync data and create users",
 	'profile_sync:sync_config:sync_status:ban' => "Ban users",
 	'profile_sync:sync_config:sync_status:default' => "Sync data",
+	
+	'profile_sync:rest:api:sync_data' => "Process data according to a Profile Sync configuration. Check the admin section on how to configure.",
+	'profile_sync:rest:api:sync_data:error:sync_config_id' => "The provided sync_config_id didn't result in a valid configuration",
+	'profile_sync:rest:api:sync_data:error:sync_secret' => "The provided sync_secret isn't valid",
+	'profile_sync:rest:api:sync_data:success' => "Profile sync completed",
 	
 	// actions
 	'profile_sync:action:error:title' => "Please provide a title",

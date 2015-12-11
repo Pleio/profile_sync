@@ -3,6 +3,9 @@
  * All helper functions are bundled here
  */
 
+use ColdTrick\ProfileSync\Logger;
+use ColdTrick\ProfileSync\APILogger;
+
 /**
  * Run the profile synchronization based on the provided configuration
  *
@@ -22,40 +25,38 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 		return;
 	}
 	
+	$logger = profile_sync_get_log_handler($sync_config->getGUID());
+	if (!($logger instanceof Logger)) {
+		return;
+	}
+	
 	$sync_match = json_decode($sync_config->sync_match, true);
 	$datasource_id = $sync_config->datasource_id;
 	$profile_id = $sync_config->profile_id;
 	$lastrun = (int) $sync_config->lastrun;
 	
-	profile_sync_log($sync_config->getGUID(), "Last run timestamp: {$lastrun} (" . date(elgg_echo("friendlytime:date_format"), $lastrun) . ")" . PHP_EOL);
+	$logger->log("Last run timestamp: {$lastrun} (" . date(elgg_echo("friendlytime:date_format"), $lastrun) . ")" . PHP_EOL);
 	
 	$profile_fields = elgg_get_config("profile_fields");
 	
 	if (empty($sync_match) || ($datasource_id === "") || empty($profile_id)) {
-		profile_sync_log($sync_config->getGUID(), "Configuration error", true);
+		$logger->log("Configuration error", Logger::ERROR);
 		return;
 	}
 	
 	if (!in_array($profile_id, array("name", "username", "email")) && !array_key_exists($profile_id, $profile_fields)) {
-		profile_sync_log($sync_config->getGUID(), "Invalid profile identifier: {$profile_id}", true);
+		$logger->log("Invalid profile identifier: {$profile_id}", Logger::ERROR);
 		return;
 	}
 	
-	switch ($datasource->datasource_type) {
-		case "mysql":
-			$sync_source = new ProfileSyncMySQL($datasource, $lastrun);
-			break;
-		case "csv":
-			$sync_source = new ProfileSyncCSV($datasource, $lastrun);
-			break;
-		default:
-			profile_sync_log($sync_config->getGUID(), "Invalid datasource type: {$datasource->datasource_type}", true);
-			return;
-			break;
+	$sync_source = profile_sync_get_datasource_handler($datasource, $lastrun);
+	if (empty($sync_source)) {
+		$logger->log("Invalid datasource type: {$datasource->datasource_type}", Logger::ERROR);
+		return;
 	}
 	
 	if (!$sync_source->connect()) {
-		profile_sync_log($sync_config->getGUID(), "Unable to connect to the datasource", true);
+		$logger->log("Unable to connect to the datasource", Logger::ERROR);
 		return;
 	}
 	
@@ -72,7 +73,7 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 	$create_user_username = false;
 	
 	if ($create_user) {
-		profile_sync_log($sync_config->getGUID(), "User creation is allowed");
+		$logger->log("User creation is allowed");
 		
 		foreach ($sync_match as $datasource_col => $datasource_config) {
 			switch ($datasource_config["profile_field"]) {
@@ -89,34 +90,34 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 		}
 		
 		if (($create_user_name === false) || ($create_user_username === false) || ($create_user_email === false)) {
-			profile_sync_log($sync_config->getGUID(), "Missing information to create users");
-			profile_sync_log($sync_config->getGUID(), "- name: {$create_user_name}");
-			profile_sync_log($sync_config->getGUID(), "- email: {$create_user_email}");
-			profile_sync_log($sync_config->getGUID(), "- username: {$create_user_username}");
+			$logger->log("Missing information to create users", Logger::WARNING);
+			$logger->log("- name: {$create_user_name}", Logger::WARNING);
+			$logger->log("- email: {$create_user_email}", Logger::WARNING);
+			$logger->log("- username: {$create_user_username}", Logger::WARNING);
 			$create_user = false;
 		}
 	}
 	
 	if ($ban_user) {
-		profile_sync_log($sync_config->getGUID(), "Matching users will be banned");
+		$logger->log("Matching users will be banned");
 	}
 	
 	if ($unban_user) {
-		profile_sync_log($sync_config->getGUID(), "Matching users will be unbanned");
+		$logger->log("Matching users will be unbanned");
 	}
 	
 	if ($ban_user && $create_user) {
-		profile_sync_log($sync_config->getGUID(), "Both create and ban users is allowed, don't know what to do", true);
+		$logger->log("Both create and ban users is allowed, don't know what to do", Logger::ERROR);
 		return;
 	}
 	
 	if ($unban_user && $create_user) {
-		profile_sync_log($sync_config->getGUID(), "Both create and unban users is allowed, don't know what to do", true);
+		$logger->log("Both create and unban users is allowed, don't know what to do", Logger::ERROR);
 		return;
 	}
 	
 	if ($ban_user && $unban_user) {
-		profile_sync_log($sync_config->getGUID(), "Both ban and unban users is allowed, don't know what to do", true);
+		$logger->log("Both ban and unban users is allowed, don't know what to do", Logger::ERROR);
 		return;
 	}
 	
@@ -184,7 +185,7 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 		
 		// fallback user
 		if (empty($user) && ($datasource_id_fallback !== '') && !empty($source_row[$datasource_id_fallback]) && !empty($profile_id_fallback)) {
-// 			profile_sync_log($sync_config->getGUID(), "User not found: {$profile_id} => {$datasource_unique_id} trying fallback");
+			$logger->log("User not found: {$profile_id} => {$datasource_unique_id} trying fallback", Logger::DEBUG);
 			
 			$profile_used_id = $profile_id_fallback;
 			$datasource_used_id = $datasource_id_fallback;
@@ -207,7 +208,7 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 				$user_guid = register_user($username, $pwd, $name, $email);
 				if (!empty($user_guid)) {
 					$counters["user created"]++;
-					profile_sync_log($sync_config->getGUID(), "Created user: {$name}");
+					$logger->log("Created user: {$name}");
 					
 					$user = get_user($user_guid);
 					
@@ -226,18 +227,19 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 				}
 			} catch (RegistrationException $r) {
 				$name = profile_sync_filter_var($source_row[$create_user_name]);
-				profile_sync_log($sync_config->getGUID(), "Failure creating user: {$name} - {$r->getMessage()}");
+				$logger->log("Failure creating user: {$name} - {$r->getMessage()}", Logger::WARNING);
 			}
 		}
 		
 		// did we get a user
 		if (empty($user)) {
 			$counters["user not found"]++;
-			profile_sync_log($sync_config->getGUID(), "User not found: {$profile_used_id} => {$datasource_unique_id}");
+			$logger->log("User not found: {$profile_used_id} => {$datasource_unique_id}", Logger::WARNING);
 			continue;
-		} else {
-			$counters["processed users"]++;
 		}
+		
+		$logger->log("Processing user: {$user->name} found by using {$profile_used_id} => {$datasource_unique_id}", Logger::DEBUG);
+		$counters["processed users"]++;
 		
 		// ban the user
 		if ($ban_user) {
@@ -245,7 +247,7 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 			if (!$user->isBanned()) {
 				$counters["user banned"]++;
 				$user->ban("Profile Sync: " . $sync_config->title);
-				profile_sync_log($sync_config->getGUID(), "User banned: {$user->name} ({$user->username})");
+				$logger->log("User banned: {$user->name} ({$user->username})");
 			}
 			
 			continue;
@@ -257,7 +259,7 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 			if ($user->isBanned()) {
 				$counters["user unbanned"]++;
 				$user->unban();
-				profile_sync_log($sync_config->getGUID(), "User unbanned: {$user->name} ({$user->username})");
+				$logger->log("User unbanned: {$user->name} ({$user->username})");
 			}
 			
 			continue;
@@ -269,7 +271,8 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 			"username",
 			"email",
 			"user_icon_relative_path",
-			"user_icon_full_path"
+			"user_icon_full_path",
+			"user_icon_base64",
 		);
 		
 		foreach ($sync_match as $datasource_col => $profile_config) {
@@ -289,6 +292,72 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 			$value = elgg_extract($datasource_col, $source_row);
 			$value = profile_sync_filter_var($value);
 			
+			// prepare user icon handling
+			$new_user_icontime = false;
+			$base64_icon = false;
+			
+			switch ($profile_field) {
+				case 'user_icon_relative_path':
+					// get a user icon based on a relative file path/url
+					// only works with file based datasources (eg. csv)
+					if (!($sync_source instanceof ProfileSyncCSV)) {
+						$logger->log("Can't fetch relative user icon path in non CSV datasouces: trying user {$user->name}", Logger::WARNING);
+						continue(2);
+					}
+					
+					if (empty($value)) {
+						// nothing to do
+						break;
+					}
+					
+					// make new icon path
+					$value = sanitise_filepath($value, false); // prevent abuse (like ../../......)
+					$value = ltrim($value, DIRECTORY_SEPARATOR); // remove beginning /
+					$value = $base_location . DIRECTORY_SEPARATOR . $value; // concat base location and rel path
+					
+					// load the mtime for the icon
+					$new_user_icontime = @filemtime($value);
+					
+					break;
+				case 'user_icon_full_path':
+					// this is already a full working path
+					break;
+				case 'user_icon_base64':
+					
+					if (empty($value)) {
+						// nothing to do
+						break;
+					}
+					
+					// use a separate setting for this icontime
+					$current_iconhash = hash('sha256', $value);
+					$stored_iconhash = $user->getPrivateSetting('profile_sync_base64_iconhash');
+					
+					if (empty($stored_iconhash)) {
+						// new icon, so update
+						// and store hash for future use
+						$user->setPrivateSetting('profile_sync_base64_iconhash', $current_iconhash);
+					} elseif ($current_iconhash !== $stored_iconhash) {
+						// updated icon, so update
+						// and store hash for future use
+						$user->setPrivateSetting('profile_sync_base64_iconhash', $current_iconhash);
+					} else {
+						// get last save icontime
+						$new_user_icontime = $user->icontime;
+					}
+					
+					// create a temp file to store the icon
+					$base64_icon = tempnam(sys_get_temp_dir(), $user->getGUID());
+					
+					// write the base64 decoded data
+					file_put_contents($base64_icon, base64_decode($value));
+					
+					// rewrite the value to the new filename
+					$value = $base64_icon;
+					break;
+			}
+			
+			// handle the actual data
 			switch ($profile_field) {
 				case "email":
 					if (!is_email_address($value)) {
@@ -299,20 +368,20 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 						// new username, check for availability
 						if (get_user_by_username($value)) {
 							// already taken
-							profile_sync_log($sync_config->getGUID(), "New username: {$value} for {$user->name} is already taken");
+							$logger->log("New username: {$value} for {$user->name} is already taken", Logger::WARNING);
 							continue(2);
 						}
 					}
 				case "name":
 					if (empty($value)) {
 						$counters["empty attributes"]++;
-						profile_sync_log($sync_config->getGUID(), "Empty user attribute: {$datasource_col} for user {$user->name}");
+						$logger->log("Empty user attribute: {$datasource_col} for user {$user->name}", Logger::WARNING);
 						continue(2);
 					}
 					
 					if (isset($user->$profile_field) && !$override) {
 						// don't override profile field
-// 						profile_sync_log($sync_config->getGUID(), "Profile field already set: " . $profile_field . " for user " . $user->name);
+						$logger->log("Profile field already set: " . $profile_field . " for user " . $user->name, Logger::DEBUG);
 						continue(2);
 					}
 					
@@ -326,27 +395,14 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 					$user->$profile_field = $value;
 					$user->save();
 					break;
+				case "user_icon_base64":
 				case "user_icon_relative_path":
-					// get a user icon based on a relative file path/url
-					// only works with file based datasources (eg. csv)
-					if (!($sync_source instanceof ProfileSyncCSV)) {
-						profile_sync_log($sync_config->getGUID(), "Can't fetch relative user icon path in non CSV datasouces: trying user {$user->name}");
-						continue(2);
-					}
-					
-					// make new icon path
-					if (!empty($value)) {
-						$value = sanitise_filepath($value, false); // prevent abuse (like ../../......)
-						$value = ltrim($value, DIRECTORY_SEPARATOR); // remove beginning /
-						$value = $base_location . DIRECTORY_SEPARATOR . $value; // concat base location and rel path
-					}
-					
 				case "user_icon_full_path":
 					// get a user icon based on a full file path/url
 					
 					if (!empty($user->icontime) && !$override) {
 						// don't override icon
-// 						profile_sync_log($sync_config->getGUID(), "User already has an icon: " . $user->name);
+						$logger->log("User already has an icon: " . $user->name, Logger::DEBUG);
 						continue(2);
 					}
 					
@@ -355,18 +411,22 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 					
 					$fh = new ElggFile();
 					$fh->owner_guid = $user->getGUID();
-						
-					if (empty($value) && $user->icontime) {
+					
+					if (empty($value)) {
 						// no icon, so unset current icon
-						profile_sync_log($sync_config->getGUID(), "Removing icon for user: {$user->name}");
-						
-						foreach ($icon_sizes as $size => $icon_info) {
-							$fh->setFilename("profile/{$user->getGUID()}{$size}.jpg");
-							$fh->delete();
+						if ($user->icontime) {
+							// the user has an icon
+							$logger->log("Removing icon for user: {$user->name}");
+							
+							foreach ($icon_sizes as $size => $icon_info) {
+								$fh->setFilename("profile/{$user->getGUID()}{$size}.jpg");
+								$fh->delete();
+							}
+							
+							unset($user->icontime);
+							$user->removePrivateSetting('profile_sync_base64_iconhash');
+							unset($fh);
 						}
-						
-						unset($user->icontime);
-						unset($fh);
 						
 						// on to the next field
 						continue(2);
@@ -375,25 +435,24 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 					// try to get the user icon
 					$icon_contents = file_get_contents($value);
 					if (empty($icon_contents)) {
-						profile_sync_log($sync_config->getGUID(), "Unable to fetch user icon: {$value} for user {$user->name}");
+						$logger->log("Unable to fetch user icon: {$value} for user {$user->name}", Logger::WARNING);
 						continue(2);
 					}
 					
-					// was csv image updated
-					$csv_icontime = @filemtime($value);
-					if (($csv_icontime !== false) && isset($user->icontime)) {
-						$csv_icontime = sanitise_int($csv_icontime);
+					// was the user icon image updated
+					if (($new_user_icontime !== false) && isset($user->icontime)) {
+						$new_user_icontime = sanitise_int($new_user_icontime);
 						$icontime = sanitise_int($user->icontime);
 						
-						if ($csv_icontime === $icontime) {
+						if ($new_user_icontime === $icontime) {
 							// base image has same modified time as user icontime, so skipp
-// 							profile_sync_log($sync_config->getGUID(), "No need to update user icon for user: {$user->name}");
+							$logger->log("No need to update user icon for user: {$user->name}", Logger::DEBUG);
 							continue(2);
 						}
 					}
 					
-					if ($csv_icontime === false) {
-						$csv_icontime = time();
+					if ($new_user_icontime === false) {
+						$new_user_icontime = time();
 					}
 					
 					// write icon to a temp location for further handling
@@ -419,11 +478,15 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 					
 					// did we have a successfull icon upload?
 					if ($icon_updated) {
-						$user->icontime = $csv_icontime;
+						$user->icontime = $new_user_icontime;
 					}
 					
 					// cleanup
 					unlink($tmp_icon);
+					if (!empty($base64_icon)) {
+						// base64 temp file
+						unlink($base64_icon);
+					}
 					unset($fh);
 					
 					break;
@@ -431,7 +494,7 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 					// check overrides
 					if (isset($user->$profile_field) && !$override) {
 						// don't override profile field
-// 						profile_sync_log($sync_config->getGUID(), "Profile field already set: " . $profile_field . " for user " . $user->name);
+						$logger->log("Profile field already set: " . $profile_field . " for user " . $user->name, Logger::DEBUG);
 						continue(2);
 					}
 					
@@ -454,7 +517,7 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 						continue(2);
 					}
 					
-// 					profile_sync_log($sync_config->getGUID(), "Updating {$profile_field} with value {$value} old value {$user->$profile_field}");
+					$logger->log("Updating {$profile_field} with value {$value} old value {$user->$profile_field}", Logger::DEBUG);
 					
 					// get the access of existing profile data
 					$access = profile_sync_get_profile_field_access($user->getGUID(), $profile_field, $access);
@@ -490,13 +553,16 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 		$metadata_cache->clear($user->getGUID());
 	}
 	
-	profile_sync_log($sync_config->getGUID(), PHP_EOL . "End processing: " . date(elgg_echo("friendlytime:date_format")) . PHP_EOL);
+	$logger->log(PHP_EOL);
 	foreach ($counters as $name => $count) {
-		profile_sync_log($sync_config->getGUID(), $name . ": " . $count);
+		if ($count < 1) {
+			// don't log empty counters
+			continue;
+		}
+		
+		$logger->log($name . ": " . $count, Logger::STATS);
 	}
-	
-	// close logfile
-	profile_sync_log($sync_config->getGUID(), null, true);
+	$logger->log(PHP_EOL . "End processing: " . date(elgg_echo("friendlytime:date_format")));
 	
 	// save last run
 	$sync_config->lastrun = time();
@@ -511,49 +577,63 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 }
 
 /**
- * Write information to a log file
+ * Get a log handler
  *
- * @param int    $sync_config_guid the guid of a sync config where to write the log file
- * @param string $text             the text to log
- * @param bool   $close            close the log file (default: false)
+ * @param int  $sync_config_guid the sync config to get the logger for
+ * @param bool $close            close the logger (default: false)
  *
- * @return void
+ * @return bool|ColdTrick\ProfileSync\Logger
  */
-function profile_sync_log($sync_config_guid, $text, $close = false) {
-	static $file_handlers;
+function profile_sync_get_log_handler($sync_config_guid, $close = false) {
+	static $loggers;
 	
-	if (!isset($file_handlers)) {
-		$file_handlers = array();
+	if (!isset($loggers)) {
+		$loggers = array();
 	}
 	
 	$sync_config_guid = sanitise_int($sync_config_guid, false);
 	if (empty($sync_config_guid)) {
-		return;
+		return false;
 	}
 	
-	if (empty($text) && empty($close)) {
-		return;
-	}
-	
-	if (!isset($file_handlers[$sync_config_guid])) {
-		$log_file = new ElggFile();
-		$log_file->owner_guid = $sync_config_guid;
-		$log_file->setFilename(time() . ".log");
+	if (!isset($loggers[$sync_config_guid])) {
+		$loggers[$sync_config_guid] = false;
 		
-		$log_file->open("write");
-		$log_file->write("Start processing: " . date(elgg_echo("friendlytime:date_format")) . PHP_EOL);
-		$file_handlers[$sync_config_guid] = $log_file->open("append");
+		$sync_config = get_entity($sync_config_guid);
+		$datasource = $sync_config->getContainerEntity();
+		
+		switch ($datasource->datasource_type) {
+			case 'api':
+				$loggers[$sync_config_guid] = new APILogger($sync_config_guid);
+				break;
+			default:
+				$loggers[$sync_config_guid] = new Logger($sync_config_guid);
+				break;
+		}
 	}
 	
-	if (!empty($text)) {
-		fwrite($file_handlers[$sync_config_guid], $text . PHP_EOL);
-		elgg_log("Profile sync log({$sync_config_guid}): " . $text, "NOTICE");
+	$close = (bool) $close;
+	if ($close && !empty($loggers[$sync_config_guid])) {
+		$loggers[$sync_config_guid]->close();
+		unset($loggers[$sync_config_guid]);
+		return true;
 	}
 	
-	if (!empty($close)) {
-		fclose($file_handlers[$sync_config_guid]);
-		unset($file_handlers[$sync_config_guid]);
-	}
+	return elgg_extract($sync_config_guid, $loggers, false);
+}
+
+/**
+ * Close the log handler for a file
+ *
+ * @param int $sync_config_guid the sync config to close the logger for
+ *
+ * @return bool
+ */
+function profile_sync_close_log($sync_config_guid) {
+	
+	$close = profile_sync_get_log_handler($sync_config_guid, true);
+	
+	return ($close === true);
 }
 
 /**
@@ -580,6 +660,10 @@ function profile_sync_get_ordered_log_files(ElggObject $sync_config, $with_label
 	$dir = substr($dir, 0, strlen($dir) - 4);
 	
 	$dh = opendir($dir);
+	if (empty($dh)) {
+		return false;
+	}
+	
 	$files = array();
 	while (($file = readdir($dh)) !== false) {
 		if (is_dir($dir . $file)) {
@@ -710,6 +794,8 @@ function profile_sync_find_user($profile_field, $field_value, ElggObject $sync_c
 		return false;
 	}
 	
+	$logger = profile_sync_get_log_handler($sync_config->getGUID());
+	
 	$user = false;
 	switch ($profile_field) {
 		case "username":
@@ -719,7 +805,7 @@ function profile_sync_find_user($profile_field, $field_value, ElggObject $sync_c
 			$users = get_user_by_email($field_value);
 			if (count($users) > 1) {
 				$log_counters["duplicate email"]++;
-				profile_sync_log($sync_config->getGUID(), "Duplicate email address: {$field_value}");
+				$logger->log("Duplicate email address: {$field_value}", Logger::WARNING);
 			} elseif (count($users) == 1) {
 				$user = $users[0];
 			}
@@ -734,7 +820,7 @@ function profile_sync_find_user($profile_field, $field_value, ElggObject $sync_c
 			$users = elgg_get_entities($options);
 			if (count($users) > 1) {
 				$log_counters["duplicate name"]++;
-				profile_sync_log($sync_config->getGUID(), "Duplicate name: {$field_value}");
+				$logger->log("Duplicate name: {$field_value}", Logger::WARNING);
 			} elseif(count($users) == 1) {
 				$user = $users[0];
 			}
@@ -751,7 +837,7 @@ function profile_sync_find_user($profile_field, $field_value, ElggObject $sync_c
 			$users = elgg_get_entities_from_metadata($options);
 			if (count($users) > 1) {
 				$log_counters["duplicate profile field"]++;
-				profile_sync_log($sync_config->getGUID(), "Duplicate profile field: {$profile_field} => {$field_value}");
+				$logger->log("Duplicate profile field: {$profile_field} => {$field_value}", Logger::WARNING);
 			} elseif(count($users) == 1) {
 				$user = $users[0];
 			}
@@ -848,4 +934,138 @@ function profile_sync_get_profile_field_access($user_guid, $profile_field, $defa
 	}
 	
 	return elgg_extract($profile_field, $field_access, $default_access);
+}
+
+/**
+ * Get the datasource handler for the datasource type
+ *
+ * @param ElggObject $datasource the datasource
+ * @param int        $lastrun    last run for the config
+ *
+ * @return false|ProfileSync
+ */
+function profile_sync_get_datasource_handler(ElggObject $datasource, $last_run = 0) {
+	
+	if (empty($datasource) || !elgg_instanceof($datasource, 'object', 'profile_sync_datasource')) {
+		return false;
+	}
+	
+	$last_run = sanitise_int($last_run);
+	
+	switch ($datasource->datasource_type) {
+		case 'mysql':
+			return new ProfileSyncMySQL($datasource, $last_run);
+			break;
+		case 'csv':
+			return new ProfileSyncCSV($datasource, $last_run);
+			break;
+		case 'api':
+			return new ProfileSyncAPI($datasource, $last_run);
+			break;
+	}
+	
+	return false;
+}
+
+/**
+ * REST API callback for profile_sync.sync_data
+ *
+ * @param int    $sync_config_guid the GUID of the sync config
+ * @param string $sync_secret      a validation secret code
+ * @param array  $profile_data     the profile data to process
+ *
+ * @return ErrorResult|SuccessResult
+ */
+function profile_sync_process_api($sync_config_guid, $sync_secret, $profile_data) {
+	
+	$sync_config = get_entity($sync_config_guid);
+	if (empty($sync_config) || !elgg_instanceof($sync_config, 'object', 'profile_sync_config')) {
+		return new ErrorResult(elgg_echo('profile_sync:rest:api:sync_data:error:sync_config_id'));
+	}
+	
+	// validate secret
+	if (!profile_sync_validate_sync_secret($sync_config, $sync_secret)) {
+		return new ErrorResult(elgg_echo('profile_sync:rest:api:sync_data:error:sync_secret'));
+	}
+	
+	$result = true;
+	
+	// proccess the data
+	profile_sync_proccess_configuration($sync_config);
+	
+	// check if errors occured
+	$logger = profile_sync_get_log_handler($sync_config->getGUID());
+	if ($logger instanceof Logger) {
+		$errors = $logger->getLogErrors();
+		if (!empty($errors)) {
+			// report the first error only
+			$error = $errors[0];
+			$result = new ErrorResult(elgg_extract('text', $error), elgg_extract('status', $error));
+		}
+	}
+	
+	// close logfile
+	profile_sync_close_log($sync_config->getGUID());
+	
+	// cleanup log files (if needed)
+	profile_sync_cleanup_logs($sync_config);
+	
+	// an error occured
+	if ($result !== true) {
+		return $result;
+	}
+	
+	// report success
+	return new SuccessResult(elgg_echo('profile_sync:rest:api:sync_data:success'));
+}
+
+/**
+ * Generate a secret for use in the API
+ *
+ * @param ElggObject $sync_config the sync config to generate for
+ *
+ * @return false|string
+ */
+function profile_sync_get_sync_secret(ElggObject $sync_config) {
+	
+	if (empty($sync_config) || !elgg_instanceof($sync_config, 'object', 'profile_sync_config')) {
+		return false;
+	}
+	
+	$datasource = $sync_config->getContainerEntity();
+	if (empty($datasource) || !elgg_instanceof($datasource, 'object', 'profile_sync_datasource')) {
+		return false;
+	}
+	
+	$parts = array();
+	$parts[] = $sync_config->getGUID();
+	$parts[] = $datasource->getGUID();
+	$parts[] = $sync_config->time_created;
+	$parts[] = $datasource->time_created;
+	
+	$string = implode('|', $parts);
+	
+	return hash('sha256', $string);
+}
+
+/**
+ * Validate a sync config secret for the API
+ *
+ * @param ElggObject $sync_config the sync config
+ * @param string     $secret      the secret provided in the API
+ *
+ * @return bool
+ */
+function profile_sync_validate_sync_secret(ElggObject $sync_config, $secret) {
+	
+	if (empty($sync_config) || !elgg_instanceof($sync_config, 'object', 'profile_sync_config')) {
+		return false;
+	}
+	
+	$correct_secret = profile_sync_get_sync_secret($sync_config);
+	if (empty($correct_secret)) {
+		return false;
+	}
+	
+	return ($secret === $correct_secret);
 }

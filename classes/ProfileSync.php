@@ -22,6 +22,8 @@ abstract class ProfileSync {
 	public function __construct(ElggObject $datasource, $lastrun = 0) {
 		$this->datasource = $datasource;
 		$this->lastrun = (int) $lastrun;
+		
+		$this->initialize();
 	}
 	
 	/**
@@ -41,6 +43,15 @@ abstract class ProfileSync {
 		}
 		
 		return $datasource;
+	}
+	
+	/**
+	 * Do additional stuff when the object is created
+	 *
+	 * @return void
+	 */
+	protected function initialize() {
+		// default do nothing (yet)
 	}
 	
 	/**

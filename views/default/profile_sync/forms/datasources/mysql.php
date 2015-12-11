@@ -10,7 +10,7 @@ $dbquery = "";
 $class = "hidden";
 
 $entity = elgg_extract("entity", $vars);
-if ($entity && ($entity->datasource_type === "mysql")) {
+if (!empty($entity) && ($entity->datasource_type === "mysql")) {
 	$dbhost = $entity->dbhost;
 	$dbport = $entity->dbport;
 	$dbname = $entity->dbname;

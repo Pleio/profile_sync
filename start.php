@@ -3,6 +3,8 @@
  * The main plugin file for Profile Sync
  */
 
+define('PROFILE_SYNC_DATASOURCE_COL_SEPERATOR', '||$||');
+
 // load libs
 require_once(dirname(__FILE__) . "/lib/functions.php");
 require_once(dirname(__FILE__) . "/lib/hooks.php");

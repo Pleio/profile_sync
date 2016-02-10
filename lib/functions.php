@@ -75,6 +75,8 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 		profile_sync_log($sync_config->getGUID(), "User creation is allowed");
 		
 		foreach ($sync_match as $datasource_col => $datasource_config) {
+			list($datasource_col) = explode(PROFILE_SYNC_DATASOURCE_COL_SEPERATOR, $datasource_col);
+			
 			switch ($datasource_config["profile_field"]) {
 				case "name":
 					$create_user_name = $datasource_col;
@@ -274,6 +276,8 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 		);
 		
 		foreach ($sync_match as $datasource_col => $profile_config) {
+			list($datasource_col) = explode(PROFILE_SYNC_DATASOURCE_COL_SEPERATOR, $datasource_col);
+			
 			$profile_field = elgg_extract("profile_field", $profile_config);
 			$access = (int) elgg_extract("access", $profile_config, $default_access);
 			$override = (bool) elgg_extract("always_override", $profile_config, true);

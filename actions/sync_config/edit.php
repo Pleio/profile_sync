@@ -66,7 +66,7 @@ foreach ($datasource_cols as $index => $datasource_col_name) {
 		continue;
 	}
 	
-	$sync_match[$datasource_col_name] = array(
+	$sync_match[$datasource_col_name . PROFILE_SYNC_DATASOURCE_COL_SEPERATOR . $index] = array(
 		"profile_field" => $profile_cols[$index],
 		"access" => (int) elgg_extract($index, $access, $default_access),
 		"always_override" => (int) elgg_extract($index, $always_override, true)

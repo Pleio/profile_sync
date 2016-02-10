@@ -176,6 +176,8 @@ if (!empty($sync_config)) {
 	$sync_match = json_decode($sync_config->sync_match, true);
 	
 	foreach ($sync_match as $datasource_name => $profile_config) {
+		list($datasource_name) = explode(PROFILE_SYNC_DATASOURCE_COL_SEPERATOR, $datasource_name);
+		
 		$profile_name = elgg_extract("profile_field", $profile_config);
 		$access = (int) elgg_extract("access", $profile_config);
 		$always_override = (int) elgg_extract("always_override", $profile_config, true);

@@ -13,6 +13,7 @@
 		"ext-mysqli": "*"
 	},
 	"require-dev": {
-		"coldtrick/sniffs": "dev-master"
+		"coldtrick/sniffs": "dev-master",
+		"coldtrick/releases": "dev-master"
 	}
 }

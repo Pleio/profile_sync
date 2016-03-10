@@ -1,19 +1,54 @@
 Version History
 ===============
 
-x.x:
+1.0 (2016-03-10):
 
-- added: support for lastrun timestamp in datasource query
-- added: option to ban users during sync (this will not sync profile data)
-- added: plugin setting to increase PHP memory limit
+- added: control over wether or not to override a profile field
 - added: datasource cache cleaup to help with OOM issues
-- added: support for CSV file sync
+- added: event after updating a user
+- added: fallback unique profile id
 - added: hourly schedule options to sync configs
-- added: option to unban users during sync (this will not sync profile data)
 - added: log cleanup settings per sync config
-- fixed: ban sync no longer requires sync fields #2
-- fixed: improved visibility when manualy running a sync config
+- added: named columns in cvs sync when using first row
+- added: option to ban users during sync (this will not sync profile data)
+- added: option to unban users during sync (this will not sync profile data)
+- added: plugin hook to manipulate source row data
+- added: plugin setting to increase PHP memory limit
+- added: support for CSV file sync
+- added: support for lastrun timestamp in datasource query
+- added: text indicator for unban jobs
+- added: user icons can now be kept in sync
+- added sync config name to ban reason
+- changed: layout of sync field configuration
+- changed: more data in some error logging
+- changed: performance enhancements
+- changed: profile_sync objects can't be commented on
+- changed: quick return in hook
 - changed: simplified profile data update
+- fixed: always show link to config logs
+- fixed: ban sync no longer requires sync fields #2
+- fixed: call to undefined function
+- fixed: correctly send all params in POST
+- fixed: database error when updating username to an existing value
+- fixed: different encoding between profile/edit and profile_sync
+- fixed: don't override profile field value if the value is the same
+- fixed: don't override profile icon if the source image has the same timestamp as current image
+- fixed: edit unban jobs show profile field configuration
+- fixed: improved visibility when manualy running a sync config
+- fixed: incorrect check if first row needs to be skipped
+- fixed: incorrect handling of relative icon paths for CSV sources
+- fixed: incorrect saving of dbquery for MySQL datasources
+- fixed: inefficient icon basepath calculation
+- fixed: invalid configuration check
+- fixed: listing of sync logs limited to screen
+- fixed: override fallback missing in form
+- fixed: some invalid updates in cases with trailing space
+- fixed: too much logging for metadata field updates
+- fixed: unable to correcly save 0-based key settings
+- fixed: using user fallback polluting the logs
+- fixed: using wrong variable to rotate sync logs
+- fixed: various encoding bugs and incorrect variable checks
+- fixed: wrong value for unban users
 
 0.1 (2014-07-17):
 

@@ -32,11 +32,11 @@ class ProfileSyncCSV extends ProfileSync {
 			return false;
 		}
 		
-		if ($datasource->datasource_type !== "csv") {
+		if ($datasource->datasource_type !== 'csv') {
 			return false;
 		}
 		
-		$new_fh = fopen($datasource->csv_location, "r");
+		$new_fh = fopen($datasource->csv_location, 'r');
 		if ($new_fh === false) {
 			return false;
 		}
@@ -83,7 +83,7 @@ class ProfileSyncCSV extends ProfileSync {
 		}
 		
 		foreach ($fields as $index => $data) {
-			$fields[$index] = elgg_echo("profile_sync:csv:column", array($index + 1, $data));
+			$fields[$index] = elgg_echo('profile_sync:csv:column', [$index + 1, $data]);
 		}
 		
 		return $fields;

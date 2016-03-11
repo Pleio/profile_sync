@@ -29,17 +29,23 @@ class ProfileSyncMySQL extends ProfileSync {
 			return false;
 		}
 		
-		if ($datasource->datasource_type !== "mysql") {
+		if ($datasource->datasource_type !== 'mysql') {
 			return false;
 		}
 		
-		$mysqli = new mysqli($datasource->dbhost, $datasource->dbusername, $datasource->dbpassword, $datasource->dbname, (int) $datasource->dbport);
+		$mysqli = new mysqli(
+			$datasource->dbhost,
+			$datasource->dbusername,
+			$datasource->dbpassword,
+			$datasource->dbname,
+			(int) $datasource->dbport
+		);
 		if ($mysqli->connect_errno) {
 			return false;
 		}
 		
 		// @todo make the charset into a setting of the datasource
-		$mysqli->set_charset("utf8");
+		$mysqli->set_charset('utf8');
 		
 		$this->mysqli = $mysqli;
 		
@@ -68,7 +74,7 @@ class ProfileSyncMySQL extends ProfileSync {
 		$dbquery = html_entity_decode($dbquery);
 		
 		// replace placeholders with actual values
-		$dbquery = str_ireplace("[[lastrun]]", $this->lastrun, $dbquery);
+		$dbquery = str_ireplace('[[lastrun]]', $this->lastrun, $dbquery);
 		
 		return $dbquery;
 	}

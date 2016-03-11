@@ -36,7 +36,7 @@ abstract class ProfileSync {
 			return false;
 		}
 		
-		if (!elgg_instanceof($datasource, "object", "profile_sync_datasource")) {
+		if (!elgg_instanceof($datasource, 'object', 'profile_sync_datasource')) {
 			return false;
 		}
 		

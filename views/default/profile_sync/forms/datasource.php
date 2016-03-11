@@ -25,6 +25,7 @@ $title_input = elgg_format_element('label', [], elgg_echo('title'));
 $title_input .= elgg_view('input/text', [
 	'name' => 'title',
 	'value' => $title,
+	'required' => true,
 ]);
 $form_body .= elgg_format_element('div', [], $title_input);
 

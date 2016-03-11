@@ -40,6 +40,7 @@ $input .= elgg_view('input/text', [
 	'name' => 'params[csv_enclosure]',
 	'value' => $csv_enclosure,
 	'maxlength' => 1,
+	'required' => true,
 ]);
 $result .= elgg_format_element('div', [], $input);
 

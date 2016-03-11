@@ -20,8 +20,6 @@ function profile_sync_init() {
 	elgg_extend_view("css/admin", "css/profile_sync/admin");
 	elgg_extend_view("js/admin", "js/profile_sync/admin");
 	
-	elgg_register_css("elgg.icons", elgg_get_simplecache_url("css", "elements/icons"));
-	
 	// register ajax views
 	elgg_register_ajax_view("profile_sync/forms/datasource");
 	elgg_register_ajax_view("profile_sync/forms/sync_config");

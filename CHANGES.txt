@@ -1,6 +1,15 @@
 Version History
 ===============
 
+2.0 (2016-03-11):
+
+- changed: added some margin on checkboxes
+- changed: csv text delimiter field is now html5 required
+- changed: datasource columns can be copied to multiple profile fields
+- changed: datasource title is now required
+- changed: moved js to new location
+- changed: moved plugin hooks to class callbacks
+
 1.0 (2016-03-10):
 
 - added: control over wether or not to override a profile field

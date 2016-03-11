@@ -261,13 +261,14 @@ $input = elgg_format_element('label', [], elgg_view('input/checkbox', [
 	'name' => 'create_user',
 	'value' => 1,
 	'checked' => $create_user,
+	'class' => 'mrs',
 ]) . elgg_echo('profile_sync:admin:sync_configs:edit:create_user'));
 $input .= elgg_format_element('div', ['class' => 'elgg-subtext'], elgg_echo('profile_sync:admin:sync_configs:edit:create_user:description'));
 $input .= elgg_format_element('label', [], elgg_view('input/checkbox', [
 	'name' => 'notify_user',
 	'value' => 1,
 	'checked' => $notify_user,
-	'class' => 'mlm',
+	'class' => 'mlm mrs',
 ]) . elgg_echo('profile_sync:admin:sync_configs:edit:notify_user'));
 $body .= elgg_format_element('div', ['class' => 'mbs'], $input);
 
@@ -276,6 +277,7 @@ $input = elgg_format_element('label', [], elgg_view('input/checkbox', [
 	'name' => 'ban_user',
 	'value' => 1,
 	'checked' => $ban_user,
+	'class' => 'mrs',
 ]) . elgg_echo('profile_sync:admin:sync_configs:edit:ban_user'));
 $input .= elgg_format_element('div', ['class' => 'elgg-subtext'], elgg_echo('profile_sync:admin:sync_configs:edit:ban_user:description'));
 $body .= elgg_format_element('div', ['class' => 'mbs'], $input);
@@ -285,6 +287,7 @@ $input = elgg_format_element('label', [], elgg_view('input/checkbox', [
 	'name' => 'unban_user',
 	'value' => 1,
 	'checked' => $unban_user,
+	'class' => 'mrs',
 ]) . elgg_echo('profile_sync:admin:sync_configs:edit:unban_user'));
 $input .= elgg_format_element('div', ['class' => 'elgg-subtext'], elgg_echo('profile_sync:admin:sync_configs:edit:unban_user:description'));
 $body .= elgg_format_element('div', ['class' => 'mbs'], $input);

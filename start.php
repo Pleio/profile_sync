@@ -19,7 +19,6 @@ elgg_register_event_handler('init', 'system', 'profile_sync_init');
 function profile_sync_init() {
 		
 	elgg_extend_view('css/admin', 'css/profile_sync/admin');
-	elgg_extend_view('js/admin', 'js/profile_sync/admin');
 	
 	// register ajax views
 	elgg_register_ajax_view('profile_sync/forms/datasource');

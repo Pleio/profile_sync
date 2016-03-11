@@ -1,13 +1,13 @@
 <?php
 
-$entity = elgg_extract("entity", $vars);
+$entity = elgg_extract('entity', $vars);
 
-echo elgg_view_menu("entity", array(
-	"entity" => $entity,
-	"handler" => "profile_sync/datasource",
-	"class" => "elgg-menu-hz",
-	"sort_by" => "priority"
-));
+echo elgg_view_menu('entity', [
+	'entity' => $entity,
+	'handler' => 'profile_sync/datasource',
+	'class' => 'elgg-menu-hz',
+	'sort_by' => 'priority',
+]);
 
 echo $entity->title;
-echo " (" . elgg_echo("profile_sync:admin:datasources:type:" . $entity->datasource_type) . ")";
+echo ' (' . elgg_echo('profile_sync:admin:datasources:type:' . $entity->datasource_type) . ')';

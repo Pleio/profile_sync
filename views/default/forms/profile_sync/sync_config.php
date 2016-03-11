@@ -290,7 +290,7 @@ $input .= elgg_format_element('div', ['class' => 'elgg-subtext'], elgg_echo('pro
 $body .= elgg_format_element('div', ['class' => 'mbs'], $input);
 
 // log cleanup
-$input = elgg_format_element('div', [], elgg_echo('profile_sync:admin:sync_configs:edit:log_cleanup_count'));
+$input = elgg_format_element('label', [], elgg_echo('profile_sync:admin:sync_configs:edit:log_cleanup_count'));
 $input .= elgg_view('input/text', [
 	'name' => 'log_cleanup_count',
 	'value' => $log_cleanup_count,

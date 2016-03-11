@@ -1,7 +1,3 @@
-<?php
-
-?>
-//<script>
 elgg.provide("elgg.profile_sync.admin");
 
 /**
@@ -104,7 +100,7 @@ elgg.profile_sync.admin.add_field_config = function() {
 
 elgg.profile_sync.admin.datasource_type = function() {
 	var $form = $('form.elgg-form-profile-sync-datasource-edit');
-	
+
 	$form.find(".profile-sync-datasource-type").hide();
 	var type = $('#profile-sync-edit-datasource-type').val();
 	if (type !== "") {
@@ -123,7 +119,6 @@ elgg.profile_sync.admin.datasource_type = function() {
  * @return void
  */
 elgg.profile_sync.admin.init = function() {
-
 	$(document).on("change", "#profile-sync-edit-sync-create-user", elgg.profile_sync.admin.check_create_user);
 	$(document).on("change", "#profile-sync-edit-sync-ban-user", elgg.profile_sync.admin.check_ban_user);
 	$(document).on("change", "#profile-sync-edit-sync-unban-user", elgg.profile_sync.admin.check_unban_user);

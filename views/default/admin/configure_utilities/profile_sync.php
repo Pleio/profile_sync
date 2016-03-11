@@ -2,6 +2,7 @@
 
 elgg_load_js('lightbox');
 elgg_load_css('lightbox');
+elgg_require_js('profile_sync/admin');
 
 $datasource_title = elgg_view('output/url', [
 	'class' => 'elgg-button elgg-button-action elgg-lightbox float-alt profile-sync-admin-title-button',

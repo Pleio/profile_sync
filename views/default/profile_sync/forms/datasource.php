@@ -12,7 +12,7 @@ $type_options = [
 	'csv' => elgg_echo('profile_sync:admin:datasources:type:csv'),
 ];
 
-$entity = elgg_extract('title', $vars);
+$entity = elgg_extract('entity', $vars);
 if (elgg_instanceof($entity, 'object', 'profile_sync_datasource')) {
 	$title_text = $entity->title;
 	$title = $entity->title;

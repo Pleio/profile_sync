@@ -2,7 +2,7 @@
 
 $csv_location = '';
 $csv_delimiter = ',';
-$csv_enclosure = '\"';
+$csv_enclosure = '"';
 $csv_first_row = false;
 
 $entity = elgg_extract('entity', $vars);

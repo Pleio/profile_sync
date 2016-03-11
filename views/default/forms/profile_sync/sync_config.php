@@ -172,7 +172,7 @@ if (!empty($sync_config)) {
 			'options_values' => $datasource_columns,
 			'value' => $datasource_name,
 		]));
-		$row .= elgg_format_element('td', [], elgg_view_icon('arrow-right'));
+		$row .= elgg_format_element('td', ['class' => 'profile-sync-arrow'], elgg_view_icon('arrow-right'));
 		$row .= elgg_format_element('td', [], elgg_view('input/select', [
 			'name' => 'profile_cols[]',
 			'options_values' => $profile_columns,
@@ -195,7 +195,7 @@ if (!empty($sync_config)) {
 		'name' => 'datasource_cols[]',
 		'options_values' => $datasource_columns,
 	]));
-	$row .= elgg_format_element('td', [], elgg_view_icon('arrow-right'));
+	$row .= elgg_format_element('td', ['class' => 'profile-sync-arrow'], elgg_view_icon('arrow-right'));
 	$row .= elgg_format_element('td', [], elgg_view('input/select', [
 		'name' => 'profile_cols[]',
 		'options_values' => $profile_columns,

@@ -317,7 +317,7 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 					
 					if (isset($user->$profile_field) && !$override) {
 						// don't override profile field
-// 						profile_sync_log($sync_config->getGUID(), "Profile field already set: " . $profile_field . " for user " . $user->name);
+// 						profile_sync_log($sync_config->getGUID(), "Profile field already set: {$profile_field} for user {$user->name}");
 						continue(2);
 					}
 					
@@ -351,7 +351,7 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 					
 					if (!empty($user->icontime) && !$override) {
 						// don't override icon
-// 						profile_sync_log($sync_config->getGUID(), "User already has an icon: " . $user->name);
+// 						profile_sync_log($sync_config->getGUID(), "User already has an icon: {$user->name}");
 						continue(2);
 					}
 					
@@ -436,7 +436,7 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 					// check overrides
 					if (isset($user->$profile_field) && !$override) {
 						// don't override profile field
-// 						profile_sync_log($sync_config->getGUID(), "Profile field already set: " . $profile_field . " for user " . $user->name);
+// 						profile_sync_log($sync_config->getGUID(), "Profile field already set: {$profile_field} for user {$user->name}");
 						continue(2);
 					}
 					

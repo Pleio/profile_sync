@@ -1,58 +1,54 @@
 <?php
 
-$title_text = elgg_echo("profile_sync:admin:datasources:add");
-$title = "";
+$title_text = elgg_echo('profile_sync:admin:datasources:add');
+$title = '';
 
-$form_body = "";
+$form_body = '';
 
-$datasource_type = "";
-$type_options = array(
-	"" => elgg_echo("profile_sync:admin:datasources:type:choose"),
-	"mysql" => elgg_echo("profile_sync:admin:datasources:type:mysql"),
-	"csv" => elgg_echo("profile_sync:admin:datasources:type:csv"),
-);
+$datasource_type = '';
+$type_options = [
+	'' => elgg_echo('profile_sync:admin:datasources:type:choose'),
+	'mysql' => elgg_echo('profile_sync:admin:datasources:type:mysql'),
+	'csv' => elgg_echo('profile_sync:admin:datasources:type:csv'),
+];
 
-$entity = $vars["entity"];
-if (elgg_instanceof($entity, "object", "profile_sync_datasource")) {
+$entity = elgg_extract('title', $vars);
+if (elgg_instanceof($entity, 'object', 'profile_sync_datasource')) {
 	$title_text = $entity->title;
 	$title = $entity->title;
 	$datasource_type = $entity->datasource_type;
 	
-	$form_body .= elgg_view("input/hidden", array("name" => "guid", "value" => $entity->guid));
+	$form_body .= elgg_view('input/hidden', ['name' => 'guid', 'value' => $entity->guid]);
 }
 
-$form_body .= "<div>";
-$form_body .= "<label>" . elgg_echo("title") . "</label>";
-$form_body .= elgg_view("input/text", array(
-	"name" => "title",
-	"value" => $title
-));
-$form_body .= "</div>";
+$title_input = elgg_format_element('label', [], elgg_echo('title'));
+$title_input .= elgg_view('input/text', [
+	'name' => 'title',
+	'value' => $title,
+]);
+$form_body .= elgg_format_element('div', [], $title_input);
 
-$form_body .= "<div>";
-$form_body .= "<label>" . elgg_echo("profile_sync:admin:datasources:type") . "</label>";
-$form_body .= elgg_view("input/select", array(
-	"id" => "profile-sync-edit-datasource-type",
-	"name" => "params[datasource_type]",
-	"options_values" => $type_options,
-	"value" => $datasource_type,
-	"class" => "mls"
-));
-$form_body .= "</div>";
+$datasource_type_input = elgg_format_element('label', [], elgg_echo('profile_sync:admin:datasources:type'));
+$datasource_type_input .= elgg_view('input/select', [
+	'id' => 'profile-sync-edit-datasource-type',
+	'name' => 'params[datasource_type]',
+	'options_values' => $type_options,
+	'value' => $datasource_type,
+	'class' => 'mls',
+]);
+$form_body .= elgg_format_element('div', [], $datasource_type_input);
 
-$form_body .= "<div class='mvm elgg-divide-bottom'></div>";
-$form_body .= elgg_view("profile_sync/forms/datasources/mysql", $vars);
-$form_body .= elgg_view("profile_sync/forms/datasources/csv", $vars);
+$form_body .= elgg_format_element('div', ['class' => 'mvm elgg-divide-bottom']);
+$form_body .= elgg_view('profile_sync/forms/datasources/mysql', $vars);
+$form_body .= elgg_view('profile_sync/forms/datasources/csv', $vars);
 
-$form_body .= "<div class='elgg-foot'>";
-$form_body .= elgg_view("input/submit", array("value" => elgg_echo("save"), "class" => "elgg-button-submit mtm"));
-$form_body .= "</div>";
+$form_body .= elgg_format_element('div', ['class' => 'elgg-foot'], elgg_view('input/submit', ['value' => elgg_echo('save'), 'class' => 'elgg-button-submit mtm']));
 
 // make the form
-$body = elgg_view("input/form", array(
-	"action" => "action/profile_sync/datasource/edit",
-	"body" => $form_body,
-	"class" => "phs elgg-form-profile-sync-datasource-edit"
-));
+$body = elgg_view('input/form', [
+	'action' => 'action/profile_sync/datasource/edit',
+	'body' => $form_body,
+	'class' => 'phs elgg-form-profile-sync-datasource-edit',
+]);
 
-echo elgg_view_module("inline", $title_text, $body, array("class" => "profile-sync-datasource-wrapper"));
+echo elgg_view_module('inline', $title_text, $body, ['class' => 'profile-sync-datasource-wrapper']);

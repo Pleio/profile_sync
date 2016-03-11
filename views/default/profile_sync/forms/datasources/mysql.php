@@ -1,82 +1,76 @@
 <?php
 
-$dbhost = "";
-$dbport = "";
-$dbname = "";
-$dbusername = "";
-$dbpassword = "";
-$dbquery = "";
+$dbhost = '';
+$dbport = '';
+$dbname = '';
+$dbusername = '';
+$dbpassword = '';
+$dbquery = '';
 
-$class = "hidden";
+$class = ['profile-sync-datasource-type', 'profile-sync-datasource-type-mysql'];
 
-$entity = elgg_extract("entity", $vars);
-if ($entity && ($entity->datasource_type === "mysql")) {
+$entity = elgg_extract('entity', $vars);
+if ($entity && ($entity->datasource_type === 'mysql')) {
 	$dbhost = $entity->dbhost;
 	$dbport = $entity->dbport;
 	$dbname = $entity->dbname;
 	$dbusername = $entity->dbusername;
 	$dbpassword = $entity->dbpassword;
 	$dbquery = $entity->dbquery;
-	
-	$class = "";
+} else {
+	$class[] = 'hidden';
 }
 
-echo "<div class='profile-sync-datasource-type profile-sync-datasource-type-mysql $class'>";
+$result = '';
 
-echo "<div>";
-echo "<label>" . elgg_echo("profile_sync:admin:datasources:edit:mysql:dbhost") . "</label>";
-echo elgg_view("input/text", array(
-	"name" => "params[dbhost]",
-	"value" => $dbhost,
-	"required" => true
-));
-echo "</div>";
+$input = elgg_format_element('label', [], elgg_echo('profile_sync:admin:datasources:edit:mysql:dbhost'));
+$input .= elgg_view('input/text', [
+	'name' => 'params[dbhost]',
+	'value' => $dbhost,
+	'required' => true,
+]);
+$result .= elgg_format_element('div', [], $input);
 
-echo "<div>";
-echo "<label>" . elgg_echo("profile_sync:admin:datasources:edit:mysql:dbport") . "</label>";
-echo elgg_view("input/text", array(
-	"name" => "params[dbport]",
-	"value" => $dbport,
-	"placeholder" => elgg_echo("profile_sync:admin:datasources:edit:mysql:dbport:default"),
-	"required" => true
-));
-echo "</div>";
+$input = elgg_format_element('label', [], elgg_echo('profile_sync:admin:datasources:edit:mysql:dbport'));
+$input .= elgg_view('input/text', [
+	'name' => 'params[dbport]',
+	'value' => $dbport,
+	'placeholder' => elgg_echo('profile_sync:admin:datasources:edit:mysql:dbport:default'),
+	'required' => true,
+]);
+$result .= elgg_format_element('div', [], $input);
 
-echo "<div>";
-echo "<label>" . elgg_echo("profile_sync:admin:datasources:edit:mysql:dbname") . "</label>";
-echo elgg_view("input/text", array(
-	"name" => "params[dbname]",
-	"value" => $dbname,
-	"required" => true
-));
-echo "</div>";
+$input = elgg_format_element('label', [], elgg_echo('profile_sync:admin:datasources:edit:mysql:dbname'));
+$input .= elgg_view('input/text', [
+	'name' => 'params[dbname]',
+	'value' => $dbname,
+	'required' => true,
+]);
+$result .= elgg_format_element('div', [], $input);
 
-echo "<div>";
-echo "<label>" . elgg_echo("profile_sync:admin:datasources:edit:mysql:dbusername") . "</label>";
-echo elgg_view("input/text", array(
-	"name" => "params[dbusername]",
-	"value" => $dbusername,
-	"required" => true
-));
-echo "</div>";
+$input = elgg_format_element('label', [], elgg_echo('profile_sync:admin:datasources:edit:mysql:dbusername'));
+$input .= elgg_view('input/text', [
+	'name' => 'params[dbusername]',
+	'value' => $dbusername,
+	'required' => true,
+]);
+$result .= elgg_format_element('div', [], $input);
 
-echo "<div>";
-echo "<label>" . elgg_echo("profile_sync:admin:datasources:edit:mysql:dbpassword") . "</label>";
-echo elgg_view("input/password", array(
-	"name" => "params[dbpassword]",
-	"value" => $dbpassword,
-	"class" => "elgg-input-text"
-));
-echo "</div>";
+$input = elgg_format_element('label', [], elgg_echo('profile_sync:admin:datasources:edit:mysql:dbpassword'));
+$input .= elgg_view('input/password', [
+	'name' => 'params[dbpassword]',
+	'value' => $dbpassword,
+	'class' => 'elgg-input-text',
+]);
+$result .= elgg_format_element('div', [], $input);
 
-echo "<div>";
-echo "<label>" . elgg_echo("profile_sync:admin:datasources:edit:mysql:dbquery") . "</label>";
-echo elgg_view("input/plaintext", array(
-	"name" => "params[dbquery]",
-	"value" => $dbquery,
-	"required" => true
-));
-echo "<div class='elgg-subtext'>" . elgg_echo("profile_sync:admin:datasources:edit:mysql:dbquery:description", array("[[lastrun]]")) . "</div>";
-echo "</div>";
+$input = elgg_format_element('label', [], elgg_echo('profile_sync:admin:datasources:edit:mysql:dbquery'));
+$input .= elgg_view('input/plaintext', [
+	'name' => 'params[dbquery]',
+	'value' => $dbquery,
+	'required' => true,
+]);
+$input .= elgg_format_element('div', ['class' => 'elgg-subtext'], elgg_echo('profile_sync:admin:datasources:edit:mysql:dbquery:description', ['[[lastrun]]']));
+$result .= elgg_format_element('div', [], $input);
 
-echo "</div>";
+echo elgg_format_element('div', ['class' => $class], $result);

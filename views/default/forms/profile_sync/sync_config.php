@@ -67,14 +67,7 @@ $override_options = [
 ];
 
 // show which datasource
-echo '<div>';
-echo elgg_format_element('label', ['class' => 'mrs'], elgg_echo('profile_sync:admin:sync_configs:edit:datasource') . ':');
-echo $datasource->title;
-echo elgg_view('input/hidden', [
-	'name' => 'datasource_guid',
-	'value' => $datasource->getGUID(),
-]);
-echo '</div>';
+echo elgg_format_element('div', [], elgg_format_element('label', ['class' => 'mrs'], elgg_echo('profile_sync:admin:sync_configs:edit:datasource') . ':') . $datasource->title);
 
 if (empty($datasource_cols) || empty($profile_fields)) {
 	echo elgg_view('output/longtext', ['value' => elgg_echo('profile_sync:admin:sync_configs:edit:no_columns')]);
@@ -154,103 +147,103 @@ $unique_id_fallback_input .= elgg_view('input/select', [
 ]);
 $body .= elgg_format_element('div', ['class' => 'mbs'], $unique_id_fallback_input);
 
-// fields to sync
-$field_class = 'profile-sync-edit-sync-fields';
-if ($ban_user || $unban_user) {
-	$field_class .= ' hidden';
-}
-$body .= "<div class='" . $field_class . "'>";
-$body .= elgg_format_element('label', [], elgg_echo("profile_sync:admin:sync_configs:edit:fields"));
+// fields
+$table_head = elgg_format_element('th', [], elgg_echo('profile_sync:admin:sync_configs:edit:datasource_column'));
+$table_head .= elgg_format_element('th', ['class' => 'profile-sync-arrow'], '&nbsp;');
+$table_head .= elgg_format_element('th', [], elgg_echo('profile_sync:admin:sync_configs:edit:profile_column'));
+$table_head .= elgg_format_element('th', [], elgg_echo('default_access:label'));
+$table_head .= elgg_format_element('th', [], elgg_echo('profile_sync:admin:sync_configs:edit:always_override'));
 
-$body .= "<table class='elgg-table-alt'>";
-$body .= "<thead><tr>";
-$body .= "<th>" . elgg_echo("profile_sync:admin:sync_configs:edit:datasource_column") . "</th>";
-$body .= "<th class='profile-sync-arrow'>&nbsp;</th>";
-$body .= "<th>" . elgg_echo("profile_sync:admin:sync_configs:edit:profile_column") . "</th>";
-$body .= "<th>" . elgg_echo("default_access:label") . "</th>";
-$body .= "<th>" . elgg_echo("profile_sync:admin:sync_configs:edit:always_override") . "</th>";
-$body .= "</tr></thead>";
+$table = elgg_format_element('thead', [], elgg_format_element('tr', [], $table_head));
 
-$body .= "<tbody>";
+$table_body = '';
 if (!empty($sync_config)) {
 	$sync_match = json_decode($sync_config->sync_match, true);
 	
 	foreach ($sync_match as $datasource_name => $profile_config) {
 		list($datasource_name) = explode(PROFILE_SYNC_DATASOURCE_COL_SEPERATOR, $datasource_name);
 		
-		$profile_name = elgg_extract("profile_field", $profile_config);
-		$access = (int) elgg_extract("access", $profile_config);
-		$always_override = (int) elgg_extract("always_override", $profile_config, true);
+		$profile_name = elgg_extract('profile_field', $profile_config);
+		$access = (int) elgg_extract('access', $profile_config);
+		$always_override = (int) elgg_extract('always_override', $profile_config, true);
 		
-		$body .= "<tr>";
-		$body .= "<td>" . elgg_view("input/select", array(
-			"name" => "datasource_cols[]",
-			"options_values" => $datasource_columns,
-			"value" => $datasource_name
-		)) . "</td>";
-		$body .= "<td>" . elgg_view_icon("arrow-right") . "</td>";
-		$body .= "<td>" . elgg_view("input/select", array(
-			"name" => "profile_cols[]",
-			"options_values" => $profile_columns,
-			"value" => $profile_name
-		)) . "</td>";
-		$body .= "<td>" . elgg_view("input/access", array(
-			"name" => "access[]",
-			"value" => $access
-		)) . "</td>";
-		$body .= "<td class='center'>" . elgg_view("input/select", array(
-			"name" => "always_override[]",
-			"value" => $always_override,
-			"options_values" => $override_options
-		)) . "</td>";
-		$body .= "</tr>";
+		$row = elgg_format_element('td', [], elgg_view('input/select', [
+			'name' => 'datasource_cols[]',
+			'options_values' => $datasource_columns,
+			'value' => $datasource_name,
+		]));
+		$row .= elgg_format_element('td', [], elgg_view_icon('arrow-right'));
+		$row .= elgg_format_element('td', [], elgg_view('input/select', [
+			'name' => 'profile_cols[]',
+			'options_values' => $profile_columns,
+			'value' => $profile_name,
+		]));
+		$row .= elgg_format_element('td', [], elgg_view('input/access', [
+			'name' => 'access[]',
+			'value' => $access,
+		]));
+		$row .= elgg_format_element('td', ['class' => 'center'], elgg_view('input/select', [
+			'name' => 'always_override[]',
+			'value' => $always_override,
+			'options_values' => $override_options,
+		]));
+		
+		$table_body .= elgg_format_element('tr', [], $row);
 	}
 } else {
-	$body .= "<tr>";
-	$body .= "<td>" . elgg_view("input/select", array(
-		"name" => "datasource_cols[]",
-		"options_values" => $datasource_columns
-	)) . "</td>";
-	$body .= "<td>" . elgg_view_icon("arrow-right") . "</td>";
-	$body .= "<td>" . elgg_view("input/select", array(
-		"name" => "profile_cols[]",
-		"options_values" => $profile_columns
-	)) . "</td>";
-	$body .= "<td>" . elgg_view("input/access", array("name" => "access[]")) . "</td>";
-	$body .= "<td class='center'>" . elgg_view("input/select", array(
-		"name" => "always_override[]",
-		"options_values" => $override_options
-	)) . "</td>";
-	$body .= "</tr>";
+	$row = elgg_format_element('td', [], elgg_view('input/select', [
+		'name' => 'datasource_cols[]',
+		'options_values' => $datasource_columns,
+	]));
+	$row .= elgg_format_element('td', [], elgg_view_icon('arrow-right'));
+	$row .= elgg_format_element('td', [], elgg_view('input/select', [
+		'name' => 'profile_cols[]',
+		'options_values' => $profile_columns,
+	]));
+	$row .= elgg_format_element('td', [], elgg_view('input/access', ['name' => 'access[]']));
+	$row .= elgg_format_element('td', ['class' => 'center'], elgg_view('input/select', [
+		'name' => 'always_override[]',
+		'options_values' => $override_options,
+	]));
+	
+	$table_body .= elgg_format_element('tr', [], $row);
 }
 
-$body .= "<tr id='profile-sync-field-config-template' class='hidden'>";
-$body .= "<td>" . elgg_view("input/select", array(
-	"name" => "datasource_cols[]",
-	"options_values" => $datasource_columns
-)) . "</td>";
-$body .= "<td>" . elgg_view_icon("arrow-right") . "</td>";
-$body .= elgg_format_element('td', [], elgg_view("input/select", [
-	"name" => "profile_cols[]",
-	"options_values" => $profile_columns,
+$template_row_data = elgg_format_element('td', [], elgg_view('input/select', [
+	'name' => 'datasource_cols[]',
+	'options_values' => $datasource_columns
 ]));
-$body .= elgg_format_element('td', [], elgg_view("input/access", ["name" => "access[]"]));
-$body .= elgg_format_element('td', ['class' => 'center'], elgg_view("input/select", [
-	"name" => "always_override[]",
-	"options_values" => $override_options,
+$template_row_data .= elgg_format_element('td', [], elgg_view_icon('arrow-right'));
+$template_row_data .= elgg_format_element('td', [], elgg_view('input/select', [
+	'name' => 'profile_cols[]',
+	'options_values' => $profile_columns,
 ]));
-$body .= "</tr>";
+$template_row_data .= elgg_format_element('td', [], elgg_view('input/access', ['name' => 'access[]']));
+$template_row_data .= elgg_format_element('td', ['class' => 'center'], elgg_view('input/select', [
+	'name' => 'always_override[]',
+	'options_values' => $override_options,
+]));
+$table_body .= elgg_format_element('tr', ['id' => 'profile-sync-field-config-template', 'class' => 'hidden'], $template_row_data);
 
-$body .= "</tbody>";
-$body .= "</table>";
+$table .= elgg_format_element('tbody', [], $table_body);
 
-$body .= elgg_format_element('div', [], elgg_view('output/url', [
+$fields = elgg_format_element('label', [], elgg_echo("profile_sync:admin:sync_configs:edit:fields"));
+
+$fields .= elgg_format_element('table', ['class' => 'elgg-table-alt'], $table);
+
+$fields .= elgg_format_element('div', [], elgg_view('output/url', [
 	'id' => 'profile-sync-edit-sync-add-field',
 	'text' => elgg_echo('add'),
 	'href' => '#',
 	'class' => 'float-alt',
 ]));
-$body .= "</div>";
+
+// fields to sync
+$field_class = ['profile-sync-edit-sync-fields'];
+if ($ban_user || $unban_user) {
+	$field_class[] = 'hidden';
+}
+$body .= elgg_format_element('div', ['class' => $field_class], $fields);
 
 // schedule
 $schedule_input = elgg_format_element('label', [], elgg_echo('profile_sync:admin:sync_configs:edit:schedule'));
@@ -263,54 +256,52 @@ $schedule_input .= elgg_view('input/select', [
 $body .= elgg_format_element('div', ['class' => 'mbs'], $schedule_input);
 
 // special actions
-$body .= "<div class='mbs'>";
-$body .= "<label>" . elgg_view("input/checkbox", [
-	"id" => "profile-sync-edit-sync-create-user",
-	"name" => "create_user",
-	"value" => 1,
-	"checked" => $create_user,
-]);
-$body .= elgg_echo("profile_sync:admin:sync_configs:edit:create_user") . "</label>";
-$body .= elgg_format_element('div', ['class' => 'elgg-subtext'], elgg_echo("profile_sync:admin:sync_configs:edit:create_user:description"));
-$body .= '<label>' . elgg_view('input/checkbox', [
+$input = elgg_format_element('label', [], elgg_view('input/checkbox', [
+	'id' => 'profile-sync-edit-sync-create-user',
+	'name' => 'create_user',
+	'value' => 1,
+	'checked' => $create_user,
+]) . elgg_echo('profile_sync:admin:sync_configs:edit:create_user'));
+$input .= elgg_format_element('div', ['class' => 'elgg-subtext'], elgg_echo('profile_sync:admin:sync_configs:edit:create_user:description'));
+$input .= elgg_format_element('label', [], elgg_view('input/checkbox', [
 	'name' => 'notify_user',
 	'value' => 1,
 	'checked' => $notify_user,
 	'class' => 'mlm',
-]);
-$body .= elgg_echo("profile_sync:admin:sync_configs:edit:notify_user") . "</label>";
-$body .= "</div>";
+]) . elgg_echo('profile_sync:admin:sync_configs:edit:notify_user'));
+$body .= elgg_format_element('div', ['class' => 'mbs'], $input);
 
-$body .= "<div class='mbs'>";
-$body .= "<label>" . elgg_view("input/checkbox", [
-	"id" => "profile-sync-edit-sync-ban-user",
-	"name" => "ban_user",
-	"value" => 1,
-	"checked" => $ban_user,
-]);
-$body .= elgg_echo("profile_sync:admin:sync_configs:edit:ban_user") . "</label>";
-$body .= elgg_format_element('div', ['class' => 'elgg-subtext'], elgg_echo("profile_sync:admin:sync_configs:edit:ban_user:description"));
+$input = elgg_format_element('label', [], elgg_view('input/checkbox', [
+	'id' => 'profile-sync-edit-sync-ban-user',
+	'name' => 'ban_user',
+	'value' => 1,
+	'checked' => $ban_user,
+]) . elgg_echo('profile_sync:admin:sync_configs:edit:ban_user'));
+$input .= elgg_format_element('div', ['class' => 'elgg-subtext'], elgg_echo('profile_sync:admin:sync_configs:edit:ban_user:description'));
+$body .= elgg_format_element('div', ['class' => 'mbs'], $input);
 
-$body .= "<div class='mbs'>";
-$body .= "<label>" . elgg_view("input/checkbox", [
-	"id" => "profile-sync-edit-sync-unban-user",
-	"name" => "unban_user",
-	"value" => 1,
-	"checked" => $unban_user,
-]);
-$body .= elgg_echo("profile_sync:admin:sync_configs:edit:unban_user") . "</label>";
-$body .= elgg_format_element('div', ['class' => 'elgg-subtext'], elgg_echo("profile_sync:admin:sync_configs:edit:unban_user:description"));
+$input = elgg_format_element('label', [], elgg_view('input/checkbox', [
+	'id' => 'profile-sync-edit-sync-unban-user',
+	'name' => 'unban_user',
+	'value' => 1,
+	'checked' => $unban_user,
+]) . elgg_echo('profile_sync:admin:sync_configs:edit:unban_user'));
+$input .= elgg_format_element('div', ['class' => 'elgg-subtext'], elgg_echo('profile_sync:admin:sync_configs:edit:unban_user:description'));
+$body .= elgg_format_element('div', ['class' => 'mbs'], $input);
 
 // log cleanup
-$body .= "<div class='mbs'>";
-$body .= elgg_format_element('div', [], elgg_echo('profile_sync:admin:sync_configs:edit:log_cleanup_count'));
-$body .= elgg_view('input/text', [
+$input = elgg_format_element('div', [], elgg_echo('profile_sync:admin:sync_configs:edit:log_cleanup_count'));
+$input .= elgg_view('input/text', [
 	'name' => 'log_cleanup_count',
 	'value' => $log_cleanup_count,
 ]);
-$body .= elgg_format_element('div', ['class' => 'elgg-subtext'], elgg_echo('profile_sync:admin:sync_configs:edit:log_cleanup_count:description'));
+$input .= elgg_format_element('div', ['class' => 'elgg-subtext'], elgg_echo('profile_sync:admin:sync_configs:edit:log_cleanup_count:description'));
+$body .= elgg_format_element('div', ['class' => 'mbs'], $input);
 
-$foot = '';
+$foot = elgg_view('input/hidden', [
+	'name' => 'datasource_guid',
+	'value' => $datasource->getGUID(),
+]);
 if (!empty($sync_config)) {
 	$foot .= elgg_view('input/hidden', ['name' => 'guid', 'value' => $sync_config->getGUID()]);
 }

@@ -5,11 +5,11 @@
 
 elgg_admin_gatekeeper();
 
-$guid = (int) get_input("guid");
+$guid = (int) get_input('guid');
 
-echo elgg_view("graphics/ajax_loader", array("hidden" => false));
+echo elgg_view('graphics/ajax_loader', ['hidden' => false]);
 
-echo elgg_format_element("div", array("class" => "center"), elgg_echo("profile_sync:sync_config:processing"));
+echo elgg_format_element('div', ['class' => 'center'], elgg_echo('profile_sync:sync_config:processing'));
 
 ?>
 <script>

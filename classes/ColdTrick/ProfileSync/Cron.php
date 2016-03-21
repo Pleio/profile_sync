@@ -47,7 +47,7 @@ class Cron {
 				'value' => $type,
 			],
 		];
-		$batch = new ElggBatch('elgg_get_entities_from_metadata', $options);
+		$batch = new \ElggBatch('elgg_get_entities_from_metadata', $options);
 		foreach ($batch as $sync_config) {
 			// start the sync
 			profile_sync_proccess_configuration($sync_config);

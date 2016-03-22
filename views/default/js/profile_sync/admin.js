@@ -12,12 +12,12 @@ elgg.profile_sync.admin.check_create_user = function(event) {
 
 	if (ban_checked && create_checked) {
 		alert(elgg.echo("profile_sync:action:sync_config:edit:error:create_ban"));
-		$(this).removeAttr("checked");
+		$(this).prop("checked", false);
 	}
 	
 	if (unban_checked && create_checked) {
 		alert(elgg.echo("profile_sync:action:sync_config:edit:error:create_unban"));
-		$(this).removeAttr("checked");
+		$(this).prop("checked", false);
 	}
 };
 
@@ -33,14 +33,14 @@ elgg.profile_sync.admin.check_ban_user = function(event) {
 	
 	if (create_checked && ban_checked) {
 		alert(elgg.echo("profile_sync:action:sync_config:edit:error:create_ban"));
-		$(this).removeAttr("checked");
+		$(this).prop("checked", false);
 
 		ban_checked = false;
 	}
 	
 	if (unban_checked && ban_checked) {
 		alert(elgg.echo("profile_sync:action:sync_config:edit:error:ban_unban"));
-		$(this).removeAttr("checked");
+		$(this).prop("checked", false);
 	}
 	
 	if (ban_checked) {
@@ -64,14 +64,14 @@ elgg.profile_sync.admin.check_unban_user = function(event) {
 	
 	if (create_checked && unban_checked) {
 		alert(elgg.echo("profile_sync:action:sync_config:edit:error:create_unban"));
-		$(this).removeAttr("checked");
+		$(this).prop("checked", false);
 
 		unban_checked = false;
 	}
 	
 	if (ban_checked && unban_checked) {
 		alert(elgg.echo("profile_sync:action:sync_config:edit:error:ban_unban"));
-		$(this).removeAttr("checked");
+		$(this).prop("checked", false);
 	}
 	
 	if (unban_checked) {
@@ -107,8 +107,8 @@ elgg.profile_sync.admin.datasource_type = function() {
 		$form.find(".profile-sync-datasource-type-" + type).show();
 	}
 
-	$form.find('[required]').attr('disabled', 'disabled');
-	$form.find('[required]:visible').removeAttr('disabled');
+	$form.find('[required]').prop('disabled', true);
+	$form.find('[required]:visible').prop('disabled', false);
 
 	$.colorbox.resize();
 };

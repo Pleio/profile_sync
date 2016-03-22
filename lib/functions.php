@@ -788,7 +788,7 @@ function profile_sync_filter_var($value) {
 	if (is_array($value)) {
 		array_walk_recursive($value, 'profile_sync_array_decoder');
 	} else {
-		$value = trim(_elgg_html_decode($value));
+		$value = trim(elgg_html_decode($value));
 	}
 	
 	return $value;

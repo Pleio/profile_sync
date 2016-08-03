@@ -525,7 +525,10 @@ function profile_sync_proccess_configuration(ElggObject $sync_config) {
 					
 					// get the access of existing profile data
 					$access = profile_sync_get_profile_field_access($user->getGUID(), $profile_field, $access);
-					
+				    if (!$access) {
+                        $access = get_default_access(); //@todo: temporarily hotfix, find out why profile_sync_get_profile_field_access returns no access level in some cases
+                    }
+
 					// save new value
 					// need to delete and recreate as there is no way to update the field and keep access intact in Elgg 1.8
 					unset($user->$profile_field);
